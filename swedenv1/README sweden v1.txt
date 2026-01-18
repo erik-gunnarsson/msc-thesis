@@ -63,7 +63,6 @@ Status:  🟡 PROTOTYPE (using placeholder automation data)
 
 
 IMMEDIATE:
-[ ] 0. Rewrite main.py to use loguru 
 [ ] 1. Identify occupation classification in automation_probability.csv
 [ ] 2. Create or obtain SOC-to-ISCO crosswalk mapping
 [ ] 3. Update load_automation_probabilities() in main.py to use real mapping
