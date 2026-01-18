@@ -1,0 +1,22 @@
+Public microdata for Statistics on Income and Living Conditions: disclaimer
+
+Public microdata (also referred to as public use files, PUFs) for European Union Statistics on Income and Living Conditions (EU-SILC) were created to enable interested parties to become familiar with microdata. At the same time the privacy of respondents had to be protected (Principle 5 of the European Statistics Code of Practice). The data structure of the public microdata is the same as in the microdata for research (Scientific Use Files). The public microdata provide researchers and trainers the opportunity to develop programs using identical formats and variable names to those that appear in the Scientific Use Files. 
+
+The EU-SILC public microdata are fully synthetic, they do not present the actual observations, but they were simulated using statistical modelling and the statistical distributions in the original data.
+
+The public microdata are tailored to the following purposes:
+ 1. To enable accredited researchers to develop and write a code that may eventually be applied to the scientific use files;
+ 2. To allow researchers to explore the content and complexity of the survey prior to requesting access to the confidential microdata;
+ 3. For statistical training at all levels.
+
+The data cannot be used for any statistical inference to a wider population. With these data it is not possible to make generalised statements about individual characteristics or relationships between different personal or household characteristics. These files have limited research value; only the scientific use files provide a basis for valid analysis. Any calculations based on the public microdata or the conclusions drawn from them are produced at the sole risk and responsibility of the user. Neither the National Statistical Institutes nor Eurostat can guarantee the accuracy or reliability of results. Furthermore, neither the National Statistical Institute nor Eurostat can be held responsible for any improper use of these data.
+
+The Public Use Files are developed in agreement with article 19 of Regulation 223/2009 on European statistics.
+
+For each country and year the data are grouped in four files: Household Register (D), Personal Register (R), Household Data (H) and Personal Data (P). A detailed description of the variables is available on page 78 of the description of the target variables:  https://circabc.europa.eu/sd/a/d7e88330-3502-44fa-96ea-eab5579b4d1e/SILC065%20operation%202013%20VERSION%20MAY%202013.pdf.
+
+Please note that the files do not contain flags as they have no clear interpretation in the situation that the individual data are based on a model.
+
+You can download the files in CSV-format (comma separated values) zipped per country and year.
+
+Downloaded from: https://ec.europa.eu/eurostat/web/microdata/public-microdata

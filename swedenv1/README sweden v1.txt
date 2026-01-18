@@ -1,0 +1,179 @@
+================================================================================
+# AUTOMATION PROBABILITY VS WAGE REGRESSION - SWEDEN
+================================================================================
+
+Project: MSc Thesis - Initial Testing
+Model:   mean_income_i = β₀ + β₁ × automation_probability_i + ε_i
+Status:  🟡 PROTOTYPE (using placeholder automation data)
+
+================================================================================
+## 📋 ACTION ITEMS CHECKLIST
+================================================================================
+
+[ ] ISSUE 1: OCCUPATION CODE MISMATCH (HIGH PRIORITY)
+    ─────────────────────────────────────────────────
+    Problem: 
+      - Your automation_probability.csv has 291 detailed occupation codes
+      - EU-SILC public data only has 1-digit ISCO codes (9 categories)
+      - Code classification in your CSV is unknown (SOC? Custom?)
+    
+    Impact: Currently using PLACEHOLDER automation values, not your actual data!
+    
+    Solutions (choose one):
+    
+    A) Identify your occupation codes and create crosswalk:
+       1. Determine what classification your codes 1-291 represent
+          - SOC-2010 (US Bureau of Labor Statistics)? 
+          - Frey & Osborne original numbering?
+          - O*NET codes?
+       2. Create/obtain a SOC-to-ISCO crosswalk CSV
+       3. Aggregate your detailed probabilities to ISCO 1-digit level
+       
+    B) Get more detailed EU-SILC data:
+       1. Apply to Eurostat for Scientific Use Files (SUF)
+          https://ec.europa.eu/eurostat/web/microdata/overview
+       2. SUF contains 2-4 digit ISCO codes (~100+ occupations)
+       3. More statistical power for regression
+       
+    C) Use alternative wage data with detailed occupations:
+       1. Eurostat SES (Structure of Earnings Survey) has ISCO-08 detail
+       2. Swedish SCB (Statistics Sweden) may have detailed data
+
+
+[ ] ISSUE 2: LIMITED STATISTICAL POWER (MEDIUM PRIORITY)
+    ─────────────────────────────────────────────────────
+    Problem: Only 9 data points (1-digit ISCO groups)
+    
+    Impact: 
+      - Wide confidence intervals
+      - Marginal significance (p=0.052)
+      - Cannot detect nuanced relationships
+    
+    Solution: Get 2-4 digit occupation data (see Issue 1, Option B)
+
+
+[ ] ISSUE 3: CROSS-SECTIONAL LIMITATIONS (LOW PRIORITY FOR NOW)
+    ────────────────────────────────────────────────────────────
+    Problem: Cannot establish causality with cross-sectional data
+    
+    Future improvements:
+      - Panel data analysis (multiple years)
+      - Difference-in-differences design
+      - Instrumental variables approach
+
+
+IMMEDIATE:
+[ ] 0. Rewrite main.py to use loguru 
+[ ] 1. Identify occupation classification in automation_probability.csv
+[ ] 2. Create or obtain SOC-to-ISCO crosswalk mapping
+[ ] 3. Update load_automation_probabilities() in main.py to use real mapping
+[ ] 4. Re-run analysis with actual automation data
+[ ] 5. Document data sources properly
+
+ADITIONAL:
+[ ] 6. Apply for EU-SILC Scientific Use Files (2-4 digit ISCO)
+[ ] 7. Add control variables (education, age, gender, sector)
+[ ] 8. Run robustness checks (different years, weighted vs unweighted)
+[ ] 9. Add confidence intervals to visualizations
+[ ] 10. Panel data analysis across years
+[ ] 11. Compare with other Nordic countries
+[ ] 12. Quantile regression (effect at different income levels)
+
+================================================================================
+📁 PROJECT STRUCTURE
+================================================================================
+
+msc-thesis/
+├── requirements.txt        # Python dependencies (root level)
+├── venv/                   # Python virtual environment (root level)
+├── README.txt              # Project overview
+│
+└── swedenv1/               # Sweden v1 analysis
+    ├── main.py             # Main regression script
+    ├── README sweden v1.txt # This file
+    │
+    ├── data/
+    │   ├── automation_probability/
+    │   │   └── automation_probability.csv    # ⚠️ Needs mapping
+    │   │
+    │   ├── wage/
+    │   │   ├── SE_PUF_EUSILC/               # ✅ EU-SILC microdata
+    │   │   │   ├── SE_2004p_EUSILC.csv
+    │   │   │   ├── SE_2005p_EUSILC.csv
+    │   │   │   └── ... (2004-2013)
+    │   │   └── earn_ses_monthly__custom_19703567_linear.csv  # Eurostat aggregate
+    │   │
+    │   └── mapping/
+    │       └── isco_soc_crosswalk.xls       # May help with mapping
+    │
+    └── outputs/                # Generated by main.py
+        ├── regression_scatter.png
+        ├── income_by_occupation.png
+        ├── automation_by_occupation.png
+        ├── summary_figure.png
+        ├── summary_by_occupation.csv
+        ├── regression_coefficients.csv
+        ├── regression_statistics.csv
+        └── yearly_statistics.csv
+
+
+================================================================================
+🔧 HOW TO RUN
+================================================================================
+
+# Setup (first time) - from project root
+cd msc-thesis
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Run analysis
+source venv/bin/activate
+python swedenv1/main.py
+
+# Outputs will be saved to swedenv1/outputs/
+
+
+================================================================================
+📚 DATA SOURCES & REFERENCES
+================================================================================
+
+Automation Probability:
+- Frey, C.B. & Osborne, M.A. (2017). "The future of employment: How 
+  susceptible are jobs to computerisation?" Technological Forecasting 
+  and Social Change, 114, 254-280.
+
+Occupation Classifications:
+- ISCO-08: https://www.ilo.org/public/english/bureau/stat/isco/isco08/
+- SOC-2010: https://www.bls.gov/soc/2010/home.htm
+- SOC-ISCO Crosswalk: https://www.bls.gov/soc/soccrosswalks.htm
+
+EU-SILC Documentation:
+- https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions
+
+
+## 📊 STATUS ON DATA SOURCES
+
+1. INCOME DATA (EU-SILC Microdata)
+   Source: SE_PUF_EUSILC (Sweden Public Use Files)
+   Years:  2004-2013
+   Link:   https://ec.europa.eu/eurostat/web/microdata/european-union-statistics-on-income-and-living-conditions
+   Status: ✅ Working
+   
+   Key Variables:
+   - PL050/PL051: ISCO occupation code (1-digit only in public files)
+   - PY010G: Gross employee cash income
+   - PB040: Personal cross-sectional weight
+
+2. AUTOMATION PROBABILITY DATA
+   Source: automation_probability.csv (291 occupation codes)
+   Link:   [ADD SOURCE - Frey & Osborne 2013?]
+   Status: ⚠️ NOT PROPERLY MAPPED
+   
+   Issue: Your CSV has codes 1-291, but classification system is unknown.
+          Currently using PLACEHOLDER values at 1-digit ISCO level.
+
+3. ALTERNATIVE WAGE DATA (Not currently used)
+   Source: Eurostat EARN_SES_MONTHLY
+   Link:   https://ec.europa.eu/eurostat/databrowser/view/earn_ses_monthly/default/table
+   Status: 🔵 Available but aggregated
