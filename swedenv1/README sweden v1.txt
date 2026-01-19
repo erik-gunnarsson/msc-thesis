@@ -6,6 +6,8 @@ Project: MSc Thesis - Initial Testing
 Model:   mean_income_i = β₀ + β₁ × automation_probability_i + ε_i
 Status:  🟡 PROTOTYPE (using placeholder automation data)
 
+
+test
 ================================================================================
 ## 📋 ACTION ITEMS CHECKLIST
 ================================================================================
