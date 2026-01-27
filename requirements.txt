@@ -15,3 +15,7 @@ tqdm>=4.65.0
 
 # Logs/debugging
 loguru
+
+# linear models
+linearmodels
+
