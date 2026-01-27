@@ -19,3 +19,5 @@ loguru
 # linear models
 linearmodels
 
+# visual outputs
+seaborn
