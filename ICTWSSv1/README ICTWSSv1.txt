@@ -1,10 +1,30 @@
-## Methodology 
+# Collective bargaining layer 
+
+## Update Logs 
+### ======================== Jan 27th updated => mainv2.py ========================
+
+- Add dynamics: include lagged employment and move to system GMM or LSDVC ==> decide don LSDVC as the pannel was small and system GMM buggy on python
+- Add a wage proxy (even if imperfect) to avoid “coverage is just wages” critique. 
+  - added at data/eurostat_wageproxy
+- Use lagged ICTWSS and pre-specify 1–2 core institutional measures ===> Keep this simple! MAX 2
+  - [AdjCov] Adjusted Bargaining Coverage (lagged t-1)
+  - [coord] Wage Coordination Index (lagged t-1)
 
 ### ======================== Jan 26th ideas ========================
 
 testing a country–industry–year panel where an automation proxy (ICT capital / ICT usage) affects employment, and where that effect is moderated by institutions (ICTWSS)?”
 
----
+## Methodology
+
+### data
+
+- employment: Eurostat => https://ec.europa.eu/eurostat/databrowser/view/sbs_na_ind_r2__custom_19815875/default/table 
+- wage proxy: Eurostat => https://ec.europa.eu/eurostat/databrowser/view/nama_10_a64/default/table?lang=en
+- ICT: KLEMS => https://euklems-intanprod-llee.luiss.it/
+- Collective Bargaining: ICTWSS => https://www.oecd.org/en/data/datasets/oecdaias-ictwss-database.html
+  - [AdjCov] Adjusted Bargaining Coverage (lagged t-1)
+  - [coord] Wage Coordination Index (lagged t-1)
+
 
 ### Panel unit
 
