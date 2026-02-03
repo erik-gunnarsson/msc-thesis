@@ -6,7 +6,7 @@
 ## Layout
 Initial Tesing Folders:
 - uncomtradev1 => replacing IFR with EU Import data
-- ICTWSSv1 => adding collective barggening 
+- ICTWSSv1 => adding collective bargaining 
 - europev1 => broader test on EU data
 - swedenv1 => quick test on sweden
 
