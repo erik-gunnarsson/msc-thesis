@@ -1,12 +1,13 @@
-swedenv1/outputs
 venv
 
 #data folders
 ICTWSSv1/data
 europev1/data
 swedenv1/data
+uncomtradev1/data
 
 #outputs folders
 ICTWSSv1/outputs
 europev1/outputs
 swedenv1/outputs
+uncomtradev1/outputs
