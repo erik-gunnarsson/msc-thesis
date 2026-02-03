@@ -6,4 +6,4 @@ Initial Tesing Folders:
 
 ## map of literature
 
-![Litmaps Citation Network Graph](mapv1.png)
+![literature map](mapv1.png)
