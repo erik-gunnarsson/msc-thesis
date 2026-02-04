@@ -1,7 +1,7 @@
 # Msc Thesis 
 
 **Latest Research Question**
-> Does robot adoption reduce employment in manufacturing industries, and to what extent do labor market institutions—specifically collective bargaining coverage and wage coordination—mediate this effect across countries and industries?
+> *Does robot adoption reduce employment in manufacturing industries, and to what extent do labor market institutions—specifically collective bargaining coverage and wage coordination—mediate this effect across countries and industries?*
 
 ## Layout
 Initial Tesing Folders (Chronolgical order Asc):
@@ -11,33 +11,17 @@ Initial Tesing Folders (Chronolgical order Asc):
 - europev1 => broader test on EU data
 - swedenv1 => quick test on sweden
 
-
-
 ## Literature Map
 
 ![literature map](mapv1.png)
 
-
-
-
 ---
-
 
 # Collective Bargaining Layer × Robot Adoption
-
-
-## Updated Research Question
-> *Does robot adoption reduce employment in manufacturing industries, and to what extent do labor market institutions—specifically collective bargaining coverage and wage coordination—mediate this effect across countries and industries?*
-
-More simply, we are testing whether the moderating role of collective bargaining operates through differential industry exposure to automation, rather than only at the macro level.
-
-
----
 
 ## Methodology
 
 ### Data Sources
-
 
 #### EU Data
 * **Employment & Value Added**
@@ -54,6 +38,8 @@ More simply, we are testing whether the moderating role of collective bargaining
   **IFR **
   *Operational Stock*
   [https://IFR.org](https://ifr.org)
+
+#### 
 
 
 #### Collective Bargaining Data

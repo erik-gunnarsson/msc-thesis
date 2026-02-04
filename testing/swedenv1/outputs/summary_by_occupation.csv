@@ -1,0 +1,10 @@
+isco_1digit,occupation_name,mean_income,median_income,std_income,automation_probability,n_obs
+1,Managers,33423,30039,24560,0.015,3017
+2,Professionals,30215,27356,23503,0.04,13302
+3,Technicians,29181,26487,24462,0.25,11352
+4,Clerical workers,22369,20943,19355,0.7,4911
+5,Service/sales,21501,19098,37219,0.4,12034
+6,Agricultural,23634,21663,19883,0.5,1119
+7,Craft workers,29404,26915,23841,0.6,6285
+8,Machine operators,28972,26708,27466,0.7,5900
+9,Elementary,20178,17464,17967,0.8,2614
