@@ -11,3 +11,9 @@ ICTWSSv1/outputs
 europev1/outputs
 swedenv1/outputs
 uncomtradev1/outputs
+
+#replication kits
+data/upscalingIFR/robots-at-work-replication/
+
+#all data
+data/
