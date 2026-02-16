@@ -1,7 +1,0 @@
-DATAFLOW,LAST UPDATE,freq,nace_r2,isco08,worktime,age,sex,indic_se,geo,TIME_PERIOD,OBS_VALUE,OBS_FLAG,CONF_STATUS
-ESTAT:EARN_SES_MONTHLY(1.0),09/07/25 23:00:00,Annual,"Industry, construction and services (except public administration, defense, compulsory social security)",Total,Total,Total,Total,Mean earnings in euro,Sweden,2002,2449,,
-ESTAT:EARN_SES_MONTHLY(1.0),09/07/25 23:00:00,Annual,"Industry, construction and services (except public administration, defense, compulsory social security)",Total,Total,Total,Total,Mean earnings in euro,Sweden,2006,2510,,
-ESTAT:EARN_SES_MONTHLY(1.0),09/07/25 23:00:00,Annual,"Industry, construction and services (except public administration, defense, compulsory social security)",Total,Total,Total,Total,Mean earnings in euro,Sweden,2010,2809,,
-ESTAT:EARN_SES_MONTHLY(1.0),09/07/25 23:00:00,Annual,"Industry, construction and services (except public administration, defense, compulsory social security)",Total,Total,Total,Total,Mean earnings in euro,Sweden,2014,3286,,
-ESTAT:EARN_SES_MONTHLY(1.0),09/07/25 23:00:00,Annual,"Industry, construction and services (except public administration, defense, compulsory social security)",Total,Total,Total,Total,Mean earnings in euro,Sweden,2018,3488,,
-ESTAT:EARN_SES_MONTHLY(1.0),09/07/25 23:00:00,Annual,"Industry, construction and services (except public administration, defense, compulsory social security)",Total,Total,Total,Total,Mean earnings in euro,Sweden,2022,3450,,

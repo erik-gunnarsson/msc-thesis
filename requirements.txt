@@ -1,6 +1,7 @@
 # Core data analysis
 pandas>=2.0.0
 numpy>=1.24.0
+openpyxl>=3.0.0  # Required for reading Excel files (.xlsx) with pandas
 
 # Statistical modeling
 statsmodels>=0.14.0
@@ -21,3 +22,8 @@ linearmodels
 
 # visual outputs
 seaborn
+
+# streamlit
+streamlit
+streamlit-flow-component # used for decision tree
+plotly>=5.0.0  # for interactive 3D visualizations
