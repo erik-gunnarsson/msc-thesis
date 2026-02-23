@@ -27,3 +27,7 @@ seaborn
 streamlit
 streamlit-flow-component # used for decision tree
 plotly>=5.0.0  # for interactive 3D visualizations
+
+
+# graphviz
+graphviz
