@@ -1,275 +1,156 @@
-# MSc Thesis: Industrial Robots, Employment, and Collective Bargaining
+# MSc Thesis — Industrial Robots, Employment, and Collective Bargaining (Europe)
 
-**Research Question**
-> *Does industrial robot adoption affect manufacturing employment in Europe, and do collective bargaining institutions moderate this relationship? If so, does this moderation vary across industries?*
+## Research question
+**How does collective bargaining shape the aggregate employment effects of industrial robots across European countries?**
 
----
-
-## Quick Summary
-
-**Main Findings:**
-1. **Baseline (pooled)**: No average effect of robots on employment (β = -0.007, p = 0.42)
-2. **Institutional moderation**: Coordination buffers robot displacement by ~2.5 percentage points (p = 0.064)
-3. **Industry heterogeneity** (key contribution): Coordination works in **skill-intensive** industries (pharma +4.9%, chemicals +2.8%, petroleum +13.9%) but **NOT** in routine-intensive industries (automotive -2.4%, metals -0.8%, both n.s.)
-
-**Contribution**: Reconciles conflicting literature by showing robot-employment effects are industry-specific. Challenges hypothesis that coordination protects routine workers—instead, it facilitates adjustment where robots complement skilled workers.
+More precisely, we study whether national collective bargaining institutions (e.g., **wage coordination** and **collective bargaining coverage**) **moderate** the relationship between **robot adoption** and **manufacturing labour demand**, and whether this moderation differs across **types of manufacturing industries**.
 
 ---
 
-## Data Sources
+## Motivation and research gap
+Empirical evidence on robots and employment is mixed across contexts. A core gap is a **Europe-focused, industry-granular** account that explicitly incorporates **collective bargaining institutions** as moderators, rather than treating them as background country controls.
 
-### 1. Robot Adoption (IFR)
-- **Source**: International Federation of Robotics via Bachmann et al. (2024) replication kit
-- **Coverage**: 1993-2019, country × industry × year
-- **Variable**: Operational stock of industrial robots (ISO 8373 definition)
-- **Measure**: `ln(Robots per 1000 workers)`, normalized to 1995 base-year employment
-- **Sample**: 25 EU countries, 34 NACE Rev. 2 manufacturing industries
-
-### 2. Employment Outcomes (EU KLEMS)
-- **Source**: EU KLEMS Growth and Productivity Accounts (2023 release)
-- **Coverage**: 1995-2021, 28 EU countries, NACE Rev. 2 two-digit industries
-- **Primary Variable**: `LAB_QI` (total hours worked, log-transformed)
-- **Why hours over headcount**: Captures both extensive margin (job losses) and intensive margin (hours reductions)
-
-### 3. Labor Market Institutions (ICTWSS)
-- **Source**: OECD/AIAS ICTWSS Database
-- **Baseline Window**: 1990-1995 average (extended to recover Germany & France)
-- **Key Variables**:
-  - `AdjCov`: Adjusted collective bargaining coverage (% of workers covered by agreements)
-  - `Coord`: Wage coordination index (1-5 scale, Garnero 2021 classification)
-  - `HighCoord`: Binary indicator (1 if Coord ≥ 4, capturing organized decentralized/centralized systems)
-- **Treatment**: Time-invariant country characteristics (frozen at baseline to avoid endogeneity)
-
-### 4. Control Variables (EU KLEMS + Eurostat)
-- **Industry-level** (EU KLEMS):
-  - Log real value added (`VA_PYP`)
-  - Log capital stock: ICT (`CAPICT_QI`) and non-ICT (`CAPNICT_QI`)
-- **Country-level** (Eurostat):
-  - Log real GDP
-  - Unemployment rate
-- **Deflation**: All nominal variables deflated to constant 2015 euros using harmonized CPIs
+The key methodological constraint is **statistical power**: estimating fully industry-specific robot × institution effects across many industries is unstable in a European panel with a limited number of countries. This project addresses that by using a **theory-driven industry grouping** into a small number of buckets, enabling defensible heterogeneity analysis without over-parameterizing the model.
 
 ---
 
-## Final Sample Construction
+## Data sources
+### 1) Industrial robots (IFR)
+- **Source:** International Federation of Robotics (IFR), accessed via a replication dataset (Bachmann et al. replication kit)
+- **Coverage:** Country × industry × year
+- **Core measure:** Operational stock of industrial robots (ISO 8373 definition)
+- **Main variable:** `ln_robots_it-1` (log robot intensity, lagged 1 year)
 
-**After merging and cleaning:**
-- **Countries**: 17 (AT, BE, CZ, DE, DK, EE, ES, FI, FR, IT, LT, LV, NL, SE, SI, SK, UK)
-- **Industries**: 24 NACE Rev. 2 manufacturing sectors (C10-C33)
-- **Years**: 1995-2019 (25 years)
-- **Observations**: 2,886 (country × industry × year)
-- **Entities**: 291 country-industry pairs
-- **Panel**: Unbalanced (some industries with insufficient data dropped)
+### 2) Labour outcomes and industry controls (EU KLEMS)
+- **Source:** EU KLEMS Growth and Productivity Accounts (2023 release)
+- **Coverage:** Country × NACE Rev.2 manufacturing industry × year
+- **Main outcome:** `ln_hours` (log of total hours worked, e.g., `LAB_QI`)
+- **Controls (industry-level):**
+  - log real value added
+  - log ICT capital stock
+  - log non-ICT capital stock
+  - (other standard production controls as used in the empirical strategy)
 
-**Sample restrictions for coverage analysis:**
-- 6 countries dropped (CZ, EE, ES, LT, LV, SK) due to missing AdjCov in baseline period
-- Restricted sample: 11 countries, 2,109 observations (73% of full sample)
+### 3) Collective bargaining institutions (ICTWSS / OECD–AIAS)
+- **Source:** ICTWSS database
+- **Key constructs:**
+  - `Coord`: Wage coordination index (ordinal scale)
+  - `AdjCov`: Adjusted collective bargaining coverage (%)
+- **Design choice:** Institutions are treated as **predetermined** (time-invariant) by freezing them at a **baseline window** (e.g., early 1990s average) to reduce simultaneity concerns.
 
----
-
-## Empirical Strategy
-
-### Panel Structure
-**Unit of Analysis**: Country × Industry × Year  
-**Fixed Effects**:
-- **Pooled models (Eq. 1-3)**: Country-industry FE (α_ij) + Year FE (δ_t)
-- **Industry-by-industry (Eq. 4-5)**: Country FE (α_i) + Year FE (δ_t)
-  - *Note*: Cannot use country-industry FE when subsetting by industry (perfectly collinear)
-
-**Standard Errors**: Clustered at country-industry level (conservative)
-
----
-
-### Equation 1: Baseline Model
-```
-ln(Hours)_ijt = β₁ ln(Robots)_ijt-1 + X'_ijt γ + α_ij + δ_t + ε_ijt
-```
-**Purpose**: Test main effect—do robots affect employment on average?  
-**Sample**: Full 17 countries, 24 industries, N = 2,886  
-**Result**: β₁ = -0.007 (SE = 0.009, p = 0.42) → **Null result**
+### 4) Macro controls (Eurostat / national accounts)
+- **Country-level controls:** e.g., real GDP, unemployment rate (where used)
+- **Deflation:** nominal variables deflated to constant euros (harmonized price indices)
 
 ---
 
-### Equation 2: Coordination Moderation (Pooled)
-```
-ln(Hours)_ijt = β₁ ln(Robots)_ijt-1 + β₂[ln(Robots)_ijt-1 × HighCoord_i] 
-                + X'_ijt γ + α_ij + δ_t + ε_ijt
-```
-**Purpose**: Does coordination moderate robot-employment relationship?  
-**Sample**: Full 17 countries, N = 2,886  
-**Result**: 
-- β₁ = -0.016 (p = 0.19) [low-coordination baseline]
-- β₂ = +0.025 (p = 0.064) [coordination interaction] **← Marginally significant**
-- **Marginal effects**:
-  - Low coordination: -1.6%
-  - High coordination: +0.9%
-  - Difference: +2.5 percentage points
-
-**Interpretation**: Coordinated bargaining systems buffer robot displacement
+## Sample construction (high level)
+- Unit of analysis: **country × industry × year**
+- Period: **1995–2019** (baseline; can be extended if data support)
+- Manufacturing only: **NACE Rev.2 Section C (C10–C33)**
+- Panel is typically **unbalanced** due to missingness and harmonization constraints across sources.
+- Coverage-based analyses may require a restricted country sample if baseline `AdjCov` is missing for some countries.
 
 ---
 
-### Equation 3: Coverage Moderation (Pooled)
-```
-ln(Hours)_ijt = β₁ ln(Robots)_ijt-1 + β₂[ln(Robots)_ijt-1 × AdjCov_centered_i] 
-                + X'_ijt γ + α_ij + δ_t + ε_ijt
-```
-**Purpose**: Does coverage (breadth) moderate robot effects?  
-**Sample**: Restricted to 11 Western European countries, N = 2,109  
-**Result**: 
-- β₁ = +0.015 (p = 0.021) [at mean coverage]
-- β₂ = -0.0013 (p = 0.074) [per 1pp coverage increase]
+## Key measurement choices
+### Lagged robots (t−1)
+Robots are lagged to improve temporal ordering: adoption precedes labour adjustment.
 
-**Interpretation**: Marginally significant but negative moderation—higher coverage associated with MORE displacement. Quality of coordination matters more than breadth.
+### Fixed-denominator robot intensity
+Robot intensity is constructed using a **fixed base-year employment denominator** (e.g., 1995) to avoid mechanical correlation from a changing employment denominator.
 
-**⚠️ Limitation**: Sample composition changed (dropped all Eastern Europe)—results not directly comparable to Eq. 2.
+### Institutions as predetermined (baseline “freeze”)
+Collective bargaining institutions are treated as structural country characteristics by freezing them at a pre-period baseline window to mitigate reverse causality concerns.
 
 ---
 
-### Equation 4: Industry-by-Industry Coordination (NEW)
-```
-For each industry j:
-  ln(Hours)_ijt = β₁ʲ ln(Robots)_ijt-1 + β₂ʲ[ln(Robots)_ijt-1 × HighCoord_i] 
-                  + X'_ijt γ + α_i + δ_t + ε_ijt
-```
-**Purpose**: WHERE does coordination moderation work?  
-**Method**: Run 13 separate regressions (one per industry with sufficient data)  
-**Sample**: 13/24 industries (dropped 11 due to insufficient countries or observations)
+## Industry heterogeneity strategy: Six theory-driven manufacturing buckets (NACE Rev.2)
+Instead of estimating separate robot–institution slopes for every 2-digit industry (which is underpowered), manufacturing industries are grouped into six ex-ante buckets grounded in standard technology-intensity classifications and aligned with common robot-use patterns in manufacturing.
 
-**Key Results** (coordination interaction β₂):
+**Bucket 1 — High-tech**
+- C21 Pharmaceuticals
+- C26 Computer, electronic & optical
 
-| Industry | Effect | p-value | Interpretation |
-|----------|--------|---------|----------------|
-| **SKILL-INTENSIVE** (Coordination buffers): | | |
-| C31-C33 (Furniture) | **+9.6%*** | 0.001 | Strong buffering |
-| C19 (Petroleum) | **+13.9%*** | 0.027 | Strong buffering |
-| C21 (Pharmaceuticals) | **+4.9%*** | 0.001 | Strong buffering |
-| C20-C21 (Chemicals) | **+2.8%*** | <0.001 | Moderate buffering |
-| **ROUTINE-INTENSIVE** (No coordination effect): | | |
-| C29-C30 (Motor vehicles) | -2.4% | 0.593 | **No effect** |
-| C24-C25 (Metals) | -0.8% | 0.684 | **No effect** |
-| C10-C12 (Food) | -0.5% | 0.894 | **No effect** |
-| **NEGATIVE EFFECT**: | | |
-| C28 (Machinery) | **-7.1%*** | 0.026 | Amplifies harm |
+**Bucket 2 — Transport equipment (robot-intensive)**
+- C29 Motor vehicles, trailers & semi-trailers
+- C30 Other transport equipment
 
-**Finding**: Coordination works where robots **complement** skilled workers (pharma, chemicals), NOT where robots **substitute** routine workers (automotive, metals). **This challenges our hypothesis.**
+**Bucket 3 — Electro-mechanical capital goods (robot-intensive)**
+- C27 Electrical equipment
+- C28 Machinery & equipment n.e.c.
 
----
+**Bucket 4 — Metals**
+- C24 Basic metals
+- C25 Fabricated metal products (excl. machinery)
 
-### Equation 5: Industry-by-Industry Coverage
-```
-For each industry j:
-  ln(Hours)_ijt = β₁ʲ ln(Robots)_ijt-1 + β₂ʲ[ln(Robots)_ijt-1 × AdjCov_i] 
-                  + X'_ijt γ + α_i + δ_t + ε_ijt
-```
-**Purpose**: Does coverage moderation vary by industry?  
-**Sample**: 13 industries, restricted to 11 countries with coverage data
+**Bucket 5 — Process & materials**
+- C19 Coke & refined petroleum
+- C20 Chemicals
+- C22 Rubber & plastics
+- C23 Other non-metallic mineral products
 
-**Key Results**: More consistently negative than coordination—high coverage amplifies displacement in automotive (-0.38%), metals (-0.39%), electronics (-0.22%).
+**Bucket 6 — Low-tech / traditional manufacturing**
+- C10–C18 (food; textiles; wood; paper/printing; etc.)
+- C31–C32 (furniture; other manufacturing)
+- C33 (repair/installation) is treated as a documented edge case and assigned consistently (default: bundled with capital goods ecosystem; reported as a robustness variation if needed).
+
+This grouping is used to estimate heterogeneity at a **manageable dimensionality (3–6 groups)** while preserving interpretability and reducing overfitting risk.
 
 ---
 
-## Key Design Choices (Textbook Anchors)
+## Empirical strategy (conceptual)
+We estimate two-way fixed effects panel models that relate industry labour outcomes to robot adoption, and test moderation by bargaining institutions.
 
-### 1. **Lagged Robots (t-1)**
-- **Purpose**: Temporal ordering, reduces simultaneity bias
-- **Rationale**: Robot installation → employment adjustment takes time
-- **Trade-off**: Misses immediate effects, but improves identification
-- **Textbook**: Chapter 7 (Causality) - Lagged treatment supports temporal ordering
+### Baseline structure
+- **Fixed effects:** country–industry FE + year FE
+- **Standard errors:** clustered at the country–industry level (baseline choice)
 
-### 2. **Fixed-Denominator Intensity Measure**
-```
-Robot Intensity = Robots_ijt / Employment_ij,1995
-```
-- **Purpose**: Avoids mechanical correlation (robots/worker ratio depends on worker count)
-- **Rationale**: If denominator varies with outcome, creates spurious correlation
-- **Following**: Graetz & Michaels (2018), Haapanala et al. (2022)
-- **Textbook**: Chapter 12 (Measurement) - Avoid ratio variables with outcome in denominator
+### Moderation + heterogeneity via buckets
+The central specification interacts:
+- robots (lagged) × bargaining institution (coordination and/or coverage) × bucket indicators
 
-### 3. **Baseline Institutions (Time-Invariant)**
-- **Purpose**: Treat bargaining institutions as structural features, avoid endogeneity
-- **Rationale**: Institutions might respond to automation (reverse causality)
-- **Trade-off**: Assumes institutions stable 1995-2019 (not always true—Greece 2008)
-- **Following**: Leibrecht et al. (2023), Haapanala et al. (2022)
-- **Textbook**: Chapter 7 (Causality) - Predetermined moderators reduce endogeneity concerns
-
-### 4. **Log-Log Specification**
-- **Interpretation**: β₁ = elasticity (1% increase in robots → β₁% change in hours)
-- **Rationale**: Both variables highly skewed; logs normalize distributions
-- **Textbook**: Chapter 14 (Transformations) - Log transformations for skewed data
-
-### 5. **Two-Way Fixed Effects**
-- **Pooled models**: α_ij (country-industry) + δ_t (year)
-  - Controls for "German automotive is uniquely robot-intensive"
-  - Controls for global shocks (2008 recession, COVID if extended)
-- **Industry-specific models**: α_i (country) + δ_t (year)
-  - Controls for "Germany is high-coordination"
-  - Weaker than pooled (can't control for industry-specific country trends)
-- **Textbook**: Chapter 19 (Panel Methods) - Within-unit estimator, removes time-invariant heterogeneity
-
-### 6. **Industry-by-Industry Approach (Heterogeneity)**
-- **Purpose**: Test whether pooled null reflects offsetting effects across industries
-- **Method**: Run coordination moderation separately for each industry
-- **Trade-off**: Lower power per industry, but reveals heterogeneity
-- **Textbook**: Chapter 15 (Interactions) - Separate regressions preserve heterogeneity that binary interactions wash out
+This yields:
+- an average robots–labour relationship (within country–industry over time)
+- how that relationship differs in **high vs low coordination (or varying coverage)**
+- how those moderation patterns differ across **industry buckets**
 
 ---
 
-## Main Contributions
-
-### 1. **Methodological**
-- **Better identification than Leibrecht et al. (2023)**: Industry-level panel with two-way FE vs. country-level dynamic panel
-- **Addresses Leibrecht's call (p. 274)**: "Future research should study interaction between collective bargaining and automation at the industry-level"
-- **Stronger within-unit variation**: Exploits country-industry-year changes vs. country-year
-
-### 2. **Substantive**
-- **Reconciles conflicting literature**:
-  - Acemoglu & Restrepo (2020): Negative (US = routine manufacturing + weak institutions)
-  - Dauth et al. (2021): Positive (Germany = chemicals/machinery + strong coordination)
-  - Graetz & Michaels (2018): Null (pooling masks heterogeneity)
-  - **Our finding**: All correct—effects are industry-specific AND institution-specific
-
-- **Challenges routine-biased displacement theory**:
-  - Expected: Coordination protects routine workers in automotive/metals
-  - Found: Coordination buffers in skill-intensive pharma/chemicals
-  - Mechanism: Coordination facilitates **task reinstatement** (retraining) where robots complement, not where they substitute
-
-- **Policy implication**: One-size-fits-all labor market policies won't work. Coordination effective for high-skill adjustment, ineffective for routine displacement.
+## Robustness and sensitivity (planned)
+- Alternative institution coding (binary vs ordinal coordination; centered coverage; alternative baseline windows)
+- Alternative bucket assignment for edge cases (e.g., C33)
+- Alternative control sets (production controls; macro controls)
+- Alternative clustering choices / small-country inference checks (documented as sensitivity)
 
 ---
 
-## Limitations & Caveats
+## Limitations (design-relevant)
+- Observational panel design: estimates are **conditional associations**, not experimental causal effects.
+- Institutions vary mainly at the country level; moderation inference is constrained by the number of countries.
+- Industry granularity is intentionally reduced via buckets to maintain statistical stability.
 
-### 1. **Causal Inference**
-- **Design**: Observational panel, not experimental or quasi-experimental
-- **Threats**: Time-varying confounders, reverse causality (two-way FE reduces but doesn't eliminate)
-- **Interpretation**: Conditional associations consistent with robot-induced employment adjustments, NOT definitive causal effects
-- **Textbook**: Chapter 7 (Causality) - Observational designs can suggest but not prove causation
-
-### 2. **Sample Restrictions**
-- **Coverage model**: 27% sample loss (6 countries dropped), restricted to Western Europe
-- **Industry-by-industry**: 11/24 industries dropped (insufficient data)
-- **Generalizability**: Results may not extend to full European manufacturing
-- **Textbook**: Chapter 6 (Sampling) - Sample selection affects external validity
-
-### 3. **Measurement**
-- **Hours worked (LAB_QI)**: Proxy, not direct employment measure
-- **Robot stock**: Doesn't distinguish robot types (welding vs. assembly vs. collaborative)
-- **Institutions**: Crude binary (high/low coord) loses nuance
-- **Textbook**: Chapter 12 (Measurement) - All operationalizations imperfect
-
-### 4. **Scope**
-- **Manufacturing only**: Services (70% of EU employment) excluded
-- **Country coverage**: 17 EU countries, not all of Europe
-- **Time period**: Pre-COVID (1995-2019), may not reflect post-pandemic dynamics
-- **Textbook**: Chapter 5 (Research Design) - Scope limitations affect generalizability
-
-### 5. **Fixed Effects Trade-Off**
-- **Industry-specific models**: Country FE (not country-industry FE)
-- **Implication**: Cannot control for Germany-specific automotive trends
-- **Robustness**: Pooled coordination result (with stronger FE) confirms finding
-- **Textbook**: Chapter 19 (Panel Methods) - More FE = better control, but less variation
-
-
-on main branch  
 ---
+
+## Repository structure (suggested)
+- `data_raw/` — raw input extracts (IFR, EU KLEMS, ICTWSS, Eurostat)
+- `data_processed/` — merged panel datasets and intermediates
+- `src/`
+  - `01_build_panel.*` — merges and harmonizes datasets
+  - `02_construct_measures.*` — robot intensity, baseline institutions, deflation, buckets
+  - `03_models.*` — fixed-effects regressions and outputs
+  - `04_figures_tables.*` — summary tables and plots
+- `output/` — regression tables, figures
+- `docs/` — thesis write-up materials
+
+---
+
+## How to reproduce (outline)
+1. Place raw data in `data_raw/` and set paths in config.
+2. Run `01_build_panel` to merge IFR + EU KLEMS + ICTWSS (+ macro controls).
+3. Run `02_construct_measures` to:
+   - compute fixed-denominator robot intensity
+   - apply baseline institution freeze
+   - assign 2-digit industries into six buckets
+4. Run `03_models` to estimate FE specifications.
+5. Run `04_figures_tables` to export tables/figures.
