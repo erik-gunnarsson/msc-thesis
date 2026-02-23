@@ -1,13 +1,25 @@
 '''
-Equation 2: Institutional Moderation – Coordination
+Equation 2: Institutional Moderation (generic runner)
 
-ln(Hours) = β₁ ln(Robots)_{t-1} + β₃[ln(Robots) × HighCoord] + controls + FE
-- HighCoord: 1 if Coord ≥ 4 (Garnero 2021)
-- Data from 2-cleaning-data.py (high_coord pre-built)
+ln(LI) = β₁ ln(Robots)_{t-1} + β₂[ln(Robots) × M_c] + controls + FE
 
-Usage (run from project root):
-  python code/4-equation2-institutional-moderation-coordination.py 1   # diagnostics only
-  python code/4-equation2-institutional-moderation-coordination.py 2   # diagnostics + model
+where LI = labour input proxy and M_c is a predetermined institutional
+moderator (ud_pre_c, coord_pre_c, or adjcov_pre_c).
+
+Coord is continuous by default; binary (Coord ≥ 4) available via
+--coord-mode binary as robustness.
+
+CLI flags:
+  --moderator coord|adjcov|ud|...   (default: coord)
+  --sample full|common              (default: full)
+  --coord-mode continuous|binary    (default: continuous)
+  --se clustered|driscoll-kraay     (default: clustered)
+  --trends none|bucket              (default: none)
+
+Usage:
+  python code/4-equation2-institutional-moderation-coordination.py 2 --moderator ud --sample full
+  python code/4-equation2-institutional-moderation-coordination.py 2 --moderator coord --sample common
+  python code/4-equation2-institutional-moderation-coordination.py 2 --moderator adjcov --sample common
 '''
 
 import sys
@@ -21,59 +33,91 @@ from _equation_utils import (
     OUTPUT_PATH,
     BAR,
     SEP,
-    get_step,
+    format_sample_header,
     get_controls,
     prepare_panel,
     run_panelols,
     log_diagnostics,
+    parse_args,
+    moderator_to_columns,
+    apply_sample_filter,
+    add_trend_terms,
+    get_bucket_dummies,
+    write_sample_manifest,
+    write_run_metadata,
 )
 
-STEPS = {1: "diagnostics", 2: "coordination_model"}
+STEPS = {1: "diagnostics", 2: "moderation_model"}
 
 
 def step_diagnostics(df: pd.DataFrame) -> None:
     log_diagnostics(df)
 
 
-def step_coordination_model(df_raw: pd.DataFrame) -> None:
+def step_coordination_model(df_raw: pd.DataFrame, args) -> None:
     controls = get_controls(df_raw)
     controls_str = " + ".join(controls)
 
-    df = prepare_panel(df_raw, require=["ln_hours", "ln_robots_lag1", "ln_va", "ln_cap", "coord"])
+    mod_var, has_var, is_binary = moderator_to_columns(args.moderator, args.coord_mode)
+    logger.info(f"Moderator: {args.moderator} → {mod_var} (binary={is_binary})")
+
+    df = apply_sample_filter(df_raw.copy(), args.sample)
+    req = ["ln_hours", "ln_robots_lag1", "ln_va", "ln_cap", mod_var]
+    df = prepare_panel(df, require=req)
     for c in controls:
         if c in df.columns:
             df = df.dropna(subset=[c])
     df = df.drop_duplicates(subset=["entity", "year_int"]).copy()
 
-    # high_coord from 2-cleaning-data.py; fallback if using old cleaned_data
-    if "high_coord" not in df.columns:
-        logger.warning("high_coord missing in cleaned_data; computing from coord. Re-run 2-cleaning-data.py for pre-built column.")
-        df["high_coord"] = np.where(df["coord"].notna(), (df["coord"] >= 4).astype(int), np.nan)
-    df = df.dropna(subset=["high_coord"])
+    if has_var in df.columns:
+        df = df[df[has_var]].copy()
 
-    formula = f"ln_hours ~ ln_robots_lag1 + ln_robots_lag1:high_coord + {controls_str} + EntityEffects + TimeEffects"
+    if args.trends == "bucket":
+        get_bucket_dummies(df)
+
+    interaction_col = f"ln_robots_lag1:{mod_var}"
+    formula = f"ln_hours ~ ln_robots_lag1 + {interaction_col} + {controls_str} + EntityEffects + TimeEffects"
+    formula = add_trend_terms(df, formula, args.trends)
     logger.info(f"Formula: {formula}")
 
-    res = run_panelols(formula, df)
+    res = run_panelols(formula, df, cov_type=args.se)
 
-    logger.info(f"\n{BAR}\n  Coordination (HighCoord ≥ 4)\n{SEP}")
+    tag = f"eq2_{args.moderator}_{args.sample}"
+    write_sample_manifest(df, tag, sample_mode=args.sample)
+    write_run_metadata(
+        "4-equation2-institutional-moderation-coordination.py",
+        {"moderator": args.moderator, "sample": args.sample,
+         "coord_mode": args.coord_mode, "se": args.se, "trends": args.trends},
+        n_obs=res.nobs, n_entities=df["entity"].nunique(),
+    )
+
+    logger.info(f"\n{BAR}\n  Institutional moderation ({args.moderator}, {args.sample} sample)\n{SEP}")
     print(res)
 
     OUTPUT_PATH.mkdir(exist_ok=True)
-    with open(OUTPUT_PATH / "equation2_coordination_moderation.txt", "w") as f:
-        f.write(str(res))
+    out_name = f"equation2_{args.moderator}_moderation_{args.sample}sample.txt"
+    with open(OUTPUT_PATH / out_name, "w") as f:
+        f.write(format_sample_header(df) + str(res))
 
-    eff_low = res.params.get("ln_robots_lag1", np.nan)
-    eff_high = eff_low + res.params.get("ln_robots_lag1:high_coord", 0)
-    logger.info(f"\nMarginal effects:")
-    logger.info(f"  Low coordination (Coord<4):  {eff_low:.4f}")
-    logger.info(f"  High coordination (Coord≥4): {eff_high:.4f}")
-    logger.info(f"  Difference (interaction):    {res.params.get('ln_robots_lag1:high_coord', np.nan):.4f}")
+    eff_base = res.params.get("ln_robots_lag1", np.nan)
+    eff_inter = res.params.get(interaction_col, 0)
+
+    if is_binary:
+        logger.info(f"\nMarginal effects:")
+        logger.info(f"  Low coordination ({mod_var}=0): {eff_base:.4f}")
+        logger.info(f"  High coordination ({mod_var}=1): {eff_base + eff_inter:.4f}")
+        logger.info(f"  Difference (interaction):    {eff_inter:.4f}")
+    else:
+        logger.info(f"\nβ₁ (ln_robots_lag1): {eff_base:.4f}")
+        logger.info(f"β (interaction): {eff_inter:.4f}")
+        logger.info(f"  (Effect at mean moderator = β₁; each unit ↑ moderator shifts slope by β_inter)")
+
     logger.info(f"Sample: {res.nobs} obs\n{BAR}\n")
 
 
 def main():
-    step = get_step(1)
+    args = parse_args(default_moderator="coord")
+    step = args.step
     logger.info(f"Step {step}: {STEPS.get(step, '?')}")
 
     df = pd.read_csv(CLEANED_PATH)
@@ -84,7 +128,7 @@ def main():
 
     if step == 2:
         step_diagnostics(df)
-        step_coordination_model(df)
+        step_coordination_model(df, args)
         return
 
     logger.error(f"Unknown step {step}. Use 1 or 2.")
