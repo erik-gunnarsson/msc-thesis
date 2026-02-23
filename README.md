@@ -140,48 +140,57 @@ All main models are estimated as two-way fixed effects panels with:
 * **Time effects:** year fixed effects
 * **Inference:** clustered standard errors at the entity level (baseline), with robustness options documented.
 
-### Equation 1: Baseline robot-labour association
+### Notation
 
-[
-\ln(LI)*{ijt}=\beta_1 \ln(Robots)*{ij,t-1} + \gamma X_{ijt} + \alpha_{ij} + \delta_t + \varepsilon_{ijt}
-]
-(LI) denotes the labour input proxy.
+| Symbol | Definition |
+|--------|------------|
+| $LI_{ijt}$ | Labour input proxy (country $i$, industry $j$, year $t$) |
+| $\ln(Robots)_{ij,t-1}$ | Log robot intensity, lagged one period |
+| $X_{ijt}$ | Industry-level controls (value added, capital, etc.) |
+| $\alpha_{ij}$ | Country–industry fixed effects |
+| $\delta_t$ | Year fixed effects |
+| $\varepsilon_{ijt}$ | Error term |
+| $M_c$ | Institutional moderator (UD, COORD, or ADJCOV; baseline 1990–1995) |
+| $Bucket_b$ | Indicator for bucket $b$ (reference: Low-tech) |
+
+### Equation 1: Baseline robot–labour association
+
+$$
+\ln(LI)_{ijt} = \beta_1 \ln(Robots)_{ij,t-1} + \gamma X_{ijt} + \alpha_{ij} + \delta_t + \varepsilon_{ijt}
+$$
 
 ### Equation 2: Institutional moderation (three channels)
 
-For each moderator (M_c \in {UD_pre, COORD_pre, ADJCOV_pre}):
-[
-\ln(LI)*{ijt}=\beta_1 \ln(Robots)*{ij,t-1} + \beta_2 \left[\ln(Robots)*{ij,t-1}\times M_c\right] + \gamma X*{ijt} + \alpha_{ij} + \delta_t + \varepsilon_{ijt}
-]
+For each moderator $M_c \in \{\text{UD}_{\text{pre}}, \text{COORD}_{\text{pre}}, \text{ADJCOV}_{\text{pre}}\}$:
 
-Notes:
+$$
+\ln(LI)_{ijt} = \beta_1 \ln(Robots)_{ij,t-1} + \beta_2 \left[ \ln(Robots)_{ij,t-1} \times M_c \right] + \gamma X_{ijt} + \alpha_{ij} + \delta_t + \varepsilon_{ijt}
+$$
 
-* `ud` and `coord` are run on both full and common samples.
-* `coord` is continuous in the main specification (`coord_pre_c`); the binary variant (`high_coord_pre`, Coord >= 4) is robustness only.
-* `adjcov` results are explicitly labeled as restricted-sample (common sample only).
+**Notes:** `ud` and `coord` are run on both full and common samples. `coord` is continuous in the main specification; binary (Coord ≥ 4) is robustness only. `adjcov` models are restricted-sample only.
 
 ### Equation 3: Bucket heterogeneity (pooled interaction)
 
-[
-\ln(LI)*{ijt}=\beta_1 \ln(Robots)*{ij,t-1} + \sum_{b\neq ref}\beta_{2b}\left[\ln(Robots)*{ij,t-1}\times Bucket_b\right] + \gamma X*{ijt} + \alpha_{ij} + \delta_t + \varepsilon_{ijt}
-]
+$$
+\ln(LI)_{ijt} = \beta_1 \ln(Robots)_{ij,t-1} + \sum_{b \neq \text{ref}} \beta_{2b} \left[ \ln(Robots)_{ij,t-1} \times Bucket_b \right] + \gamma X_{ijt} + \alpha_{ij} + \delta_t + \varepsilon_{ijt}
+$$
 
-### Equation 4: Bucket heterogeneity with institutional moderation (core contribution)
+### Equation 4: Bucket × institution (core contribution)
 
-For each moderator (M_c):
-[
-\ln(LI)*{ijt}=
-\beta_1 \ln(Robots)*{ij,t-1}
-+\sum_{b\neq ref}\beta_{2b}\left[\ln(Robots)*{ij,t-1}\times Bucket_b\right]
-+\beta_3\left[\ln(Robots)*{ij,t-1}\times M_c\right]
-+\sum_{b\neq ref}\beta_{4b}\left[\ln(Robots)*{ij,t-1}\times M_c \times Bucket_b\right]
-+\gamma X*{ijt}+\alpha_{ij}+\delta_t+\varepsilon_{ijt}
-]
+For each moderator $M_c$:
 
-Outputs include:
+$$
+\begin{aligned}
+\ln(LI)_{ijt}
+&= \beta_1 \ln(Robots)_{ij,t-1} \\
+&\quad + \sum_{b \neq \text{ref}} \beta_{2b} \left[ \ln(Robots)_{ij,t-1} \times Bucket_b \right] \\
+&\quad + \beta_3 \left[ \ln(Robots)_{ij,t-1} \times M_c \right] \\
+&\quad + \sum_{b \neq \text{ref}} \beta_{4b} \left[ \ln(Robots)_{ij,t-1} \times M_c \times Bucket_b \right] \\
+&\quad + \gamma X_{ijt} + \alpha_{ij} + \delta_t + \varepsilon_{ijt}
+\end{aligned}
+$$
 
-* bucket-specific marginal robot effects at relevant moderator values, and
-* formal bucket-to-bucket contrasts (Wald tests) under a single variance-covariance matrix.
+**Outputs:** bucket-specific marginal robot effects at moderator values; formal bucket-to-bucket Wald contrasts under a single variance–covariance matrix.
 
 ### Planned contrasts
 
