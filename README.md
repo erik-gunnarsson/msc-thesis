@@ -4,17 +4,18 @@
 
 > *Does union density change how automation affects unemployment in industries that are highly exposed to robots?*
 
-More precisely, the thesis tests whether cross-country differences in collective bargaining institutions **moderate** the relationship between **robot adoption** and **manufacturing labour demand**, and whether this moderation differs across **theory-driven manufacturing buckets**.
+More precisely, the thesis tests whether cross-country differences in collective bargaining institutions **moderate** the relationship between **robot adoption** and **labour demand**, and whether this moderation differs across **industry buckets within manufacturing**.
 
 ---
 
 ## Motivation and research gap
 
-Evidence on robots and labour-market outcomes is mixed across contexts. A key gap is a **Europe-focused, industry-granular** analysis that treats collective bargaining institutions as **mechanisms that condition adjustment**, not just background controls.
+Evidence on robots and labour-market outcomes is mixed across contexts. A key gap is a **industry-granular** analysis that treats collective bargaining institutions as **mechanisms that condition adjustment**.
 
-A practical constraint is **statistical power**: estimating fully industry-specific robot-by-institution effects across many industries is unstable in a European panel with a limited number of countries. This project addresses that constraint by:
+A practical constraint is **statistical power**: estimating fully industry-specific robot-by-institution effects across many industries is unstable in a European panel due to the limited number of countries. 
 
-* grouping manufacturing industries into a small number of **theory-driven buckets**, and
+This project addresses that constraint by:
+* grouping manufacturing industries into a small number of **industry buckets**.
 * estimating **pooled interaction models** that enable coherent inference and formal comparisons across buckets.
 
 ---
@@ -192,13 +193,13 @@ $$
 
 **Outputs:** bucket-specific marginal robot effects at moderator values; formal bucket-to-bucket Wald contrasts under a single variance–covariance matrix.
 
-### Planned contrasts
+### Accounting for Multiple-Testing risk
 
 To reduce multiple-testing risk, the main text emphasizes a small set of pre-specified contrasts (for example Metals vs Low-tech, Transport vs Low-tech). Full pairwise contrast matrices are saved as appendix outputs.
 
 ---
 
-## Robustness and sensitivity (planned)
+## Robustness and sensitivity (👷‍♂️ TODO)
 
 * Full vs common sample comparisons for `ud` and `coord`.
 * Coordination robustness: continuous vs binary coding.
@@ -218,6 +219,11 @@ To reduce multiple-testing risk, the main text emphasizes a small set of pre-spe
 * Theoretical six vs operational five buckets reflect secondary-data aggregation constraints.
 
 ---
+
+# Coding Related 
+
+## Streamlit (👷‍♂️ TODO)
+info on how streamlit dashboard works 
 
 ## Repository structure
 
