@@ -1,4 +1,4 @@
-# MSc Thesis — Industrial Robots, Employment, and Collective Bargaining (Europe)
+# MSc Thesis — Industrial Robots, Employment, and Collective Bargaining
 
 ## Research question
 **How does collective bargaining shape the aggregate employment effects of industrial robots across European countries?**
