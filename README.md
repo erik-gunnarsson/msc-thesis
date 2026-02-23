@@ -2,7 +2,7 @@
 
 ## Research question
 
-> **How do collective bargaining institutions shape the labour-demand effects of industrial robots across European countries, and do these effects differ across types of manufacturing industries?**
+> *Does union density change how automation affects unemployment in industries that are highly exposed to robots?*
 
 More precisely, the thesis tests whether cross-country differences in collective bargaining institutions **moderate** the relationship between **robot adoption** and **manufacturing labour demand**, and whether this moderation differs across **theory-driven manufacturing buckets**.
 
