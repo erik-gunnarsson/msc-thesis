@@ -161,7 +161,7 @@ $$
 
 ### Equation 2: Institutional moderation (three channels)
 
-For each moderator $M_c \in \{\text{UD}_{\text{pre}}, \text{COORD}_{\text{pre}}, \text{ADJCOV}_{\text{pre}}\}$:
+For each moderator $M_c$:
 
 $$
 \ln(LI)_{ijt} = \beta_1 \ln(Robots)_{ij,t-1} + \beta_2 \left[ \ln(Robots)_{ij,t-1} \times M_c \right] + \gamma X_{ijt} + \alpha_{ij} + \delta_t + \varepsilon_{ijt}
@@ -221,46 +221,49 @@ To reduce multiple-testing risk, the main text emphasizes a small set of pre-spe
 
 ## Repository structure
 
-* `data/`
-  Raw input extracts and merged panel (`cleaned_data.csv`)
-
-* `code/`
-
-  * `1-datacheck.py`
-    Validates raw data files and coverage.
-  * `2-build_panel.py`
-    Merges IFR + KLEMS + ICTWSS + Eurostat; constructs robot intensity; builds baseline institution measures; assigns buckets; outputs `cleaned_data.csv`.
-  * `3-equation1-baseline.py`
-    Baseline FE regression.
-  * `4-equation2-institutional-moderation-coordination.py`
-    Institutional moderation models (generic runner: `--moderator ud|coord|adjcov`, `--sample full|common`). UD and Coord run on both samples; AdjCov on common only.
-  * `5-equation3-institutional-moderation-coverage.py`
-    Coverage moderation (defaults to `adjcov`, restricted/common sample). Outputs explicitly labeled as restricted-sample.
-  * `6-equation4-bucket-heterogeneity-coordination.py`
-    Pooled bucket x robots x moderator triple interactions with marginal effects and Wald contrasts (generic runner: `--moderator ud|coord|adjcov`).
-  * `7-equation5-bucket-heterogeneity-coverage.py`
-    Bucket heterogeneity with continuous moderator (defaults to `adjcov`, common sample).
-  * `8-ictwss-triage.py`
-    Moderator feasibility diagnostics and screening regressions for transparency (not a selection rule).
-  * `_equation_utils.py`
-    Shared constants (bucket definitions), panel helpers, diagnostics, contrast testing, sample filtering.
-  * `runall.py`
-    Runs the full pipeline sequentially.
-  * `archive/`
-    Superseded scripts retained for auditability.
-
-* `outputs/`
-  Regression tables, diagnostics, contrasts, and figures.
+```
+.
+├── .github
+│   └── workflows
+│       └── ci.yml
+├── code
+│   ├── archive
+│   │   ├── 2-cleaning-data.py
+│   │   ├── 6-equation4-industry-heterogeneity-coordination.py
+│   │   ├── 7-equation5-industry-heterogeneity-coverage.py
+│   │   ├── 8-equation6-routinetaskintensity.py
+│   │   └── README.md
+│   ├── logs
+│   ├── 1-datacheck.py
+│   ├── 2-build_panel.py
+│   ├── 3-equation1-baseline.py
+│   ├── 4-equation2-institutional-moderation-coordination.py
+│   ├── 5-equation3-institutional-moderation-coverage.py
+│   ├── 6-equation4-bucket-heterogeneity-coordination.py
+│   ├── 7-equation5-bucket-heterogeneity-coverage.py
+│   ├── 8-ictwss-triage.py
+│   ├── _equation_utils.py
+│   └── runall.py
+├── streamlit
+│   ├── components
+│   │   ├── __init__.py
+│   │   ├── decisiontree.py
+│   │   ├── utils.py
+│   │   └── vectorspace.py
+│   ├── pages
+│   │   ├── 1-home.py
+│   │   ├── 2-decision-tree.py
+│   │   ├── 3-vector-space.py
+│   │   └── 4-results.py
+│   └── streamlit.py
+├── .gitignore
+├── README.md
+├── mapv1.png
+└── requirements.txt
+```
 
 ---
 
 ## How to reproduce (outline)
 
-1. Place raw data in `data/` (IFR, KLEMS, ICTWSS, Eurostat).
-2. Run the full pipeline:
-
-   * `python code/runall.py`
-3. Optional diagnostics:
-
-   * `python code/8-ictwss-triage.py` to generate moderator leverage summaries and screening outputs.
-4. Outputs are written to `outputs/` with filenames indicating moderator and sample (full vs common, where relevant).
+Will update once finished
