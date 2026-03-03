@@ -214,7 +214,7 @@ else:
 # ═══════════════════════════════════════════════════════════════════
 # 6. Industry List (C10-C33) — by name and usability in eq4/eq5
 # ═══════════════════════════════════════════════════════════════════
-# IFR industry_code -> KLEMS nace_r2_code (from 2-cleaning-data.py)
+# IFR industry_code -> KLEMS nace_r2_code (from 2-build_panel.py)
 IFR_TO_NACE = {
     "10-12": "C10-C12", "13-15": "C13-C15", "16": "C16-C18", "17-18": "C16-C18",
     "19": "C19", "19-22": "C20-C21", "20": "C20-C21", "20-21": "C20-C21", "20-23": "C20-C21",
@@ -305,7 +305,7 @@ if cleaned is not None and "nace_r2_code" in cleaned.columns:
     if skipped_eq5:
         logger.info(f"  Skipped for eq5: {sorted(skipped_eq5)}")
 else:
-    warn("cleaned_data.csv not found — run 2-cleaning-data.py first for eq4/eq5 usability")
+    warn("cleaned_data.csv not found — run 2-build_panel.py first for eq4/eq5 usability")
 
 # ═══════════════════════════════════════════════════════════════════
 # 7. Summary

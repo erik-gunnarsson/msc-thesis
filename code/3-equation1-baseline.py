@@ -1,7 +1,9 @@
 '''
 Equation 1: Baseline Model
 
-ln(Hours)_ijt = β₁ ln(Robots)_ijt-1 + X'_ijt γ + α_ij + δ_t + ε_ijt
+ln(LI)_ijt = β₁ ln(Robots)_ijt-1 + X'_ijt γ + α_ij + δ_t + ε_ijt
+
+LI = labour input proxy (LAB_QI from EU KLEMS).
 
 - Two-way fixed effects (country-industry entity + year)
 - Cluster-robust SEs at entity level
@@ -19,6 +21,8 @@ try:
 except ImportError:
     PanelOLS = None
 
+from _equation_utils import write_run_metadata, write_sample_manifest
+
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 CLEANED_PATH = DATA_DIR / "cleaned_data.csv"
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "outputs"
@@ -34,7 +38,7 @@ def main():
     df = df.set_index(["entity", "year_int"], drop=False)
     df = df.sort_index()
 
-    # Baseline: ln_hours ~ ln_robots_lag1 + controls + entity FE + year FE
+    # Baseline: ln(labour input) ~ ln_robots_lag1 + controls + entity FE + year FE
     controls = ["ln_va", "ln_cap"]
     # Add ln_gdp, unemployment if available and non-null
     if "ln_gdp" in df.columns and df["ln_gdp"].notna().any():
@@ -60,7 +64,7 @@ def main():
     res = mod.fit(cov_type="clustered", cluster_entity=True)
 
     logger.info("\n\n" + "=" * 60)
-    logger.info("Baseline Model: ln(Hours) ~ ln(Robots)_{t-1} + controls + FE")
+    logger.info("Baseline Model: ln(Labour Input) ~ ln(Robots)_{t-1} + controls + FE")
     logger.info("=" * 60)
     print(res)
 
@@ -71,12 +75,19 @@ def main():
 
     logger.info(f"\nResults saved to {OUTPUT_PATH / 'equation1_baseline_regression.txt'}")
 
+    # Run metadata
+    write_sample_manifest(df, "eq1_baseline", sample_mode="full")
+    write_run_metadata(
+        "3-equation1-baseline.py",
+        {"se": "clustered"},
+        n_obs=res.nobs, n_entities=df["entity"].nunique(),
+    )
+
     # Brief summary
     beta_robots = res.params.get("ln_robots_lag1", np.nan)
     se_robots = res.std_errors.get("ln_robots_lag1", np.nan)
     logger.info(f"\nβ₁ (ln_robots_lag1): {beta_robots:.4f} (SE: {se_robots:.4f})")
-    logger.info("Interpretation: 1% increase in robots/1000 workers → "
-                f"{100*beta_robots:.2f}% change in labour input (hours proxy)")
+    logger.info(f"Interpretation: 1% ↑ robots → {beta_robots:.4f}% change in labour input proxy")
 
     # --- Sanity checks ---
     _log_sanity_checks(df, res)
@@ -95,8 +106,8 @@ def _log_sanity_checks(df: pd.DataFrame, res) -> None:
     ln_hours_std = grp["ln_hours"].std()
 
     logger.info("  1. Within-entity variation (std)")
-    logger.info(f"     ln_robots_lag1: mean={ln_robots_std.mean():.4f}, min={ln_robots_std.min():.4f}, max={ln_robots_std.max():.4f}")
-    logger.info(f"     ln_hours:       mean={ln_hours_std.mean():.4f}, min={ln_hours_std.min():.4f}, max={ln_hours_std.max():.4f}")
+    logger.info(f"     ln_robots_lag1:   mean={ln_robots_std.mean():.4f}, min={ln_robots_std.min():.4f}, max={ln_robots_std.max():.4f}")
+    logger.info(f"     ln_labour_input:  mean={ln_hours_std.mean():.4f}, min={ln_hours_std.min():.4f}, max={ln_hours_std.max():.4f}")
 
     low_var = (ln_robots_std < 0.01).sum()
     if low_var > 0:
@@ -110,7 +121,7 @@ def _log_sanity_checks(df: pd.DataFrame, res) -> None:
         return c if not np.isnan(c) else None
 
     industry_corr = df.groupby("nace_r2_code", group_keys=False).apply(_corr, include_groups=False).dropna()
-    logger.info(f"\n  2. Industry-level correlation (ln_robots_lag1, ln_hours)")
+    logger.info(f"\n  2. Industry-level correlation (ln_robots_lag1, ln_labour_input)")
     logger.info(f"     mean={industry_corr.mean():.4f}, min={industry_corr.min():.4f}, max={industry_corr.max():.4f}")
     neg = industry_corr.nsmallest(3)
     pos = industry_corr.nlargest(3)
