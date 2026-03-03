@@ -82,6 +82,19 @@ A dedicated triage script summarizes moderator data quality (coverage, distinct 
 * Manufacturing only: **NACE Rev.2 Section C (C10–C33)**
 * Panel is typically **unbalanced** due to harmonization constraints across IFR, KLEMS, and ICTWSS.
 
+### Panel breakdown
+
+| Dimension       | Definition                                      | Full sample   | Common sample (adjcov) |
+| --------------- | ----------------------------------------------- | ------------- | ---------------------- |
+| Unit            | country × industry × year                       | —             | —                      |
+| Entity          | country–industry cell                            | ~265–290      | ~200–250               |
+| Countries       | EU member states (IFR + KLEMS + ICTWSS overlap)  | ~13           | ~9                     |
+| Industries      | KLEMS `nace_r2_code` (merged via IFR crosswalk) | ~11 groups    | ~11 groups             |
+| Year range      | After lag and `dropna` on core vars              | ~2003–2019    | ~2003–2019             |
+| Observations    | entity-year cells                               | ~2 600–2 700  | ~1 900–2 000           |
+
+**Merge logic:** IFR (robots) and KLEMS (outcome, controls) are inner-joined on country × industry × year via IFR→NACE crosswalk. GDP, unemployment, and ICTWSS baseline are left-joined. Rows with missing `ln_hours`, `ln_robots_lag1`, `ln_va`, or `ln_cap` are dropped. Exact counts depend on the merge and vary slightly across runs.
+
 ### Full vs common samples
 
 Some moderators are available for fewer countries (notably `adjcov`). To avoid confusing sample-driven differences with substantive differences:
