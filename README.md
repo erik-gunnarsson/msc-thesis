@@ -141,18 +141,31 @@ All main models are estimated as two-way fixed effects panels with:
 * **Time effects:** year fixed effects
 * **Inference:** clustered standard errors at the entity level (baseline), with robustness options documented.
 
-### Notation
+
+### Notations used in Equations 1–4:
 
 | Symbol | Definition |
 |--------|------------|
+| $i$ | Country index |
+| $j$ | Industry index |
+| $t$ | Year index |
+| $b$ | Bucket index |
 | $LI_{ijt}$ | Labour input proxy (country $i$, industry $j$, year $t$) |
 | $\ln(Robots)_{ij,t-1}$ | Log robot intensity, lagged one period |
 | $X_{ijt}$ | Industry-level controls (value added, capital, etc.) |
+| $M_c$ | Institutional moderator (UD, COORD, or ADJCOV; baseline 1990–1995) |
 | $\alpha_{ij}$ | Country–industry fixed effects |
 | $\delta_t$ | Year fixed effects |
 | $\varepsilon_{ijt}$ | Error term |
-| $M_c$ | Institutional moderator (UD, COORD, or ADJCOV; baseline 1990–1995) |
 | $Bucket_b$ | Indicator for bucket $b$ (reference: Low-tech) |
+| $\beta_1$ | Coefficient on robots (main effect) |
+| $\beta_2$ | Coefficient on robot × moderator interaction (Eq 2) |
+| $\beta_{2b}$ | Bucket-specific robot coefficients (Eq 3, 4) |
+| $\beta_3$ | Coefficient on robot × moderator (Eq 4) |
+| $\beta_{4b}$ | Bucket-specific robot × moderator coefficients (Eq 4) |
+| $\gamma$ | Coefficient vector for controls |
+
+---
 
 ### Equation 1: Baseline robot–labour association
 
