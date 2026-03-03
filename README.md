@@ -2,7 +2,7 @@
 
 ## Research question
 
-> *Does union density change how automation affects unemployment in industries that are highly exposed to robots?*
+> *Do labour market institutions change how automation affects unemployment in industries that are highly exposed to robots?*
 
 More precisely, the thesis tests whether cross-country differences in collective bargaining institutions **moderate** the relationship between **robot adoption** and **labour demand**, and whether this moderation differs across **industry buckets within manufacturing**.
 
