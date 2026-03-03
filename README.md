@@ -150,7 +150,7 @@ All main models are estimated as two-way fixed effects panels with:
 | $j$ | Industry index |
 | $t$ | Year index |
 | $b$ | Bucket index |
-| $LI_{ijt}$ | Labour input proxy (country $i$, industry $j$, year $t$) |
+| $\ln(LI)_{ijt}$ | Log labour input proxy (country $i$, industry $j$, year $t$) |
 | $\ln(Robots)_{ij,t-1}$ | Log robot intensity, lagged one period |
 | $X_{ijt}$ | Industry-level controls (value added, capital, etc.) |
 | $M_c$ | Institutional moderator (UD, COORD, or ADJCOV; baseline 1990–1995) |
