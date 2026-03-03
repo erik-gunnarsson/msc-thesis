@@ -50,6 +50,16 @@ This project addresses that constraint by:
   2. **Bargaining coordination:** `coord` (Coordination index) -- continuous specification is the main model; binary (Coord >= 4) is robustness only.
   3. **Agreement coverage:** `adjcov` (Adjusted collective bargaining coverage) -- restricted-sample (available for fewer countries).
 
+#### Triage Test
+
+The triage script screens candidate ICTWSS moderators (descriptive leverage + screening regressions). Moderators are chosen on theory and measurement feasibility, not on p-values. The final variables used are:
+
+| Variable | Label                    | Sample        | Specification                                      |
+| -------- | ------------------------ | ------------- | -------------------------------------------------- |
+| ud       | Union Density            | full, common  | Continuous; strongest leverage (most countries)   |
+| coord    | Coordination             | full, common  | Continuous (main); binary (Coord ≥ 4) robustness   |
+| adjcov   | Adjusted Coverage        | restricted    | Fewer countries; common-sample models only        |
+
 #### Predetermined institutions (baseline freeze)
 
 Institutions are treated as structural country characteristics by measuring them using a **pre-period baseline** (1990-1995 averages, stored as `*_pre` raw and `*_pre_c` centered), to mitigate simultaneity concerns.
