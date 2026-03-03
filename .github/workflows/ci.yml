@@ -19,7 +19,7 @@ jobs:
         run: uv python install 3.11
 
       - name: Install dependencies
-        run: uv pip install --system -r requirements.txt
+        run: uv sync
 
       - name: Run smoke test
-        run: python code/runall.py --smoke
+        run: uv run python code/runall.py --smoke
