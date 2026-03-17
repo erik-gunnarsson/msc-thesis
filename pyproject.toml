@@ -19,6 +19,7 @@ dependencies = [
     "streamlit-flow-component>=1.0.0",
     "plotly>=5.0.0",
     "graphviz>=0.20.0",
+    "pyxlsb>=1.0.10",
 ]
 
 [tool.uv]

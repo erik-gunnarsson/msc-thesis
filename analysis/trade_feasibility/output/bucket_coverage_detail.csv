@@ -1,0 +1,6 @@
+bucket,bucket_name,n_countries,countries_present,countries_missing,n_entities,n_observations,pass_threshold
+1,Transport equipment,20,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, NL, PL, PT, SE, SK",MT,20,213,PASS
+2,Electro-mechanical capital goods,19,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, NL, PL, PT, SE, SK","LV, MT",37,388,FAIL
+3,Metals,19,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, NL, PL, PT, SE, SK","LV, MT",19,203,FAIL
+4,Process and materials,20,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, NL, PL, PT, SE, SK",MT,58,562,PASS
+5,Low-tech / traditional,21,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SK",,72,702,PASS
