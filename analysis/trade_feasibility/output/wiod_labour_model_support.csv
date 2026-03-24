@@ -1,0 +1,13 @@
+model,description,n_countries,n_entities,n_observations,years,countries_list,pass_threshold
+BASE_H_EMPE,WIOD labour panel with default controls,24,236,2283,2001-2014,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
+EQ2_UD,Robots x ud,21,206,2068,2001-2014,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SK",PASS
+EQ2_COORD,Robots x coord,23,226,2212,2001-2014,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SI, SK",PASS
+EQ2_ADJCOV,Robots x adjcov,14,142,1535,2001-2014,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, SI",PASS
+EQ3_BUCKET,Bucket heterogeneity,24,236,2283,2001-2014,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
+EQ4_UD_BUCKET,Bucket x ud,21,206,2068,2001-2014,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SK",PASS
+EQ4_COORD_BUCKET,Bucket x coord,23,226,2212,2001-2014,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SI, SK",PASS
+EQ4_ADJCOV_BUCKET,Bucket x adjcov,14,142,1535,2001-2014,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, SI",PASS
+EQ5A_EXPOSURE,Exposed vs sheltered,24,236,2283,2001-2014,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
+EQ5B_UD_EXPOSURE,Exposed x ud,21,206,2068,2001-2014,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SK",PASS
+EQ5B_COORD_EXPOSURE,Exposed x coord,23,226,2212,2001-2014,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SI, SK",PASS
+EQ5B_ADJCOV_EXPOSURE,Exposed x adjcov,14,142,1535,2001-2014,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, SI",PASS

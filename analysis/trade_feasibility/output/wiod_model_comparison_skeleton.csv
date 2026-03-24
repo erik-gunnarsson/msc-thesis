@@ -1,0 +1,7 @@
+model_id,family,description,outcome,key_terms,default_controls,headline_inference
+EQ3_BUCKET,bucket,Robots x bucket heterogeneity on WIOD labour panel,ln_h_empe,"lr_bucket_1, lr_bucket_2, lr_bucket_3, lr_bucket_4","ln_va_wiod_qi, ln_k_wiod, gdp_growth",Country cluster + wild cluster bootstrap on key heterogeneity terms
+EQ4_UD_BUCKET,bucket,Robots x bucket x ud,ln_h_empe,"ln_robots_lag1:ud_pre_c, lr_mod_bucket_1..4","ln_va_wiod_qi, ln_k_wiod, gdp_growth",Country cluster + wild cluster bootstrap on key interaction terms
+EQ4_COORD_BUCKET,bucket,Robots x bucket x coord,ln_h_empe,"ln_robots_lag1:coord_pre_c, lr_mod_bucket_1..4","ln_va_wiod_qi, ln_k_wiod, gdp_growth",Country cluster + wild cluster bootstrap on key interaction terms
+EQ5A_EXPOSURE,exposure,Robots x exposed/sheltered heterogeneity,ln_h_empe,lr_exposed,"ln_va_wiod_qi, ln_k_wiod, gdp_growth",Country cluster + wild cluster bootstrap on lr_exposed
+EQ5B_UD_EXPOSURE,exposure,Robots x exposed/sheltered x ud,ln_h_empe,"ln_robots_lag1:ud_pre_c, lr_mod_exposure","ln_va_wiod_qi, ln_k_wiod, gdp_growth",Country cluster + wild cluster bootstrap on key interaction terms
+EQ5B_COORD_EXPOSURE,exposure,Robots x exposed/sheltered x coord,ln_h_empe,"ln_robots_lag1:coord_pre_c, lr_mod_exposure","ln_va_wiod_qi, ln_k_wiod, gdp_growth",Country cluster + wild cluster bootstrap on key interaction terms

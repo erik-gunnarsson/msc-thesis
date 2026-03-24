@@ -1,0 +1,3 @@
+exposure_group,n_countries,n_entities,n_observations,countries_list
+exposed,20,110,1138,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, NL, PL, PT, SE, SK"
+sheltered,21,96,930,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SK"

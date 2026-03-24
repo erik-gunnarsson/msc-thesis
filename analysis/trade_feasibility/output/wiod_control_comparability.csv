@@ -1,0 +1,5 @@
+component,klems_variable,wiod_variable,comparability,notes
+Outcome,LAB_QI,H_EMPE,"Same labour-input family, different measure",KLEMS LAB_QI is quality-adjusted labour services; WIOD H_EMPE is raw employee hours worked.
+Output control,VA_PYP,VA_QI,Closest analogue / reasonably comparable,Both are real gross value-added volume measures; base-year/index construction differs across databases.
+Capital control,CAP_QI,K,Not directly comparable,KLEMS CAP_QI is capital services volume; WIOD K is nominal capital stock.
+Capital control sensitivity,CAP_QI,CAP,Not directly comparable,"WIOD CAP is capital compensation, not capital services or capital stock."
