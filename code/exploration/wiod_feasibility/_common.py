@@ -13,7 +13,7 @@ except ImportError:  # pragma: no cover - handled at runtime
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 DATA_DIR = ROOT_DIR / "data"
-OUTPUT_DIR = ROOT_DIR / "results" / "exploration" / "trade_feasibility"
+OUTPUT_DIR = ROOT_DIR / "results" / "exploration" / "wiod_feasibility"
 WIOD_DIR = DATA_DIR / "WIOTS_in_EXCEL"
 CURRENT_BASELINE_PATH = DATA_DIR / "cleaned_data.csv"
 

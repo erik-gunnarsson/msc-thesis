@@ -19,11 +19,11 @@ The active thesis workflow now lives under:
 
 Exploration scripts now live in:
 
-- `code/exploration/trade_feasibility/01_data_availability_audit.py`
-- `code/exploration/trade_feasibility/02_merge_feasibility.py`
-- `code/exploration/trade_feasibility/03_sample_size_report.py`
-- `code/exploration/trade_feasibility/regression_ready_audit.py`
-- `code/exploration/trade_feasibility/05_wiod_eq2b_hawk_dove_gate.py`
+- `code/exploration/wiod_feasibility/01_data_availability_audit.py`
+- `code/exploration/wiod_feasibility/02_merge_feasibility.py`
+- `code/exploration/wiod_feasibility/03_sample_size_report.py`
+- `code/exploration/wiod_feasibility/regression_ready_audit.py`
+- `code/exploration/wiod_feasibility/05_wiod_eq2b_hawk_dove_gate.py`
 
 The earlier WIOD labour design-comparison script and the bucket-model exploration are no longer active in this branch.
 
@@ -71,7 +71,7 @@ That is why `Eq. 2b` remains in the active branch as an exploratory extension.
 
 Current exploration artifacts are written here:
 
-- `results/exploration/trade_feasibility/`
+- `results/exploration/wiod_feasibility/`
 
 Active WIOD results are written elsewhere:
 

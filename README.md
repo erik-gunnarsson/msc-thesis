@@ -147,7 +147,7 @@ The institutional moderators are country-level and baseline-frozen. Their standa
 │   │   ├── archived/
 │   │   └── legacy_klems/
 │   ├── exploration/
-│   │   └── trade_feasibility/
+│   │   └── wiod_feasibility/
 │   ├── _paths.py
 │   ├── _shared_utils.py
 │   ├── _wiod_model_utils.py
@@ -157,7 +157,7 @@ The institutional moderators are country-level and baseline-frozen. Their standa
 │   ├── core/
 │   ├── secondary/
 │   ├── exploration/
-│   │   └── trade_feasibility/
+│   │   └── wiod_feasibility/
 │   └── archive/
 └── README.md
 ```
@@ -167,10 +167,10 @@ The institutional moderators are country-level and baseline-frozen. Their standa
 - `code/core/`: active WIOD mainline scripts
 - `code/secondary/`: diagnostics, decomposition checks, and appendix-facing robustness scripts
 - `code/secondary/legacy_klems/`: legacy KLEMS overlap workflow
-- `code/exploration/trade_feasibility/`: branch-history audits and feasibility scripts
+- `code/exploration/wiod_feasibility/`: branch-history audits and feasibility scripts
 - `results/core/`: active first-results outputs
 - `results/secondary/`: Eq. 2b and diagnostic outputs
-- `results/exploration/trade_feasibility/`: saved feasibility and readiness artifacts
+- `results/exploration/wiod_feasibility/`: saved feasibility and readiness artifacts
 - `results/archive/`: archived legacy output snapshot from the pre-cleanup structure
 
 ## Active Workflow
@@ -210,17 +210,17 @@ Main review files:
 ### 3. Run the Exploratory Eq. 2b Extension
 
 ```bash
-uv run python code/exploration/trade_feasibility/05_wiod_eq2b_hawk_dove_gate.py
+uv run python code/exploration/wiod_feasibility/05_wiod_eq2b_hawk_dove_gate.py
 uv run python code/secondary/15_wiod_eq2b_hawk_dove.py
 ```
 
 This writes:
 
-- `results/exploration/trade_feasibility/wiod_eq2b_coord_ud_gate.md`
-- `results/exploration/trade_feasibility/wiod_eq2b_coord_ud_country_table.csv`
-- `results/exploration/trade_feasibility/wiod_eq2b_coord_ud_cell_counts.csv`
-- `results/exploration/trade_feasibility/wiod_eq2b_coord_ud_vif.csv`
-- `results/exploration/trade_feasibility/wiod_eq2b_coord_ud_scatter.png`
+- `results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_gate.md`
+- `results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_country_table.csv`
+- `results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_cell_counts.csv`
+- `results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_vif.csv`
+- `results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_scatter.png`
 - `results/secondary/exploratory_wiod_eq2b_coord_ud_*`
 - `results/secondary/wiod_eq2b_coord_ud_comparison.csv`
 
@@ -257,11 +257,11 @@ Outputs:
 
 Exploratory feasibility and readiness scripts live under:
 
-- `code/exploration/trade_feasibility/`
+- `code/exploration/wiod_feasibility/`
 
 Their current documentation and retained outputs live under:
 
-- `results/exploration/trade_feasibility/`
+- `results/exploration/wiod_feasibility/`
 
 These scripts are not part of the main thesis run sequence. They exist to document how the branch evolved and to preserve the feasibility evidence behind the WIOD pivot.
 
@@ -301,7 +301,7 @@ Current convention:
 
 - active first results -> `results/core/`
 - active diagnostics and appendix tables -> `results/secondary/`
-- exploration/audit artifacts -> `results/exploration/trade_feasibility/`
+- exploration/audit artifacts -> `results/exploration/wiod_feasibility/`
 - migrated legacy output snapshot -> `results/archive/`
 
 ## Notes

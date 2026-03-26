@@ -178,8 +178,8 @@ def load_wiod_trade_panel() -> pd.DataFrame:
 
     import importlib.util
 
-    common_path = ROOT_DIR / "code" / "exploration" / "trade_feasibility" / "_common.py"
-    spec = importlib.util.spec_from_file_location("trade_feasibility_common", common_path)
+    common_path = ROOT_DIR / "code" / "exploration" / "wiod_feasibility" / "_common.py"
+    spec = importlib.util.spec_from_file_location("wiod_feasibility_common", common_path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Could not load trade-feasibility common module from {common_path}")
     module = importlib.util.module_from_spec(spec)

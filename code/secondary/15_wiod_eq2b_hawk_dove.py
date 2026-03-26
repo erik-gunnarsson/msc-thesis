@@ -10,7 +10,7 @@ ln_h_empe_ijt = beta1 ln_robots_lag1_ijt
               + X_ijt + alpha_ij + delta_t + eps_ijt
 
 The binary Hawk-Dove classification is diagnostic only and is handled by the
-separate exploration gate script under code/exploration/trade_feasibility.
+separate exploration gate script under code/exploration/wiod_feasibility.
 '''
 
 from __future__ import annotations
