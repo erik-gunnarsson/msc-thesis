@@ -45,6 +45,7 @@ This is now the primary empirical workflow for the thesis. It keeps labour input
 
 Core scripts:
 
+- [code/14_wiod_first_results.py](code/14_wiod_first_results.py)
 - [code/09_build_wiod_panel.py](code/09_build_wiod_panel.py)
 - [code/10_wiod_baseline.py](code/10_wiod_baseline.py)
 - [code/11_wiod_institution_moderation.py](code/11_wiod_institution_moderation.py)
@@ -110,6 +111,105 @@ The current WIOD labour audit shows:
 - `EQ4_UD_BUCKET`: `21 countries / 2068 observations`
 
 The pooled bucket models are estimable, but bucket 2 and bucket 3 are the thinner contrasts and should be interpreted more cautiously.
+
+## Empirical Specification
+
+The active empirical design is a country x industry x year panel with
+country-industry fixed effects and year fixed effects.
+
+### Mainline WIOD equations
+
+Headline equations:
+
+```text
+Eq. 1 (baseline)
+ln(H_EMPE)_ijt
+  = beta1 * ln(Robots)_{ij,t-1}
+  + gamma1 * ln(VA_QI)_{ijt}
+  + gamma2 * ln(K)_{ijt}
+  + gamma3 * GDPGrowth_it
+  + alpha_ij + delta_t + eps_ijt
+
+Eq. 2 (institutional moderation)
+ln(H_EMPE)_ijt
+  = beta1 * ln(Robots)_{ij,t-1}
+  + beta2 * [ln(Robots)_{ij,t-1} x M_c]
+  + gamma1 * ln(VA_QI)_{ijt}
+  + gamma2 * ln(K)_{ijt}
+  + gamma3 * GDPGrowth_it
+  + alpha_ij + delta_t + eps_ijt
+```
+
+Exploratory / appendix equations:
+
+```text
+Eq. 3 (bucket heterogeneity)
+ln(H_EMPE)_ijt
+  = beta1 * ln(Robots)_{ij,t-1}
+  + sum_(b != 5) beta2b * [ln(Robots)_{ij,t-1} x Bucket_bj]
+  + gamma1 * ln(VA_QI)_{ijt}
+  + gamma2 * ln(K)_{ijt}
+  + gamma3 * GDPGrowth_it
+  + alpha_ij + delta_t + eps_ijt
+
+Eq. 4 (bucket x institution, exploratory)
+ln(H_EMPE)_ijt
+  = beta1 * ln(Robots)_{ij,t-1}
+  + sum_(b != 5) beta2b * [ln(Robots)_{ij,t-1} x Bucket_bj]
+  + beta3 * [ln(Robots)_{ij,t-1} x M_c]
+  + sum_(b != 5) beta4b * [ln(Robots)_{ij,t-1} x M_c x Bucket_bj]
+  + gamma1 * ln(VA_QI)_{ijt}
+  + gamma2 * ln(K)_{ijt}
+  + gamma3 * GDPGrowth_it
+  + alpha_ij + delta_t + eps_ijt
+```
+
+### Variable legend
+
+- `i`: country
+- `j`: manufacturing industry
+- `t`: year
+- `ln(H_EMPE)_ijt`: log labour input from WIOD SEA (`H_EMPE`)
+- `ln(Robots)_{ij,t-1}`: one-year-lagged log robot intensity from IFR, implemented as `ln_robots_lag1`
+- `ln(VA_QI)_{ijt}`: log real value added from WIOD SEA, implemented as `ln_va_wiod_qi`
+- `ln(K)_{ijt}`: log capital stock proxy from WIOD SEA, implemented as `ln_k_wiod`
+- `GDPGrowth_it`: country-level GDP growth, implemented as `gdp_growth`
+- `M_c`: baseline-frozen institutional moderator for country `c`
+- `coord_pre_c`: bargaining coordination, centered around the sample mean
+- `adjcov_pre_c`: adjusted collective-bargaining coverage, centered around the sample mean
+- `ud_pre_c`: union density, centered around the sample mean
+- `Bucket_bj`: industry bucket dummy for non-reference bucket `b`
+- `alpha_ij`: country-industry fixed effects
+- `delta_t`: year fixed effects
+- `eps_ijt`: idiosyncratic error term
+
+### Bucket mapping
+
+The bucket specification uses bucket 5 as the omitted reference category.
+
+- Bucket 1: `C29-C30` — transport equipment
+- Bucket 2: `C26-C27`, `C28` — electro-mechanical capital goods
+- Bucket 3: `C24-C25` — metals
+- Bucket 4: `C19`, `C20-C21`, `C22-C23` — process and materials
+- Bucket 5: `C10-C12`, `C13-C15`, `C16-C18`, `C31-C33` — low-tech / traditional
+
+### Identification note
+
+The institutional moderators are country-level and baseline-frozen, so their
+standalone main effects are absorbed by the country-industry fixed effects.
+Likewise, bucket main effects are absorbed by the country-industry fixed
+effects. What is identified in Eq. 2 and Eq. 4 is the way institutional or
+bucket structure changes the slope on robot adoption.
+
+### KLEMS legacy mapping
+
+The KLEMS legacy workflow uses the same model structure, but with a different
+labour-input and control set:
+
+- outcome: `ln_hours` from KLEMS `LAB_QI`
+- output control: `ln_va`
+- capital control: `ln_cap`
+- optional macro controls: `ln_gdp`, `unemployment`
 
 ## Control Comparability
 
@@ -177,6 +277,35 @@ uv run python code/00_run_pipeline.py --smoke
 Mainline WIOD workflow:
 
 ```bash
+uv run python code/14_wiod_first_results.py
+```
+
+This first-results runner freezes the mainline specification and produces the
+headline WIOD package in review order:
+
+- `Eq. 1` baseline
+- `Eq. 2 coord` (primary focal)
+- `Eq. 2 adjcov --sample common` (secondary focal restricted-sample)
+- `Eq. 2 ud` (reference benchmark)
+
+Read these outputs first:
+
+- `outputs/wiod_first_results_summary.csv`
+- `outputs/wiod_first_results_overview.md`
+- `outputs/wiod_eq1_baseline_*`
+- `outputs/primary_contribution_eq2_wiod_coord_*`
+- `outputs/secondary_focal_eq2_wiod_adjcov_*`
+- `outputs/reference_benchmark_eq2_wiod_ud_*`
+
+Not part of the initial first-results package:
+
+- exploratory bucket models from [code/12_wiod_bucket_models.py](code/12_wiod_bucket_models.py)
+- KLEMS legacy workflow from [code/00_run_pipeline.py](code/00_run_pipeline.py)
+- archived exposure comparison from [code/13_wiod_exposure_models.py](code/13_wiod_exposure_models.py)
+
+Manual WIOD component runs:
+
+```bash
 uv run python code/09_build_wiod_panel.py
 uv run python code/10_wiod_baseline.py
 uv run python code/11_wiod_institution_moderation.py --moderator coord
@@ -211,3 +340,4 @@ uv run python code/00_run_pipeline.py
 - Greece is harmonized as `GR -> EL` in the new WIOD/trade audit code.
 - [code/13_wiod_exposure_models.py](code/13_wiod_exposure_models.py) is retained as an archived comparison script but is not part of the active thesis run sequence.
 - In the active thesis framing, `coord` is focal, `adjcov` is secondary but theory-relevant, and `ud` is retained as a reference benchmark only.
+- [code/14_wiod_first_results.py](code/14_wiod_first_results.py) archives stale WIOD-only output artifacts into `outputs/archive/` before regenerating the first-results bundle, so the reviewed outputs stay focused on the current naming family.
