@@ -1,5 +1,8 @@
 '''
-WIOD exposed-vs-sheltered comparison models on the labour panel.
+ARCHIVED — WIOD exposed-vs-sheltered comparison models on the labour panel.
+
+This script is kept for historical comparison only and is not part of the
+active thesis workflow.
 
 Eq. 5a: ln(H_EMPE)_ijt = beta1 ln(Robots)_{ijt-1}
                        + beta2 [ln(Robots)_{ijt-1} x Exposed_j]
@@ -80,6 +83,10 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    logger.warning(
+        "ARCHIVED WORKFLOW — exposure models are retained for historical comparison "
+        "but are not part of the active thesis run sequence."
+    )
     args = parse_args()
     if args.mode == "eq5b" and args.moderator == "adjcov" and args.sample != "common":
         logger.info("Forcing common sample for adjcov Eq. 5b models")

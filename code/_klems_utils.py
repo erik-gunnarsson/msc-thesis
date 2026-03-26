@@ -5,7 +5,8 @@ All data comes from 02_build_klems_panel.py output (cleaned_data.csv).
 No data wrangling here; equation scripts use pre-built vars.
 
 Single source of truth for bucket definitions, moderator registry
-(three-channel: UD, Coord, AdjCov), CLI helpers, and post-estimation tools.
+(bargaining coordination primary, adjusted coverage secondary, union density
+reference), CLI helpers, and post-estimation tools.
 
 Dependent variable: ln(LAB_QI) — labour input proxy (column: ln_hours).
 Moderators use predetermined (1990-1995) values with _pre_c (centered) suffix.
@@ -136,7 +137,13 @@ MODERATOR_REGISTRY = {
         "binary_var": "high_coord_pre",
         "has_var": "has_coord",
         "is_binary": False,
-        "label": "Coordination (continuous)",
+        "label": "Bargaining coordination",
+        "role_label": "primary focal moderator",
+        "workflow_tier": "primary",
+        "active_workflow": True,
+        "priority_rank": 1,
+        "theory_note": "Bargaining coordination is the headline institutional channel because it combines strong theory fit with workable country coverage.",
+        "sample_caveat": "Preferred focal specification in both WIOD and KLEMS workflows.",
     },
     "adjcov": {
         "mod_var": "adjcov_pre_c",
@@ -144,7 +151,13 @@ MODERATOR_REGISTRY = {
         "centered_var": "adjcov_pre_c",
         "has_var": "has_adjcov",
         "is_binary": False,
-        "label": "Adjusted Coverage",
+        "label": "Adjusted collective-bargaining coverage",
+        "role_label": "secondary focal moderator",
+        "workflow_tier": "secondary",
+        "active_workflow": True,
+        "priority_rank": 2,
+        "theory_note": "Adjusted collective-bargaining coverage is theoretically important, but inference is constrained by the smaller common-sample country set.",
+        "sample_caveat": "Restricted/common-sample specification in practice.",
     },
     "ud": {
         "mod_var": "ud_pre_c",
@@ -153,6 +166,12 @@ MODERATOR_REGISTRY = {
         "has_var": "has_ud",
         "is_binary": False,
         "label": "Union Density",
+        "role_label": "reference benchmark",
+        "workflow_tier": "reference",
+        "active_workflow": True,
+        "priority_rank": 3,
+        "theory_note": "Union density is retained as a reference comparison because it has broader coverage, but it is not a focal institutional channel in the thesis theory.",
+        "sample_caveat": "Reference benchmark only; do not treat as co-equal with coord or adjcov.",
     },
     "wstat": {
         "mod_var": "wstat_pre_c",
@@ -161,6 +180,12 @@ MODERATOR_REGISTRY = {
         "has_var": "has_wstat",
         "is_binary": False,
         "label": "Statutory Bargaining Scope",
+        "role_label": "appendix candidate",
+        "workflow_tier": "appendix",
+        "active_workflow": False,
+        "priority_rank": 10,
+        "theory_note": "Appendix-only institutional candidate retained for diagnostic screening.",
+        "sample_caveat": "Not part of the active thesis workflow.",
     },
     "wc": {
         "mod_var": "wc_pre_binary",
@@ -169,6 +194,12 @@ MODERATOR_REGISTRY = {
         "has_var": "has_wc",
         "is_binary": True,
         "label": "Works Council",
+        "role_label": "appendix candidate",
+        "workflow_tier": "appendix",
+        "active_workflow": False,
+        "priority_rank": 11,
+        "theory_note": "Appendix-only institutional candidate retained for diagnostic screening.",
+        "sample_caveat": "Not part of the active thesis workflow.",
     },
     "spa_signed": {
         "mod_var": "spa_signed_pre_binary",
@@ -177,11 +208,31 @@ MODERATOR_REGISTRY = {
         "has_var": "has_spa_signed",
         "is_binary": True,
         "label": "Social Pacts",
+        "role_label": "appendix candidate",
+        "workflow_tier": "appendix",
+        "active_workflow": False,
+        "priority_rank": 12,
+        "theory_note": "Appendix-only institutional candidate retained for diagnostic screening.",
+        "sample_caveat": "Not part of the active thesis workflow.",
     },
 }
 
 
-MAINLINE_MODERATORS = ["coord", "ud", "adjcov"]
+MAINLINE_MODERATORS = ["coord", "adjcov", "ud"]
+
+
+def ordered_moderator_keys(keys: Optional[list[str]] = None, *, active_only: bool = False) -> list[str]:
+    """Return moderator keys in declared theory/workflow order."""
+    key_list = list(keys or MODERATOR_REGISTRY.keys())
+    if active_only:
+        key_list = [key for key in key_list if MODERATOR_REGISTRY[key].get("active_workflow", False)]
+    return sorted(
+        key_list,
+        key=lambda key: (
+            MODERATOR_REGISTRY[key].get("priority_rank", 999),
+            MODERATOR_REGISTRY[key].get("label", key),
+        ),
+    )
 
 
 def add_common_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
@@ -235,6 +286,12 @@ def get_moderator(mod_key: str = "coord") -> dict:
     return MODERATOR_REGISTRY[mod_key]
 
 
+def moderator_role_summary(mod_key: str) -> str:
+    """Return a one-line summary of moderator role and theory note."""
+    info = get_moderator(mod_key)
+    return f"{info['role_label']} — {info['theory_note']}"
+
+
 def moderator_to_columns(mod_key: str, coord_mode: str = "continuous") -> tuple:
     """
     Map moderator key to (mod_var, has_var, is_binary).
@@ -276,6 +333,12 @@ def moderator_diagnostics(df: pd.DataFrame, mod_key: str) -> dict:
     return {
         "moderator": mod_key,
         "label": info["label"],
+        "role_label": info.get("role_label"),
+        "workflow_tier": info.get("workflow_tier"),
+        "active_workflow": info.get("active_workflow"),
+        "priority_rank": info.get("priority_rank"),
+        "theory_note": info.get("theory_note"),
+        "sample_caveat": info.get("sample_caveat"),
         "n_countries": n_ctry,
         "mean": float(vals.mean()),
         "std": float(vals.std()),

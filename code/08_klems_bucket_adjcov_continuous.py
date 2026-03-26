@@ -1,4 +1,6 @@
 '''
+ROBUSTNESS / LEGACY — KLEMS overlap specification.
+
 KLEMS continuous-moderator bucket runner.
 
 Thesis mapping: continuous bucket moderation variant, defaulting to AdjCov.
@@ -14,6 +16,7 @@ moderation (continuous moderator), estimated in a single regression:
 
 where LI = labour input proxy and M_c is a centered predetermined moderator.
 Defaults to adjcov_pre_c.  Bucket 5 (low-tech/traditional) is reference.
+This script is typically used for the secondary focal AdjCov channel.
 
 Post-estimation:
   Console  – Planned contrasts only (PLANNED_CONTRASTS)
@@ -53,6 +56,8 @@ from _klems_utils import (
     test_linear_contrast,
     parse_args,
     moderator_to_columns,
+    get_moderator,
+    moderator_role_summary,
     apply_sample_filter,
     add_trend_terms,
     write_sample_manifest,
@@ -80,11 +85,13 @@ def step_model(df_raw: pd.DataFrame, args) -> None:
     controls = get_controls(df_raw)
     controls_str = " + ".join(controls)
 
+    mod_info = get_moderator(args.moderator)
     mod_var, has_var, is_binary = moderator_to_columns(args.moderator, args.coord_mode)
     if is_binary:
         logger.warning(f"Eq5 expects a continuous moderator but {args.moderator} is binary. Proceeding anyway.")
 
     logger.info(f"Moderator: {args.moderator} → {mod_var}")
+    logger.info(f"Moderator role: {moderator_role_summary(args.moderator)}")
 
     df = apply_sample_filter(df_raw.copy(), args.sample)
     req = ["ln_hours", "ln_robots_lag1", "ln_va", "ln_cap", mod_var, "bucket"]

@@ -1,6 +1,10 @@
 '''
 WIOD institutional moderation on labour input.
 
+This script runs the active institutional specifications on the WIOD panel:
+coord as the focal channel, adjcov as the secondary focal restricted-sample
+channel, and ud as a reference benchmark.
+
 ln(H_EMPE)_ijt = beta1 ln(Robots)_{ijt-1}
                + beta2 [ln(Robots)_{ijt-1} x M_c]
                + X_ijt + alpha_ij + delta_t + eps_ijt
@@ -20,6 +24,7 @@ import argparse
 
 from loguru import logger
 
+from _klems_utils import get_moderator, moderator_role_summary
 from _wiod_model_utils import load_or_build_wiod_panel, write_model_bundle
 from _wiod_panel_utils import (
     fit_all_inference,
@@ -33,7 +38,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--moderator",
-        choices=["coord", "ud", "adjcov"],
+        choices=["coord", "adjcov", "ud"],
         default="coord",
         help="Institutional moderator.",
     )
@@ -75,6 +80,7 @@ def main() -> None:
         args.sample = "common"
 
     df = load_or_build_wiod_panel()
+    mod_info = get_moderator(args.moderator)
     mod_var, has_var, is_binary = moderator_to_columns(args.moderator, args.coord_mode)
     controls = get_wiod_controls(
         capital_proxy=args.capital_proxy,
@@ -87,17 +93,23 @@ def main() -> None:
 
     interaction_term = f"ln_robots_lag1:{mod_var}"
     rhs_terms = ["ln_robots_lag1", interaction_term] + controls
+    prefix_root = {
+        "primary": "primary_contribution_eq2_wiod",
+        "secondary": "secondary_focal_eq2_wiod",
+        "reference": "reference_benchmark_eq2_wiod",
+    }.get(mod_info.get("workflow_tier"), "institutional_eq2_wiod")
 
     logger.info(
-        "WIOD Eq. 2 sample: "
+        "WIOD Eq. 2 institutional sample: "
         f"{len(sample)} obs, {sample['entity'].nunique()} entities, "
         f"{sample['country_code'].nunique()} countries"
     )
+    logger.info(f"Moderator role: {moderator_role_summary(args.moderator)}")
     result = fit_all_inference(sample, outcome="ln_h_empe", rhs_terms=rhs_terms)
 
     write_model_bundle(
-        prefix=f"wiod_eq2_{args.moderator}_{args.sample}_{args.capital_proxy}_{args.coord_mode}",
-        title=f"WIOD Eq. 2 institutional moderation ({args.moderator})",
+        prefix=f"{prefix_root}_{args.moderator}_{args.sample}_{args.capital_proxy}_{args.coord_mode}",
+        title=f"WIOD Eq. 2 institutional moderation: {mod_info['label']} ({mod_info['role_label']})",
         result=result,
         rhs_terms=rhs_terms,
         key_terms=["ln_robots_lag1", interaction_term],
@@ -118,6 +130,9 @@ def main() -> None:
             "Outcome: ln_h_empe (WIOD H_EMPE labour-hours proxy)",
             f"Moderator column: {mod_var}",
             f"Controls: {', '.join(controls)}",
+            f"Role: {mod_info['role_label']}",
+            f"Theory note: {mod_info['theory_note']}",
+            f"Sample note: {mod_info['sample_caveat']}",
             "Inference: country cluster headline; entity cluster + Driscoll-Kraay comparison",
         ],
     )

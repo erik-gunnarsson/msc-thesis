@@ -1,4 +1,6 @@
 '''
+ROBUSTNESS / LEGACY — KLEMS overlap specification.
+
 KLEMS AdjCov moderation runner.
 
 Thesis mapping: restricted-sample institutional moderation specification.
@@ -8,7 +10,8 @@ ln(LI) = β₁ ln(Robots)_{t-1} + β₂[ln(Robots) × AdjCov_pre_c] + controls +
 where LI = labour input proxy.
 AdjCov: collective bargaining coverage (continuous, centered, predetermined).
 This script defaults to the restricted (common) sample — countries with
-AdjCov data.  Results are explicitly labeled as restricted-sample.
+AdjCov data. Results are explicitly labeled as restricted-sample and as the
+secondary focal institutional specification.
 
 CLI flags:
   --moderator coord|adjcov|ud|...   (default: adjcov)
@@ -42,6 +45,8 @@ from _klems_utils import (
     apply_sample_filter,
     add_trend_terms,
     get_bucket_dummies,
+    get_moderator,
+    moderator_role_summary,
     write_sample_manifest,
     write_run_metadata,
 )
@@ -57,8 +62,10 @@ def step_coverage_model(df_raw: pd.DataFrame, args) -> None:
     controls = get_controls(df_raw)
     controls_str = " + ".join(controls)
 
+    mod_info = get_moderator(args.moderator)
     mod_var, has_var, is_binary = moderator_to_columns(args.moderator, args.coord_mode)
     logger.info(f"Moderator: {args.moderator} → {mod_var} (binary={is_binary})")
+    logger.info(f"Moderator role: {moderator_role_summary(args.moderator)}")
 
     df = apply_sample_filter(df_raw.copy(), args.sample)
     req = ["ln_hours", "ln_robots_lag1", "ln_va", "ln_cap", mod_var]
@@ -95,14 +102,21 @@ def step_coverage_model(df_raw: pd.DataFrame, args) -> None:
     sample_label = f"{args.sample} sample"
     if args.moderator == "adjcov":
         sample_label += " — RESTRICTED (AdjCov countries only)"
-    logger.info(f"\n{BAR}\n  Coverage moderation ({args.moderator}, {sample_label})\n{SEP}")
+    logger.info(
+        f"\n{BAR}\n  Coverage moderation ({args.moderator}, {sample_label})"
+        f" — {mod_info['role_label']}\n{SEP}"
+    )
     print(res)
 
     OUTPUT_PATH.mkdir(exist_ok=True)
     restricted_tag = "_restricted" if args.moderator == "adjcov" else ""
     out_name = f"equation3_{args.moderator}_moderation_{args.sample}sample{restricted_tag}.txt"
     with open(OUTPUT_PATH / out_name, "w") as f:
-        f.write(format_sample_header(df) + str(res))
+        header = format_sample_header(df)
+        header += f"Institutional role: {mod_info['role_label']}\n"
+        header += f"Theory note: {mod_info['theory_note']}\n"
+        header += f"Sample note: {mod_info['sample_caveat']}\n{SEP}\n"
+        f.write(header + str(res))
 
     b1 = res.params.get("ln_robots_lag1", np.nan)
     b2 = res.params.get(interaction_col, np.nan)

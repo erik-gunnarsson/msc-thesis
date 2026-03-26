@@ -32,7 +32,7 @@ EXPOSURE_PATH = OUTPUT_DIR / "wiod_exposure_balance.csv"
 COMPARABILITY_PATH = OUTPUT_DIR / "wiod_control_comparability.csv"
 SKELETON_PATH = OUTPUT_DIR / "wiod_model_comparison_skeleton.csv"
 COEFFICIENT_PATH = OUTPUT_DIR / "wiod_heterogeneity_coefficients.csv"
-NOTE_PATH = OUTPUT_DIR / "wiod_vs_kelms_note.md.md"
+NOTE_PATH = OUTPUT_DIR / "wiod_vs_kelms_note.md"
 
 
 def ensure_output_dir() -> None:
@@ -145,20 +145,29 @@ def build_model_skeleton() -> pd.DataFrame:
                 "headline_inference": "Country cluster + wild cluster bootstrap on key heterogeneity terms",
             },
             {
-                "model_id": "EQ4_UD_BUCKET",
+                "model_id": "EQ4_COORD_BUCKET",
                 "family": "bucket",
-                "description": "Robots x bucket x ud",
+                "description": "Robots x bucket x coord (primary focal)",
                 "outcome": "ln_h_empe",
-                "key_terms": "ln_robots_lag1:ud_pre_c, lr_mod_bucket_1..4",
+                "key_terms": "ln_robots_lag1:coord_pre_c, lr_mod_bucket_1..4",
                 "default_controls": "ln_va_wiod_qi, ln_k_wiod, gdp_growth",
                 "headline_inference": "Country cluster + wild cluster bootstrap on key interaction terms",
             },
             {
-                "model_id": "EQ4_COORD_BUCKET",
+                "model_id": "EQ4_ADJCOV_BUCKET",
                 "family": "bucket",
-                "description": "Robots x bucket x coord",
+                "description": "Robots x bucket x adjcov (secondary focal, restricted)",
                 "outcome": "ln_h_empe",
-                "key_terms": "ln_robots_lag1:coord_pre_c, lr_mod_bucket_1..4",
+                "key_terms": "ln_robots_lag1:adjcov_pre_c, lr_mod_bucket_1..4",
+                "default_controls": "ln_va_wiod_qi, ln_k_wiod, gdp_growth",
+                "headline_inference": "Country cluster + wild cluster bootstrap on key interaction terms",
+            },
+            {
+                "model_id": "EQ4_UD_BUCKET",
+                "family": "bucket",
+                "description": "Robots x bucket x ud (reference benchmark)",
+                "outcome": "ln_h_empe",
+                "key_terms": "ln_robots_lag1:ud_pre_c, lr_mod_bucket_1..4",
                 "default_controls": "ln_va_wiod_qi, ln_k_wiod, gdp_growth",
                 "headline_inference": "Country cluster + wild cluster bootstrap on key interaction terms",
             },
@@ -172,20 +181,29 @@ def build_model_skeleton() -> pd.DataFrame:
                 "headline_inference": "Country cluster + wild cluster bootstrap on lr_exposed",
             },
             {
-                "model_id": "EQ5B_UD_EXPOSURE",
-                "family": "exposure",
-                "description": "Robots x exposed/sheltered x ud",
-                "outcome": "ln_h_empe",
-                "key_terms": "ln_robots_lag1:ud_pre_c, lr_mod_exposure",
-                "default_controls": "ln_va_wiod_qi, ln_k_wiod, gdp_growth",
-                "headline_inference": "Country cluster + wild cluster bootstrap on key interaction terms",
-            },
-            {
                 "model_id": "EQ5B_COORD_EXPOSURE",
                 "family": "exposure",
                 "description": "Robots x exposed/sheltered x coord",
                 "outcome": "ln_h_empe",
                 "key_terms": "ln_robots_lag1:coord_pre_c, lr_mod_exposure",
+                "default_controls": "ln_va_wiod_qi, ln_k_wiod, gdp_growth",
+                "headline_inference": "Country cluster + wild cluster bootstrap on key interaction terms",
+            },
+            {
+                "model_id": "EQ5B_ADJCOV_EXPOSURE",
+                "family": "exposure",
+                "description": "Robots x exposed/sheltered x adjcov",
+                "outcome": "ln_h_empe",
+                "key_terms": "ln_robots_lag1:adjcov_pre_c, lr_mod_exposure",
+                "default_controls": "ln_va_wiod_qi, ln_k_wiod, gdp_growth",
+                "headline_inference": "Country cluster + wild cluster bootstrap on key interaction terms",
+            },
+            {
+                "model_id": "EQ5B_UD_EXPOSURE",
+                "family": "exposure",
+                "description": "Robots x exposed/sheltered x ud (reference benchmark)",
+                "outcome": "ln_h_empe",
+                "key_terms": "ln_robots_lag1:ud_pre_c, lr_mod_exposure",
                 "default_controls": "ln_va_wiod_qi, ln_k_wiod, gdp_growth",
                 "headline_inference": "Country cluster + wild cluster bootstrap on key interaction terms",
             },
@@ -250,14 +268,14 @@ Current WIOD labour support with default controls (`ln_va_wiod_qi`, `ln_k_wiod`,
 `gdp_growth`) is:
 
 - Base panel: {base_row['n_countries']} countries, {base_row['n_entities']} entities, {base_row['n_observations']} observations ({base_row['years']})
-- Eq. 4 bucket x ud: {eq4_ud['n_countries']} countries, {eq4_ud['n_observations']} observations
 - Eq. 4 bucket x coord: {eq4_coord['n_countries']} countries, {eq4_coord['n_observations']} observations
+- Eq. 4 bucket x ud: {eq4_ud['n_countries']} countries, {eq4_ud['n_observations']} observations
 - Eq. 5a exposure: {eq5a['n_countries']} countries, {eq5a['n_observations']} observations
-- Eq. 5b exposure x ud: {eq5b_ud['n_countries']} countries, {eq5b_ud['n_observations']} observations
 - Eq. 5b exposure x coord: {eq5b_coord['n_countries']} countries, {eq5b_coord['n_observations']} observations
+- Eq. 5b exposure x ud: {eq5b_ud['n_countries']} countries, {eq5b_ud['n_observations']} observations
 
 Bucket models remain estimable in pooled form, but the thin-bucket concern is
-real at the country-support level. In the shared `ud + coord` reference sample,
+real at the country-support level. In the shared `coord + ud` availability sample,
 bucket country counts are: {bucket_counts}. That means the issue is more about
 precision than identification.
 
@@ -306,17 +324,17 @@ def main() -> None:
 
     support_rows = [
         sample_row("BASE_H_EMPE", "WIOD labour panel with default controls", base, threshold=20),
-        sample_row("EQ2_UD", "Robots x ud", ud, threshold=20),
-        sample_row("EQ2_COORD", "Robots x coord", coord, threshold=20),
-        sample_row("EQ2_ADJCOV", "Robots x adjcov", adjcov, threshold=14),
+        sample_row("EQ2_COORD", "Robots x coord (primary focal)", coord, threshold=20),
+        sample_row("EQ2_ADJCOV", "Robots x adjcov (secondary focal)", adjcov, threshold=14),
+        sample_row("EQ2_UD", "Robots x ud (reference benchmark)", ud, threshold=20),
         sample_row("EQ3_BUCKET", "Bucket heterogeneity", base, threshold=20),
-        sample_row("EQ4_UD_BUCKET", "Bucket x ud", ud, threshold=20),
-        sample_row("EQ4_COORD_BUCKET", "Bucket x coord", coord, threshold=20),
-        sample_row("EQ4_ADJCOV_BUCKET", "Bucket x adjcov", adjcov, threshold=14),
+        sample_row("EQ4_COORD_BUCKET", "Bucket x coord (primary focal)", coord, threshold=20),
+        sample_row("EQ4_ADJCOV_BUCKET", "Bucket x adjcov (secondary focal)", adjcov, threshold=14),
+        sample_row("EQ4_UD_BUCKET", "Bucket x ud (reference benchmark)", ud, threshold=20),
         sample_row("EQ5A_EXPOSURE", "Exposed vs sheltered", exposure_base, threshold=20),
-        sample_row("EQ5B_UD_EXPOSURE", "Exposed x ud", exposure_ud, threshold=20),
         sample_row("EQ5B_COORD_EXPOSURE", "Exposed x coord", exposure_coord, threshold=20),
         sample_row("EQ5B_ADJCOV_EXPOSURE", "Exposed x adjcov", exposure_adjcov, threshold=14),
+        sample_row("EQ5B_UD_EXPOSURE", "Exposed x ud", exposure_ud, threshold=20),
     ]
     support_df = pd.DataFrame(support_rows)
     support_df.to_csv(SUPPORT_PATH, index=False)
@@ -352,20 +370,6 @@ def main() -> None:
         )
     )
 
-    eq4_ud_sample = ud.copy()
-    eq4_ud_terms = add_bucket_interactions(eq4_ud_sample, mod_var=ud_var)
-    eq4_ud_bucket_terms = [term for term in eq4_ud_terms if term.startswith("lr_bucket_")]
-    eq4_ud_triples = [term for term in eq4_ud_terms if term.startswith("lr_mod_bucket_")]
-    coefficient_frames.append(
-        fit_and_collect(
-            "EQ4_UD_BUCKET",
-            "bucket",
-            eq4_ud_sample,
-            ["ln_robots_lag1"] + eq4_ud_bucket_terms + [f"ln_robots_lag1:{ud_var}"] + eq4_ud_triples + controls,
-            [f"ln_robots_lag1:{ud_var}"] + eq4_ud_triples,
-        )
-    )
-
     eq4_coord_sample = coord.copy()
     eq4_coord_terms = add_bucket_interactions(eq4_coord_sample, mod_var=coord_var)
     eq4_coord_bucket_terms = [term for term in eq4_coord_terms if term.startswith("lr_bucket_")]
@@ -377,6 +381,20 @@ def main() -> None:
             eq4_coord_sample,
             ["ln_robots_lag1"] + eq4_coord_bucket_terms + [f"ln_robots_lag1:{coord_var}"] + eq4_coord_triples + controls,
             [f"ln_robots_lag1:{coord_var}"] + eq4_coord_triples,
+        )
+    )
+
+    eq4_ud_sample = ud.copy()
+    eq4_ud_terms = add_bucket_interactions(eq4_ud_sample, mod_var=ud_var)
+    eq4_ud_bucket_terms = [term for term in eq4_ud_terms if term.startswith("lr_bucket_")]
+    eq4_ud_triples = [term for term in eq4_ud_terms if term.startswith("lr_mod_bucket_")]
+    coefficient_frames.append(
+        fit_and_collect(
+            "EQ4_UD_BUCKET",
+            "bucket",
+            eq4_ud_sample,
+            ["ln_robots_lag1"] + eq4_ud_bucket_terms + [f"ln_robots_lag1:{ud_var}"] + eq4_ud_triples + controls,
+            [f"ln_robots_lag1:{ud_var}"] + eq4_ud_triples,
         )
     )
 
@@ -392,18 +410,6 @@ def main() -> None:
         )
     )
 
-    eq5b_ud_sample = exposure_ud.copy()
-    eq5b_ud_terms = add_exposure_interactions(eq5b_ud_sample, mod_var=ud_var_exp)
-    coefficient_frames.append(
-        fit_and_collect(
-            "EQ5B_UD_EXPOSURE",
-            "exposure",
-            eq5b_ud_sample,
-            ["ln_robots_lag1", "lr_exposed", f"ln_robots_lag1:{ud_var_exp}", "lr_mod_exposure"] + controls,
-            [f"ln_robots_lag1:{ud_var_exp}", "lr_mod_exposure"],
-        )
-    )
-
     eq5b_coord_sample = exposure_coord.copy()
     eq5b_coord_terms = add_exposure_interactions(eq5b_coord_sample, mod_var=coord_var_exp)
     coefficient_frames.append(
@@ -413,6 +419,18 @@ def main() -> None:
             eq5b_coord_sample,
             ["ln_robots_lag1", "lr_exposed", f"ln_robots_lag1:{coord_var_exp}", "lr_mod_exposure"] + controls,
             [f"ln_robots_lag1:{coord_var_exp}", "lr_mod_exposure"],
+        )
+    )
+
+    eq5b_ud_sample = exposure_ud.copy()
+    eq5b_ud_terms = add_exposure_interactions(eq5b_ud_sample, mod_var=ud_var_exp)
+    coefficient_frames.append(
+        fit_and_collect(
+            "EQ5B_UD_EXPOSURE",
+            "exposure",
+            eq5b_ud_sample,
+            ["ln_robots_lag1", "lr_exposed", f"ln_robots_lag1:{ud_var_exp}", "lr_mod_exposure"] + controls,
+            [f"ln_robots_lag1:{ud_var_exp}", "lr_mod_exposure"],
         )
     )
 
@@ -436,10 +454,10 @@ def main() -> None:
     print("=" * 60)
     print(support_df.to_string(index=False))
     print()
-    print("Bucket coverage on shared ud+coord reference sample")
+    print("Bucket coverage on shared coord+ud availability sample")
     print(bucket_detail.to_string(index=False))
     print()
-    print("Exposure balance on shared ud+coord reference sample")
+    print("Exposure balance on shared coord+ud availability sample")
     print(exposure_balance.to_string(index=False))
     print()
     print(f"Saved support table to {SUPPORT_PATH}")

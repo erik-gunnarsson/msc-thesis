@@ -408,20 +408,20 @@ def entity_count(df: pd.DataFrame) -> int:
 
 def model_specs() -> list[ModelSpec]:
     specs = [
-        ModelSpec("EQ1", "Baseline: robots -> exports", [], MAIN_THRESHOLD),
+        ModelSpec("EQ1", "Baseline: robots -> labour input", [], MAIN_THRESHOLD),
         ModelSpec("EQ1_GDP", "Baseline + GDP control", ["gdp_growth"], MAIN_THRESHOLD),
-        ModelSpec("EQ2_UD", "Moderation by ud", ["ud_pre"], MAIN_THRESHOLD),
-        ModelSpec("EQ2_COORD", "Moderation by coord", ["coord_pre"], MAIN_THRESHOLD),
-        ModelSpec("EQ2_ADJCOV", "Moderation by adjcov (restricted)", ["adjcov_pre"], RESTRICTED_THRESHOLD),
+        ModelSpec("EQ2_COORD", "Primary focal moderation by coord", ["coord_pre"], MAIN_THRESHOLD),
+        ModelSpec("EQ2_ADJCOV", "Secondary focal moderation by adjcov (restricted)", ["adjcov_pre"], RESTRICTED_THRESHOLD),
+        ModelSpec("EQ2_UD", "Reference moderation by ud", ["ud_pre"], MAIN_THRESHOLD),
         ModelSpec("EQ3", "Bucket heterogeneity", ["bucket"], MAIN_THRESHOLD, require_all_buckets=True),
-        ModelSpec("EQ4_UD", "Bucket x ud", ["ud_pre", "bucket"], MAIN_THRESHOLD, require_all_buckets=True),
-        ModelSpec("EQ4_COORD", "Bucket x coord", ["coord_pre", "bucket"], MAIN_THRESHOLD, require_all_buckets=True),
-        ModelSpec("EQ4_ADJCOV", "Bucket x adjcov (restricted)", ["adjcov_pre", "bucket"], RESTRICTED_THRESHOLD, require_all_buckets=True),
-        ModelSpec("ROB_COMMON_UD", "ud on adjcov-available countries only", ["ud_pre"], RESTRICTED_THRESHOLD, restrict_adjcov_countries=True),
+        ModelSpec("EQ4_COORD", "Bucket x coord (primary focal)", ["coord_pre", "bucket"], MAIN_THRESHOLD, require_all_buckets=True),
+        ModelSpec("EQ4_ADJCOV", "Bucket x adjcov (secondary focal, restricted)", ["adjcov_pre", "bucket"], RESTRICTED_THRESHOLD, require_all_buckets=True),
+        ModelSpec("EQ4_UD", "Bucket x ud (reference)", ["ud_pre", "bucket"], MAIN_THRESHOLD, require_all_buckets=True),
         ModelSpec("ROB_COMMON_COORD", "coord on adjcov-available countries only", ["coord_pre"], RESTRICTED_THRESHOLD, restrict_adjcov_countries=True),
         ModelSpec("ROB_COORD_BIN", "Binary coord (>=4) moderation", ["coord_pre_binary"], MAIN_THRESHOLD, use_coord_binary=True),
-        ModelSpec("ROB_TIMEVAR_UD", "Time-varying ud", ["ud"], MAIN_THRESHOLD, source_panel="base_tv", timevarying_moderator="ud"),
         ModelSpec("ROB_TIMEVAR_COORD", "Time-varying coord", ["coord"], MAIN_THRESHOLD, source_panel="base_tv", timevarying_moderator="coord"),
+        ModelSpec("ROB_COMMON_UD", "ud on adjcov-available countries only", ["ud_pre"], RESTRICTED_THRESHOLD, restrict_adjcov_countries=True),
+        ModelSpec("ROB_TIMEVAR_UD", "Time-varying ud", ["ud"], MAIN_THRESHOLD, source_panel="base_tv", timevarying_moderator="ud"),
         ModelSpec("ROB_BALANCED", "Balanced sub-panel (entities in every year)", [], MAIN_THRESHOLD, balanced=True),
         ModelSpec("ROB_PRECRISIS", "Pre-crisis period only", [], MAIN_THRESHOLD, year_min=2001, year_max=2007),
         ModelSpec("ROB_POSTCRISIS", "Post-crisis period only", [], MAIN_THRESHOLD, year_min=2008, year_max=2014),
@@ -638,12 +638,14 @@ def build_summary_text(
         "Eurostat GDP": "AVAILABLE" if (DATA_DIR / "eurostata_gdp_nama_10_gdp.csv").exists() else "MISSING",
     }
 
-    main_ids = ["EQ1", "EQ1_GDP", "EQ2_UD", "EQ2_COORD", "EQ3", "EQ4_UD", "EQ4_COORD"]
+    main_ids = ["EQ1", "EQ1_GDP", "EQ2_COORD", "EQ3", "EQ4_COORD"]
     restricted_ids = ["EQ2_ADJCOV", "EQ4_ADJCOV"]
-    robustness_ids = [model for model in attrition["model"].tolist() if model not in main_ids + restricted_ids]
+    reference_ids = ["EQ2_UD", "EQ4_UD"]
+    robustness_ids = [model for model in attrition["model"].tolist() if model not in main_ids + restricted_ids + reference_ids]
 
     main_failures = [model for model in main_ids if index.loc[model, "pass_threshold"] == "FAIL"]
     restricted_failures = [model for model in restricted_ids if index.loc[model, "pass_threshold"] == "FAIL"]
+    reference_failures = [model for model in reference_ids if index.loc[model, "pass_threshold"] == "FAIL"]
     robustness_failures = [model for model in robustness_ids if index.loc[model, "pass_threshold"] == "FAIL"]
 
     if main_failures or restricted_failures:
@@ -686,6 +688,15 @@ def build_summary_text(
     lines.extend(
         [
             "",
+            "REFERENCE BENCHMARKS:",
+        ]
+    )
+    for model in reference_ids:
+        row = index.loc[model]
+        lines.append(f"  {model:<10} {row['pass_threshold']} — {int(row['n_countries'])} countries, {int(row['n_observations'])} obs")
+    lines.extend(
+        [
+            "",
             "ROBUSTNESS CHECKS:",
         ]
     )
@@ -714,6 +725,8 @@ def build_summary_text(
             lines.append(f"    {model}: {attrition_reasons.get(model, 'threshold not met')}")
     elif verdict == "CONDITIONALLY READY":
         lines.append("  - Main and restricted models pass, but remaining constraints are:")
+        for model in reference_failures:
+            lines.append(f"    {model}: {attrition_reasons.get(model, 'threshold not met')}")
         for model in robustness_failures:
             lines.append(f"    {model}: {attrition_reasons.get(model, 'threshold not met')}")
         if not unemployment_meta["viable_under_10pct"]:

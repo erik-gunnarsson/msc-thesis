@@ -1,6 +1,9 @@
 '''
 WIOD bucket heterogeneity models on the labour panel.
 
+These models are retained as exploratory / appendix material around the
+mainline WIOD Eq. 1-2 workflow.
+
 Eq. 3: ln(H_EMPE)_ijt = beta1 ln(Robots)_{ijt-1}
                       + sum_b beta2b [ln(Robots)_{ijt-1} x Bucket_b]
                       + X_ijt + alpha_ij + delta_t + eps_ijt
@@ -26,6 +29,7 @@ import argparse
 
 from loguru import logger
 
+from _klems_utils import get_moderator, moderator_role_summary
 from _wiod_model_utils import load_or_build_wiod_panel, write_model_bundle
 from _wiod_panel_utils import (
     BUCKET_NAMES,
@@ -47,7 +51,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--moderator",
-        choices=["coord", "ud", "adjcov"],
+        choices=["coord", "adjcov", "ud"],
         default="coord",
         help="Institutional moderator for eq4.",
     )
@@ -94,6 +98,7 @@ def main() -> None:
 
     mod_var = None
     has_var = None
+    mod_info = get_moderator(args.moderator) if args.mode == "eq4" else None
     require = ["ln_h_empe", "ln_robots_lag1", "bucket"] + controls
     if args.mode == "eq4":
         mod_var, has_var, _ = moderator_to_columns(args.moderator, args.coord_mode)
@@ -116,16 +121,26 @@ def main() -> None:
     rhs_terms = ["ln_robots_lag1"] + bucket_terms
     key_terms = ["ln_robots_lag1"] + bucket_terms
     bootstrap_terms = bucket_terms.copy()
-    title = "WIOD Eq. 3 bucket heterogeneity"
+    title = "WIOD Eq. 3 bucket heterogeneity (exploratory)"
 
     if args.mode == "eq4" and mod_var:
         interaction_term = f"ln_robots_lag1:{mod_var}"
         rhs_terms += [interaction_term] + triple_terms
         key_terms = ["ln_robots_lag1", interaction_term] + bucket_terms + triple_terms
         bootstrap_terms = [interaction_term] + triple_terms
-        title = f"WIOD Eq. 4 bucket x institution ({args.moderator})"
+        title = (
+            f"WIOD Eq. 4 bucket x institution: {mod_info['label']} "
+            f"({mod_info['role_label']}, exploratory)"
+        )
 
     rhs_terms += controls
+
+    if args.mode == "eq4":
+        logger.warning(
+            "EXPLORATORY — Eq. 4 spreads the country support across five buckets. "
+            "Interpret bucket-specific institution contrasts with caution in this few-clusters setting."
+        )
+        logger.info(f"Moderator role: {moderator_role_summary(args.moderator)}")
 
     logger.info(
         f"WIOD {args.mode.upper()} bucket sample: "
@@ -146,13 +161,27 @@ def main() -> None:
         ),
         "Inference: country cluster headline; entity cluster + Driscoll-Kraay comparison",
     ]
+    if args.mode == "eq3":
+        extra.insert(1, "Role: exploratory heterogeneity stage that precedes Eq. 4")
     if mod_var:
         extra.insert(1, f"Moderator column: {mod_var}")
+    if args.mode == "eq4":
+        extra.insert(
+            0,
+            "EXPLORATORY — bucket-specific institution contrasts are retained for appendix use and should not be treated as confirmatory.",
+        )
+        extra.insert(1, f"Role: {mod_info['role_label']}")
+        extra.insert(2, f"Theory note: {mod_info['theory_note']}")
+        extra.insert(3, f"Sample note: {mod_info['sample_caveat']}")
 
     prefix = (
-        f"wiod_{args.mode}_{args.moderator}_{args.sample}_{args.capital_proxy}_{args.coord_mode}"
+        (
+            f"exploratory_"
+            f"{'focal' if mod_info['workflow_tier'] == 'primary' else ('secondary' if mod_info['workflow_tier'] == 'secondary' else 'reference')}"
+            f"_wiod_{args.mode}_{args.moderator}_{args.sample}_{args.capital_proxy}_{args.coord_mode}"
+        )
         if args.mode == "eq4"
-        else f"wiod_{args.mode}_nomod_{args.sample}_{args.capital_proxy}"
+        else f"exploratory_wiod_{args.mode}_nomod_{args.sample}_{args.capital_proxy}"
     )
 
     write_model_bundle(

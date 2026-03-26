@@ -7,6 +7,9 @@ Treatment: ln(robot_wrkr_stock_95)_{t-1}
 Controls: ln(VA_QI), ln(K) [default capital proxy], ln(CAP) [sensitivity], GDP growth
 Institutions: 1990-1995 baseline-frozen ICTWSS measures
 Exposure: baseline export intensity and exposed/sheltered binary from WIOD trade
+
+This is the mainline WIOD panel used for Eq. 1 and Eq. 2.
+Industry controls come from WIOD SEA, not KLEMS.
 '''
 
 from loguru import logger
@@ -17,6 +20,7 @@ from _wiod_panel_utils import WIOD_PANEL_PATH, save_wiod_panel
 def main() -> None:
     panel = save_wiod_panel()
     logger.info(f"Saved WIOD panel to {WIOD_PANEL_PATH}")
+    logger.info("Controls source check: WIOD SEA supplies VA_QI, K, and CAP for this panel.")
     logger.info(
         f"Countries: {panel['country_code'].nunique()}, "
         f"Entities: {panel['entity'].nunique()}, "
@@ -30,6 +34,8 @@ def main() -> None:
         f"ln_k_wiod={panel['ln_k_wiod'].notna().sum()}, "
         f"ln_capcomp_wiod={panel['ln_capcomp_wiod'].notna().sum()}"
     )
+    country_rows = panel.groupby("country_code").size().sort_values(ascending=False)
+    logger.info("Country row counts after WIOD merge:\n" + country_rows.to_string())
 
 
 if __name__ == "__main__":

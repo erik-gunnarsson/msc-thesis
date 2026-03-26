@@ -1,13 +1,13 @@
 '''
-Run the main KLEMS thesis pipeline in execution order.
+Run the legacy KLEMS robustness pipeline in execution order.
 
 Workflow:
   01_data_check.py
   02_build_klems_panel.py
   03_ictwss_moderator_triage.py          (diagnostic only)
   04_klems_baseline.py
-  05_klems_institution_moderation.py     (ud + coord)
-  06_klems_adjcov_moderation.py          (restricted-sample AdjCov)
+  05_klems_institution_moderation.py     (coord primary; ud reference)
+  06_klems_adjcov_moderation.py          (restricted-sample AdjCov, secondary focal)
   07_klems_bucket_moderation.py          (main bucket runner)
   08_klems_bucket_adjcov_continuous.py   (continuous AdjCov bucket variant)
 
@@ -33,21 +33,19 @@ FULL_SCRIPTS = [
     "03_ictwss_moderator_triage.py",
     # Baseline
     "04_klems_baseline.py",
-    # Eq2: institutional moderation (ud + coord, full & common)
-    "05_klems_institution_moderation.py 2 --moderator ud --sample full",
-    "05_klems_institution_moderation.py 2 --moderator ud --sample common",
+    # Eq2: institutional moderation (coord focal, adjcov restricted, ud reference)
     "05_klems_institution_moderation.py 2 --moderator coord --sample full",
     "05_klems_institution_moderation.py 2 --moderator coord --sample common",
-    # Eq3: coverage moderation (adjcov, restricted/common only)
     "06_klems_adjcov_moderation.py 2 --moderator adjcov --sample common",
-    # Eq4: bucket heterogeneity (ud + coord, full & common; adjcov common)
-    "07_klems_bucket_moderation.py 2 --moderator ud --sample full",
-    "07_klems_bucket_moderation.py 2 --moderator ud --sample common",
+    "05_klems_institution_moderation.py 2 --moderator ud --sample full",
+    "05_klems_institution_moderation.py 2 --moderator ud --sample common",
+    # Eq4: bucket heterogeneity (coord focal, adjcov restricted, ud reference)
     "07_klems_bucket_moderation.py 2 --moderator coord --sample full",
     "07_klems_bucket_moderation.py 2 --moderator coord --sample common",
     "07_klems_bucket_moderation.py 2 --moderator adjcov --sample common",
-    # Eq5: bucket heterogeneity continuous variant (adjcov, common only)
     "08_klems_bucket_adjcov_continuous.py 2 --moderator adjcov --sample common",
+    "07_klems_bucket_moderation.py 2 --moderator ud --sample full",
+    "07_klems_bucket_moderation.py 2 --moderator ud --sample common",
 ]
 
 SMOKE_SCRIPTS = [
@@ -58,7 +56,7 @@ SMOKE_SCRIPTS = [
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run full thesis pipeline")
+    parser = argparse.ArgumentParser(description="Run legacy KLEMS robustness pipeline")
     parser.add_argument("--smoke", action="store_true", help="Smoke test mode (data check + build only)")
     args = parser.parse_args()
 

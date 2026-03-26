@@ -1,4 +1,6 @@
 '''
+ROBUSTNESS / LEGACY — KLEMS overlap specification.
+
 KLEMS pooled bucket-moderation runner.
 
 Thesis mapping: main bucket heterogeneity model (Equation 4 family).
@@ -12,7 +14,7 @@ moderation, estimated in a single regression:
              + Σ_b β₄b [ln(Robots)_{t-1} × M_c × Bucket_b]
              + controls + α_ij + δ_t + ε_ijt
 
-where LI = labour input proxy and M_c ∈ {ud_pre_c, coord_pre_c, adjcov_pre_c}.
+where LI = labour input proxy and M_c ∈ {coord_pre_c, adjcov_pre_c, ud_pre_c}.
 Bucket 5 (low-tech/traditional) is the reference category.
 Coord is continuous by default; binary (Coord ≥ 4) via --coord-mode binary.
 
@@ -29,9 +31,9 @@ CLI flags:
   --trends none|bucket              (default: none)
 
 Usage:
-  python code/07_klems_bucket_moderation.py 2 --moderator ud --sample full
   python code/07_klems_bucket_moderation.py 2 --moderator coord --sample common
   python code/07_klems_bucket_moderation.py 2 --moderator adjcov --sample common
+  python code/07_klems_bucket_moderation.py 2 --moderator ud --sample full
 '''
 
 import sys
@@ -58,6 +60,8 @@ from _klems_utils import (
     build_pairwise_contrasts,
     parse_args,
     moderator_to_columns,
+    get_moderator,
+    moderator_role_summary,
     apply_sample_filter,
     add_trend_terms,
     write_sample_manifest,
@@ -85,8 +89,10 @@ def step_model(df_raw: pd.DataFrame, args) -> None:
     controls = get_controls(df_raw)
     controls_str = " + ".join(controls)
 
+    mod_info = get_moderator(args.moderator)
     mod_var, has_var, is_binary = moderator_to_columns(args.moderator, args.coord_mode)
     logger.info(f"Moderator: {args.moderator} → {mod_var} (binary={is_binary})")
+    logger.info(f"Moderator role: {moderator_role_summary(args.moderator)}")
 
     df = apply_sample_filter(df_raw.copy(), args.sample)
     req = ["ln_hours", "ln_robots_lag1", "ln_va", "ln_cap", mod_var, "bucket"]
@@ -121,7 +127,11 @@ def step_model(df_raw: pd.DataFrame, args) -> None:
     formula = add_trend_terms(df, formula, args.trends)
 
     logger.info(f"\n{BAR}")
-    logger.info(f"  Equation 4: Bucket heterogeneity – {args.moderator} ({args.sample} sample)")
+    logger.info(
+        f"  Equation 4: Bucket heterogeneity – {args.moderator} ({args.sample} sample)"
+        f" [{mod_info['role_label']}]"
+    )
+    logger.info(f"  Theory note: {mod_info['theory_note']}")
     logger.info(SEP)
     logger.info(f"  Formula: {formula}")
     logger.info(f"  Reference bucket: {REF_BUCKET} ({BUCKET_NAMES[REF_BUCKET]})")
@@ -132,7 +142,11 @@ def step_model(df_raw: pd.DataFrame, args) -> None:
 
     OUTPUT_PATH.mkdir(exist_ok=True)
     with open(OUTPUT_PATH / f"equation4_bucket_{args.moderator}_{args.sample}sample_regression.txt", "w") as f:
-        f.write(format_sample_header(df) + str(res))
+        header = format_sample_header(df)
+        header += f"Institutional role: {mod_info['role_label']}\n"
+        header += f"Theory note: {mod_info['theory_note']}\n"
+        header += f"Sample note: {mod_info['sample_caveat']}\n{SEP}\n"
+        f.write(header + str(res))
 
     tag = f"eq4_{args.moderator}_{args.sample}"
     write_sample_manifest(df, tag, sample_mode=args.sample)

@@ -1,5 +1,7 @@
 '''
-WIOD baseline labour-input model.
+WIOD Eq. 1 baseline labour-input model.
+
+This is part of the mainline WIOD thesis workflow.
 
 ln(H_EMPE)_ijt = beta1 ln(Robots)_{ijt-1} + X_ijt + alpha_ij + delta_t + eps_ijt
 
@@ -65,7 +67,7 @@ def main() -> None:
 
     write_model_bundle(
         prefix=f"wiod_eq1_baseline_{args.capital_proxy}",
-        title="WIOD Eq. 1 baseline labour-input model",
+        title="WIOD Eq. 1 baseline labour-input model (mainline)",
         result=result,
         rhs_terms=rhs_terms,
         key_terms=["ln_robots_lag1"],

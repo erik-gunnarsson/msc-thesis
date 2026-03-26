@@ -1,4 +1,6 @@
 '''
+ROBUSTNESS / LEGACY — KLEMS overlap specification.
+
 Equation 1: Baseline Model
 
 ln(LI)_ijt = β₁ ln(Robots)_ijt-1 + X'_ijt γ + α_ij + δ_t + ε_ijt
@@ -144,4 +146,3 @@ def _log_sanity_checks(df: pd.DataFrame, res) -> None:
 
 if __name__ == "__main__":
     main()
-

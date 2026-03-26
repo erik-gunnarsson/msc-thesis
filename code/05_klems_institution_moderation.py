@@ -1,4 +1,6 @@
 '''
+ROBUSTNESS / LEGACY — KLEMS overlap specification.
+
 KLEMS institutional moderation runner.
 
 Thesis mapping: Equation 2 for the main moderator specifications.
@@ -6,7 +8,8 @@ Thesis mapping: Equation 2 for the main moderator specifications.
 ln(LI) = β₁ ln(Robots)_{t-1} + β₂[ln(Robots) × M_c] + controls + FE
 
 where LI = labour input proxy and M_c is a predetermined institutional
-moderator (usually ud_pre_c or coord_pre_c, with adjcov also supported).
+moderator (coord_pre_c is the focal channel, ud_pre_c is a reference benchmark,
+with adjcov supported for restricted-sample comparison).
 
 Coord is continuous by default; binary (Coord ≥ 4) available via
 --coord-mode binary as robustness.
@@ -19,9 +22,9 @@ CLI flags:
   --trends none|bucket              (default: none)
 
 Usage:
-  python code/05_klems_institution_moderation.py 2 --moderator ud --sample full
   python code/05_klems_institution_moderation.py 2 --moderator coord --sample common
   python code/05_klems_institution_moderation.py 2 --moderator adjcov --sample common
+  python code/05_klems_institution_moderation.py 2 --moderator ud --sample full
 '''
 
 import sys
@@ -45,6 +48,8 @@ from _klems_utils import (
     apply_sample_filter,
     add_trend_terms,
     get_bucket_dummies,
+    get_moderator,
+    moderator_role_summary,
     write_sample_manifest,
     write_run_metadata,
 )
@@ -60,8 +65,10 @@ def step_coordination_model(df_raw: pd.DataFrame, args) -> None:
     controls = get_controls(df_raw)
     controls_str = " + ".join(controls)
 
+    mod_info = get_moderator(args.moderator)
     mod_var, has_var, is_binary = moderator_to_columns(args.moderator, args.coord_mode)
     logger.info(f"Moderator: {args.moderator} → {mod_var} (binary={is_binary})")
+    logger.info(f"Moderator role: {moderator_role_summary(args.moderator)}")
 
     df = apply_sample_filter(df_raw.copy(), args.sample)
     req = ["ln_hours", "ln_robots_lag1", "ln_va", "ln_cap", mod_var]
@@ -93,13 +100,20 @@ def step_coordination_model(df_raw: pd.DataFrame, args) -> None:
         n_obs=res.nobs, n_entities=df["entity"].nunique(),
     )
 
-    logger.info(f"\n{BAR}\n  Institutional moderation ({args.moderator}, {args.sample} sample)\n{SEP}")
+    logger.info(
+        f"\n{BAR}\n  Institutional moderation ({args.moderator}, {args.sample} sample)"
+        f" — {mod_info['role_label']}\n{SEP}"
+    )
     print(res)
 
     OUTPUT_PATH.mkdir(exist_ok=True)
     out_name = f"equation2_{args.moderator}_moderation_{args.sample}sample.txt"
     with open(OUTPUT_PATH / out_name, "w") as f:
-        f.write(format_sample_header(df) + str(res))
+        header = format_sample_header(df)
+        header += f"Institutional role: {mod_info['role_label']}\n"
+        header += f"Theory note: {mod_info['theory_note']}\n"
+        header += f"Sample note: {mod_info['sample_caveat']}\n{SEP}\n"
+        f.write(header + str(res))
 
     eff_base = res.params.get("ln_robots_lag1", np.nan)
     eff_inter = res.params.get(interaction_col, 0)

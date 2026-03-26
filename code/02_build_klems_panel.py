@@ -6,7 +6,7 @@ Outcome: ln(LAB_QI) [labour input proxy]
 Treatment: ln(robot_wrkr_stock_95)_{t-1} [robots per 1000 workers, lagged]
 Controls: ln(VA_PYP), ln(CAP_QI), ln(GDP), unemployment
 Institutions (pre-sample 1990-1995 mean, time-invariant — the default everywhere):
-  Mainline moderators: UD, Coord, AdjCov
+  Mainline moderators: Coord (primary), AdjCov (secondary), UD (reference)
   Appendix-only: Wstat, WC, SPA_signed
   Variants per moderator:
     {name}_pre        raw pre-sample value
@@ -211,7 +211,7 @@ def main():
 
     logger.info(
         "Pre-sample institution columns created (1990-1995 baseline). "
-        "Mainline moderators: ud, coord, adjcov (centered). "
+        "Active hierarchy: coord primary, adjcov secondary, ud reference. "
         f"has_adjcov covers {df['has_adjcov'].sum() / len(df) * 100:.0f}% of rows."
     )
 

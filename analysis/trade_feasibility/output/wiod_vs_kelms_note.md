@@ -8,14 +8,14 @@ Current WIOD labour support with default controls (`ln_va_wiod_qi`, `ln_k_wiod`,
 `gdp_growth`) is:
 
 - Base panel: 24 countries, 236 entities, 2283 observations (2001-2014)
-- Eq. 4 bucket x ud: 21 countries, 2068 observations
 - Eq. 4 bucket x coord: 23 countries, 2212 observations
+- Eq. 4 bucket x ud: 21 countries, 2068 observations
 - Eq. 5a exposure: 24 countries, 2283 observations
-- Eq. 5b exposure x ud: 21 countries, 2068 observations
 - Eq. 5b exposure x coord: 23 countries, 2212 observations
+- Eq. 5b exposure x ud: 21 countries, 2068 observations
 
 Bucket models remain estimable in pooled form, but the thin-bucket concern is
-real at the country-support level. In the shared `ud + coord` reference sample,
+real at the country-support level. In the shared `coord + ud` availability sample,
 bucket country counts are: B1=20, B2=19, B3=19, B4=20, B5=21. That means the issue is more about
 precision than identification.
 

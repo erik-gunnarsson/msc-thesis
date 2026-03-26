@@ -6,8 +6,12 @@ Screens candidate ICTWSS institutional variables using:
   Step 2 — Single-interaction screening regressions (full + common sample)
   Step 3 — Diagnostic summary (no moderator selection; mainline set is pre-declared)
 
-Mainline moderators (coord, ud, adjcov) are chosen on theoretical and
-data-quality grounds, NOT by t-stat ranking from this triage.
+Mainline moderators are pre-declared with a hierarchy:
+  focal: coord
+  secondary focal: adjcov
+  reference benchmark: ud
+and are chosen on theoretical and data-quality grounds, NOT by t-stat
+ranking from this triage.
 Results are saved for transparency and appendix documentation.
 
 Run after 02_build_klems_panel.py, before committing to moderators in Eq2-Eq5.
@@ -32,9 +36,10 @@ from _klems_utils import (
     run_panelols,
     moderator_diagnostics,
     apply_sample_filter,
+    ordered_moderator_keys,
 )
 
-CANDIDATES = list(MODERATOR_REGISTRY.keys())
+CANDIDATES = ordered_moderator_keys()
 
 
 def step_descriptive(df: pd.DataFrame) -> pd.DataFrame:
@@ -54,7 +59,7 @@ def step_descriptive(df: pd.DataFrame) -> pd.DataFrame:
             f"N_ctry={diag['n_countries']}, SD={diag.get('std', 0):.2f}, "
             f"distinct={diag.get('n_distinct', 0)}, "
             f"missing={diag.get('pct_missing', 0):.1f}%, "
-            f"binary={diag['is_binary']}"
+            f"binary={diag['is_binary']} [{diag.get('role_label', 'appendix candidate')}]"
         )
         if diag.get("n_distinct", 0) < 4:
             logger.warning(f"    ⚠ <4 distinct values — limited leverage")
@@ -136,6 +141,12 @@ def step_screening(df_raw: pd.DataFrame) -> pd.DataFrame:
             results.append({
                 "moderator": mod_key,
                 "label": info["label"],
+                "role_label": info.get("role_label"),
+                "workflow_tier": info.get("workflow_tier"),
+                "active_workflow": info.get("active_workflow"),
+                "priority_rank": info.get("priority_rank"),
+                "theory_note": info.get("theory_note"),
+                "sample_caveat": info.get("sample_caveat"),
                 "sample": sample_mode,
                 "beta": beta,
                 "se": se,
@@ -164,7 +175,12 @@ def main():
     OUTPUT_PATH.mkdir(exist_ok=True)
 
     if not screen_df.empty:
-        screen_df = screen_df.sort_values("pval", ascending=True)
+        sample_order = {"full": 0, "common": 1}
+        screen_df["sample_order"] = screen_df["sample"].map(sample_order).fillna(99)
+        screen_df = screen_df.sort_values(
+            ["priority_rank", "sample_order", "moderator"],
+            ascending=[True, True, True],
+        ).drop(columns=["sample_order"])
         out_path = OUTPUT_PATH / "ictwss_moderator_triage.csv"
         screen_df.to_csv(out_path, index=False)
         logger.info(f"\nTriage results → {out_path}")
@@ -172,7 +188,7 @@ def main():
         logger.info(f"\n{BAR}\n  Step 3: Diagnostic summary\n{SEP}")
         logger.info("  Screening results (for transparency — NOT a selection criterion):")
         for _, row in screen_df.iterrows():
-            tag = "MAINLINE" if row["moderator"] in MAINLINE_MODERATORS else "appendix"
+            tag = row.get("role_label", "appendix candidate")
             logger.info(
                 f"  {row['moderator']:>12} [{row['sample']:>6}]: "
                 f"|t|={abs(row['t_stat']):.2f}, p={row['pval']:.4f}  ({tag})"
@@ -181,7 +197,8 @@ def main():
         mainline_str = ", ".join(MAINLINE_MODERATORS)
         appendix_mods = [m for m in CANDIDATES if m not in MAINLINE_MODERATORS]
         appendix_str = ", ".join(appendix_mods) if appendix_mods else "(none)"
-        logger.info(f"\n  Pre-declared mainline set: {mainline_str}")
+        logger.info(f"\n  Institutional hierarchy: focal=coord; secondary focal=adjcov; reference=ud")
+        logger.info(f"  Active workflow order: {mainline_str}")
         logger.info(f"  Appendix-only (if at all):  {appendix_str}")
         logger.info(f"  Moderators are chosen on theoretical and data-quality grounds,")
         logger.info(f"  not by t-stat ranking from this triage.")
