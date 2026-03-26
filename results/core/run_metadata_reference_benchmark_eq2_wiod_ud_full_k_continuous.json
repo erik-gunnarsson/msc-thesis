@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-03-26T21:20:13.817736+00:00",
+  "git_commit": "1cc26039b8833d97d12ff4b35270108009976d30",
+  "script": "reference_benchmark_eq2_wiod_ud_full_k_continuous.py",
+  "flags": {
+    "moderator": "ud",
+    "sample": "full",
+    "coord_mode": "continuous",
+    "capital_proxy": "k",
+    "include_gdp": true,
+    "moderator_is_binary": false,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 199
+  },
+  "n_obs": 2068,
+  "n_entities": 206
+}

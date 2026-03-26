@@ -1,0 +1,7 @@
+model_id,title,term,term_label,n_countries,n_entities,n_observations,years,coef_country_cluster,se_country_cluster,p_country_cluster,p_wild_cluster,review_order
+EQ1_COMMON,WIOD Eq. 1 baseline on exact coord x ud common sample,ln_robots_lag1,Eq. 1 robot coefficient,21,206,2068,2001-2014,0.007319312981964199,0.0071485392660148835,0.30588755697761927,0.38190954773869346,1
+EQ2_COORD_COMMON,WIOD Eq. 2 coordination moderation on exact coord x ud common sample,ln_robots_lag1:coord_pre_c,Eq. 2 coord interaction,21,206,2068,2001-2014,0.012752833875584568,0.004425741475278286,0.003957702612087193,0.08542713567839195,2
+EQ2_UD_COMMON,WIOD Eq. 2 union-density reference on exact coord x ud common sample,ln_robots_lag1:ud_pre_c,Eq. 2 ud interaction,21,206,2068,2001-2014,-0.00010613002592926033,0.00040698005738465,0.7942664008757068,0.8291457286432161,3
+EQ2B_COMMON,WIOD Eq. 2b joint coord x ud moderation on exact common sample,ln_robots_lag1:coord_pre_c,Eq. 2b coord term,21,206,2068,2001-2014,0.008792497252811171,0.00700807832158685,0.20961559792342066,0.5778894472361809,4
+EQ2B_COMMON,WIOD Eq. 2b joint coord x ud moderation on exact common sample,ln_robots_lag1:coord_pre_c:ud_pre_c,Eq. 2b Hawk-Dove three-way,21,206,2068,2001-2014,-0.0005544248516530159,0.00046128012843904255,0.22939197147132162,0.34673366834170855,4
+EQ2B_COMMON,WIOD Eq. 2b joint coord x ud moderation on exact common sample,ln_robots_lag1:ud_pre_c,Eq. 2b ud term,21,206,2068,2001-2014,4.780475672347753e-05,0.00038608087056939415,0.9014573379490021,0.8994974874371859,4

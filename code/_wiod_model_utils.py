@@ -6,11 +6,11 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
-from _klems_utils import BAR, OUTPUT_PATH, SEP
+from _paths import RESULTS_CORE_DIR, ensure_results_dirs
+from _shared_utils import BAR, SEP
 from _wiod_panel_utils import (
     WIOD_PANEL_PATH,
     build_fe_formula,
-    ensure_output_dir,
     load_wiod_panel,
     sample_header,
     save_wiod_panel,
@@ -69,12 +69,14 @@ def write_model_bundle(
     bootstrap_terms: list[str] | None = None,
     flags: dict[str, object],
     sample_mode: str = "full",
-    bootstrap_reps: int = 99,
+    bootstrap_reps: int = 199,
     bootstrap_seed: int = 123,
     extra_lines: list[str] | None = None,
+    out_dir: Path | None = None,
 ) -> pd.DataFrame:
-    ensure_output_dir()
-    OUTPUT_PATH.mkdir(exist_ok=True)
+    ensure_results_dirs()
+    target_dir = out_dir or RESULTS_CORE_DIR
+    target_dir.mkdir(parents=True, exist_ok=True)
 
     bootstrap_terms = bootstrap_terms or key_terms
     restricted = build_restricted_formulas("ln_h_empe", rhs_terms, bootstrap_terms)
@@ -86,15 +88,16 @@ def write_model_bundle(
         bootstrap_seed=bootstrap_seed,
     )
     key_df = add_ci_columns(key_df)
-    key_df.to_csv(OUTPUT_PATH / f"{prefix}_key_terms.csv", index=False)
+    key_df.to_csv(target_dir / f"{prefix}_key_terms.csv", index=False)
 
     stats = sample_stats(result.sample)
-    write_sample_manifest(result.sample, prefix, sample_mode=sample_mode)
+    write_sample_manifest(result.sample, prefix, sample_mode=sample_mode, out_dir=target_dir)
     write_run_metadata(
         f"{prefix}.py",
         flags,
         n_obs=stats["n_obs"],
         n_entities=stats["n_entities"],
+        out_dir=target_dir,
     )
 
     lines = [
@@ -138,10 +141,10 @@ def write_model_bundle(
     )
 
     text = sample_header(result.sample) + "\n".join(lines) + "\n"
-    (OUTPUT_PATH / f"{prefix}_results.txt").write_text(text, encoding="utf-8")
+    (target_dir / f"{prefix}_results.txt").write_text(text, encoding="utf-8")
 
     logger.info(
-        f"{title}: saved key terms to {OUTPUT_PATH / f'{prefix}_key_terms.csv'} "
-        f"and results to {OUTPUT_PATH / f'{prefix}_results.txt'}"
+        f"{title}: saved key terms to {target_dir / f'{prefix}_key_terms.csv'} "
+        f"and results to {target_dir / f'{prefix}_results.txt'}"
     )
     return key_df

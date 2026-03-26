@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import subprocess
-import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -18,21 +17,21 @@ try:
 except ImportError:  # pragma: no cover
     PanelOLS = None
 
-from _klems_utils import (
+from _paths import (
+    DATA_DIR,
+    RESULTS_CORE_DIR,
+    RESULTS_EXPLORATION_TRADE_DIR,
+    ensure_results_dirs,
+)
+from _shared_utils import (
     BAR,
-    BUCKET_NAMES,
     MODERATOR_REGISTRY,
-    NACE_TO_BUCKET,
-    OUTPUT_PATH,
-    REF_BUCKET,
 )
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT_DIR / "data"
 WIOD_PANEL_PATH = DATA_DIR / "cleaned_data_wiod.csv"
-ANALYSIS_OUTPUT_DIR = ROOT_DIR / "analysis" / "trade_feasibility" / "output"
-WIOD_TRADE_CACHE = ANALYSIS_OUTPUT_DIR / "wiod_trade_panel.csv"
+WIOD_TRADE_CACHE = RESULTS_EXPLORATION_TRADE_DIR / "wiod_trade_panel.csv"
 SEA_PATH = DATA_DIR / "WIOTS_SEA" / "Socio_Economic_Accounts.xlsx"
 EXPOSURE_BASELINE_START = 2000
 EXPOSURE_BASELINE_END = 2002
@@ -160,8 +159,7 @@ class WiodModelResult:
 
 
 def ensure_output_dir() -> None:
-    OUTPUT_PATH.mkdir(exist_ok=True)
-    ANALYSIS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    ensure_results_dirs()
 
 
 def load_wiod_panel(path: Path = WIOD_PANEL_PATH) -> pd.DataFrame:
@@ -178,12 +176,15 @@ def load_wiod_trade_panel() -> pd.DataFrame:
     if WIOD_TRADE_CACHE.exists():
         return pd.read_csv(WIOD_TRADE_CACHE)
 
-    analysis_path = ROOT_DIR / "analysis" / "trade_feasibility"
-    sys.path.insert(0, str(analysis_path))
-    try:
-        from _common import build_wiod_trade_panel  # type: ignore
-    finally:
-        sys.path.pop(0)
+    import importlib.util
+
+    common_path = ROOT_DIR / "code" / "exploration" / "trade_feasibility" / "_common.py"
+    spec = importlib.util.spec_from_file_location("trade_feasibility_common", common_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Could not load trade-feasibility common module from {common_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    build_wiod_trade_panel = module.build_wiod_trade_panel
     return build_wiod_trade_panel(cache_path=WIOD_TRADE_CACHE)
 
 
@@ -363,16 +364,12 @@ def build_wiod_panel() -> pd.DataFrame:
     df = df.merge(baseline, on="country_code", how="left")
     df = add_exposure_variables(df)
 
-    df["bucket"] = df["nace_r2_code"].map(NACE_TO_BUCKET)
-    df["bucket_name"] = df["bucket"].map(BUCKET_NAMES)
-    df = df[df["bucket"].notna()].copy()
     df["year_int"] = df["year"].astype(int)
     df["entity"] = df["country_code"] + "_" + df["nace_r2_code"]
     df["panel_source"] = "wiod"
 
     out_cols = [
         "country_code", "nace_r2_code", "year", "year_int", "entity",
-        "bucket", "bucket_name",
         "robot_wrkr_stock_95", "ln_robots", "ln_robots_lag1", "n_ifr_rows",
         "H_EMPE", "ln_h_empe", "VA_QI", "ln_va_wiod_qi", "K", "ln_k_wiod",
         "CAP", "ln_capcomp_wiod", "GO", "gross_exports_usd_m", "trade_available",
@@ -436,29 +433,20 @@ def prepare_wiod_panel(
     return out.sort_values(["entity", "year_int"]).reset_index(drop=True)
 
 
-def add_bucket_dummies(df: pd.DataFrame) -> list[str]:
-    cols: list[str] = []
-    for bucket in sorted(BUCKET_NAMES):
-        if bucket == REF_BUCKET:
-            continue
-        col = f"bucket_{bucket}"
-        df[col] = (df["bucket"] == bucket).astype(int)
-        cols.append(col)
-    return cols
-
-
-def add_bucket_interactions(df: pd.DataFrame, mod_var: str | None = None) -> list[str]:
-    bucket_cols = add_bucket_dummies(df)
-    created: list[str] = []
-    for col in bucket_cols:
-        term = f"lr_{col}"
-        df[term] = df["ln_robots_lag1"] * df[col]
-        created.append(term)
-        if mod_var is not None:
-            mod_term = f"lr_mod_{col}"
-            df[mod_term] = df["ln_robots_lag1"] * df[mod_var] * df[col]
-            created.append(mod_term)
-    return created
+def prepare_wiod_joint_coord_ud_sample(
+    df: pd.DataFrame,
+    *,
+    capital_proxy: str = "k",
+    include_gdp: bool = True,
+) -> tuple[pd.DataFrame, list[str]]:
+    controls = get_wiod_controls(capital_proxy=capital_proxy, include_gdp=include_gdp)
+    require = ["ln_h_empe", "ln_robots_lag1", "coord_pre_c", "ud_pre_c"] + controls
+    sample = prepare_wiod_panel(df, require=require, sample="full")
+    if "has_coord" in sample.columns:
+        sample = sample[sample["has_coord"]].copy()
+    if "has_ud" in sample.columns:
+        sample = sample[sample["has_ud"]].copy()
+    return sample.reset_index(drop=True), controls
 
 
 def add_exposure_interactions(df: pd.DataFrame, mod_var: str | None = None) -> list[str]:
@@ -606,9 +594,17 @@ def summarise_key_terms(
     return pd.DataFrame(rows)
 
 
-def write_sample_manifest(df: pd.DataFrame, tag: str, *, sample_mode: str = "full") -> Path:
+def write_sample_manifest(
+    df: pd.DataFrame,
+    tag: str,
+    *,
+    sample_mode: str = "full",
+    out_dir: Path | None = None,
+) -> Path:
     ensure_output_dir()
-    path = OUTPUT_PATH / f"sample_manifest_{tag}.txt"
+    target_dir = out_dir or RESULTS_CORE_DIR
+    target_dir.mkdir(parents=True, exist_ok=True)
+    path = target_dir / f"sample_manifest_{tag}.txt"
     countries = sorted(df["country_code"].dropna().unique().tolist())
     lines = [
         f"Sample manifest: {tag}",
@@ -624,9 +620,18 @@ def write_sample_manifest(df: pd.DataFrame, tag: str, *, sample_mode: str = "ful
     return path
 
 
-def write_run_metadata(script_name: str, flags: dict[str, object], *, n_obs: int, n_entities: int) -> Path:
+def write_run_metadata(
+    script_name: str,
+    flags: dict[str, object],
+    *,
+    n_obs: int,
+    n_entities: int,
+    out_dir: Path | None = None,
+) -> Path:
     ensure_output_dir()
-    path = OUTPUT_PATH / f"run_metadata_{Path(script_name).stem}.json"
+    target_dir = out_dir or RESULTS_CORE_DIR
+    target_dir.mkdir(parents=True, exist_ok=True)
+    path = target_dir / f"run_metadata_{Path(script_name).stem}.json"
     try:
         git_hash = subprocess.run(
             ["git", "rev-parse", "HEAD"],

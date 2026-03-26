@@ -1,0 +1,8 @@
+Sample manifest: secondary_focal_eq2_wiod_adjcov_common_k_continuous
+Generated: 2026-03-26T21:19:42.055453+00:00
+Sample mode: common
+========================================================
+Observations: 1535
+Entities: 142
+Countries (14): AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, SI
+Years: 2001-2014

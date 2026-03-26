@@ -1,0 +1,42 @@
+============================================================
+REGRESSION-READY AUDIT SUMMARY
+============================================================
+
+DATA SOURCES REQUIRED:
+  - IFR (robots): AVAILABLE
+  - WIOD trade tables (exports): AVAILABLE
+  - WIOD SEA (VA, CAP controls): AVAILABLE
+  - ICTWSS (ud, coord, adjcov): AVAILABLE
+  - Eurostat GDP: AVAILABLE
+
+SEA COVERAGE: 27 countries have complete VA+CAP for all manufacturing industries across 2000-2014.
+BASE PANEL: 24 countries, 236 entities, 2283 obs, 2001-2014
+
+MAIN MODELS (threshold: >=20 countries):
+  EQ1        PASS — 24 countries, 2283 obs
+  EQ1_GDP    PASS — 24 countries, 2283 obs
+  EQ2_COORD  PASS — 23 countries, 2212 obs
+
+RESTRICTED MODELS (threshold: >=14 countries):
+  EQ2_ADJCOV PASS — 14 countries, 1535 obs
+
+REFERENCE BENCHMARKS:
+  EQ2_UD     PASS — 21 countries, 2068 obs
+
+ROBUSTNESS CHECKS:
+  ROB_COMMON_COORD PASS — 14 countries, 1535 obs
+  ROB_COORD_BIN   PASS — 23 countries, 2212 obs
+  ROB_TIMEVAR_COORD PASS — 24 countries, 2283 obs
+  ROB_COMMON_UD   FAIL — 13 countries, 1444 obs
+  ROB_TIMEVAR_UD  PASS — 23 countries, 1933 obs
+  ROB_BALANCED    FAIL — 7 countries, 952 obs
+  ROB_PRECRISIS   PASS — 24 countries, 743 obs
+  ROB_POSTCRISIS  PASS — 24 countries, 1540 obs
+  ROB_NO_CONTROLS PASS — 24 countries, 2283 obs
+
+OVERALL VERDICT: CONDITIONALLY READY
+  - Main and restricted models pass, but remaining constraints are:
+    ROB_COMMON_UD: 13 countries (<14)
+    ROB_BALANCED: 7 countries (<20)
+    Unemployment control infeasible: 101 missing country-years out of 255 (39.6% missing)
+============================================================

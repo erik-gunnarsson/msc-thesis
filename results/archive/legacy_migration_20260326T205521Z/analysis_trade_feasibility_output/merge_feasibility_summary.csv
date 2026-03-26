@@ -1,0 +1,7 @@
+scenario,view,countries,entities,observations,years,dropped_countries
+A_ifr_wiod,collapsed,24,258,3870,2000-2014,"CY, HR, LU"
+B_ud,collapsed,21,225,3375,2000-2014,"BG, CY, HR, LU, RO, SI"
+B_coord,collapsed,23,247,3705,2000-2014,"CY, HR, LU, RO"
+B_both,collapsed,21,225,3375,2000-2014,"BG, CY, HR, LU, RO, SI"
+C_adjcov,collapsed,14,148,2220,2000-2014,"BG, CY, CZ, EE, ES, HR, HU, LT, LU, LV, PL, RO, SK"
+D_current_baseline,current_pipeline,14,287,4622,1995-2019,
