@@ -2,19 +2,15 @@
 
 This repository contains the empirical code for an MSc thesis on how industrial robot adoption affects labour input in manufacturing, and how that relationship is conditioned by collective bargaining institutions.
 
-The active branch has been simplified to one live empirical sequence:
-
 - `Eq. 1`: baseline robot-labour relationship
 - `Eq. 2`: single-moderator institutional moderation
 - `Eq. 2b`: exploratory joint `coord x ud` Hawk-Dove extension
-
-The earlier bucket-based `Eq. 3 / Eq. 4` workflow has been removed from this branch and preserved separately in the archive branch `bucket-archive-pre-cleanup`.
 
 ## Research Focus
 
 The active thesis question is:
 
-How does robot adoption affect labour input across country-industry cells, and how is that slope moderated by bargaining institutions?
+To what extent does collective bargaining coordination influence the relationship between industrial robot adoption and employment in European manufacturing industries?​
 
 Institutional hierarchy in the active workflow:
 
@@ -26,7 +22,6 @@ Current empirical hierarchy:
 
 - `Eq. 1` and `Eq. 2` are the headline models
 - `Eq. 2b` is an exploratory theory test of the Hawk-Dove intuition
-- KLEMS is retained only as a legacy / overlap robustness comparison
 
 ## Active Data Sources
 
@@ -265,7 +260,7 @@ Their current documentation and retained outputs live under:
 
 These scripts are not part of the main thesis run sequence. They exist to document how the branch evolved and to preserve the feasibility evidence behind the WIOD pivot.
 
-## Legacy KLEMS Workflow
+## Legacy KLEMS Workflow (was replaced with WIOD)
 
 The KLEMS pipeline is kept only as a legacy / overlap robustness path.
 
@@ -295,17 +290,7 @@ So the KLEMS-WIOD comparison should be read as a **joint measurement-and-control
 
 ## Results Storage
 
-The old output-folder structure has been retired.
-
-Current convention:
-
 - active first results -> `results/core/`
 - active diagnostics and appendix tables -> `results/secondary/`
 - exploration/audit artifacts -> `results/exploration/wiod_feasibility/`
 - migrated legacy output snapshot -> `results/archive/`
-
-## Notes
-
-- The active branch does not include the bucket-model workflow anymore.
-- Bucket scripts and outputs were removed here to keep the thesis workflow focused and readable.
-- If you need the removed heterogeneity branch for examiner questions or historical reference, use the archived branch `bucket-archive-pre-cleanup`.
