@@ -3,7 +3,7 @@ Run a like-for-like WIOD common-sample robustness table on the exact
 coord x ud intersection support.
 
 This appendix-facing script estimates Eq. 1, Eq. 2 coord, Eq. 2 ud, and
-Eq. 2b on the same 21-country sample so coefficient differences are due to
+Eq. 2b on the same coord x ud intersection sample so coefficient differences are due to
 specification rather than sample composition.
 '''
 
@@ -122,9 +122,13 @@ def main() -> None:
         include_gdp=not args.no_gdp,
     )
     support = sample_support(sample)
-    expected = {"n_countries": 21, "n_entities": 206, "n_observations": 2068, "years": "2001-2014"}
-    if support != expected:
-        raise RuntimeError(f"Unexpected common-sample support. Expected {expected}, got {support}.")
+    if support["n_countries"] <= 0 or support["n_entities"] <= 0 or support["n_observations"] <= 0:
+        raise RuntimeError(f"Unexpected empty common-sample support: {support}.")
+    if support["years"] != "2001-2014":
+        raise RuntimeError(
+            "Unexpected common-sample year support. "
+            f"Expected 2001-2014 after lagging, got {support['years']}."
+        )
 
     rows: list[dict[str, object]] = []
     rows.extend(
@@ -193,7 +197,7 @@ def main() -> None:
     md_lines = [
         "# WIOD Common-Sample Robustness Table",
         "",
-        "All specifications below use the exact 21-country coord x ud intersection sample, so coefficient differences are specification-driven rather than sample-driven.",
+        "All specifications below use the exact coord x ud intersection sample, so coefficient differences are specification-driven rather than sample-driven.",
         "",
         f"Support: {support['n_countries']} countries, {support['n_entities']} entities, {support['n_observations']} observations, {support['years']}",
         "",

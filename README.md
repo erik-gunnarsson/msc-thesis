@@ -44,6 +44,21 @@ Main data use in the active WIOD workflow:
 - macro control: Eurostat GDP growth
 - institutions: ICTWSS baseline-frozen 1990-1995 measures
 
+Country scope in the active WIOD workflow:
+
+- the workflow starts from a broader **European candidate universe** (33 countries), not a hard EU-27 cutoff
+- countries enter each model only if they survive the actual WIOD + IFR + ICTWSS + GDP variable requirements
+- with the current data, `UK` and `NO` are the practical non-EU additions to the active regressions
+
+**Excluded countries and reasons:**
+
+- `CH` (Switzerland): the IFR extract contains disaggregated `robot_stock` at the sub-industry level, but `robot_wrkr_stock_95` (the per-worker normalisation used in the regression) is missing because IFR employment is zero for all Swiss manufacturing sub-industries. The raw robot counts exist but cannot be normalised consistently with other countries. CH will be revisited as a robustness exercise using alternative normalisation approaches.
+- `CY` (Cyprus), `HR` (Croatia), `LU` (Luxembourg), `TR` (Turkey): the IFR data source provides only aggregate country-level robot figures for these countries, with no disaggregated manufacturing sub-industry breakdown. Since the identification strategy relies on within-country cross-industry variation in robot adoption, aggregate-only data is incompatible with the panel design.
+- `IC` (Iceland): missing from the WIOD SEA release (fixed 43-country set), and IFR disaggregated data is also unavailable.
+- `RU` (Russia): missing from the IFR extract, missing Eurostat GDP coverage, and missing all ICTWSS institutional baselines.
+
+The full 33-country audit matrix is available at `results/exploration/wiod_feasibility/europe_country_availability_matrix.csv`.
+
 ## Methodology
 
 This is a **country-industry-year fixed-effects panel study**.
@@ -202,6 +217,13 @@ Main review files:
 - `results/core/secondary_focal_eq2_wiod_adjcov_*`
 - `results/core/reference_benchmark_eq2_wiod_ud_*`
 
+Current first-results support after the Europe-candidate expansion:
+
+- `Eq. 1`: 26 countries, 257 entities, 2571 observations
+- `Eq. 2 coord`: 25 countries, 247 entities, 2500 observations
+- `Eq. 2 adjcov`: 15 countries, 153 entities, 1685 observations
+- `Eq. 2 ud`: 23 countries, 227 entities, 2356 observations
+
 ### 3. Run the Exploratory Eq. 2b Extension
 
 ```bash
@@ -227,7 +249,7 @@ uv run python code/secondary/16_wiod_eq2_coord_on_eq2b_sample.py
 
 This isolates whether any change in the coord coefficient comes from:
 
-- losing two countries, or
+- moving from the broader coord sample to the exact joint-modulator intersection, or
 - adding `ud` and the three-way term to the model
 
 Outputs:
@@ -241,7 +263,7 @@ Outputs:
 uv run python code/secondary/17_wiod_common_sample_robustness.py
 ```
 
-This estimates `Eq. 1`, `Eq. 2 coord`, `Eq. 2 ud`, and `Eq. 2b` on the exact same 21-country sample.
+This estimates `Eq. 1`, `Eq. 2 coord`, `Eq. 2 ud`, and `Eq. 2b` on the exact same `coord x ud` intersection sample.
 
 Outputs:
 
@@ -259,6 +281,11 @@ Their current documentation and retained outputs live under:
 - `results/exploration/wiod_feasibility/`
 
 These scripts are not part of the main thesis run sequence. They exist to document how the branch evolved and to preserve the feasibility evidence behind the WIOD pivot.
+
+The exploration layer also carries the broader Europe-candidate audit that distinguishes:
+
+- raw-country availability in the downloaded sources
+- regression-usable countries in the active WIOD workflow
 
 ## Legacy KLEMS Workflow (was replaced with WIOD)
 

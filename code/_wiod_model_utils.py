@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -59,6 +60,81 @@ def add_ci_columns(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def is_absorbed_fe_term(term: str) -> bool:
+    return term == "Intercept" or term.startswith("C(entity)") or term.startswith("C(year_int)")
+
+
+def summarise_table_terms(
+    result,
+    *,
+    p_wild_by_term: dict[str, float] | None = None,
+) -> pd.DataFrame:
+    rows: list[dict[str, object]] = []
+    p_wild_by_term = p_wild_by_term or {}
+
+    for term in result.headline.params.index:
+        if is_absorbed_fe_term(term):
+            continue
+
+        row = {
+            "term": term,
+            "coef_country_cluster": float(result.headline.params.get(term, np.nan)),
+            "se_country_cluster": float(result.headline.bse.get(term, np.nan)),
+            "p_country_cluster": float(result.headline.pvalues.get(term, np.nan)),
+            "coef_entity_cluster": float(result.entity_clustered.params.get(term, np.nan)),
+            "se_entity_cluster": float(result.entity_clustered.bse.get(term, np.nan)),
+            "p_entity_cluster": float(result.entity_clustered.pvalues.get(term, np.nan)),
+            "coef_driscoll_kraay": np.nan,
+            "se_driscoll_kraay": np.nan,
+            "p_driscoll_kraay": np.nan,
+            "p_wild_cluster": float(p_wild_by_term.get(term, np.nan)),
+        }
+        if result.driscoll_kraay is not None and term in result.driscoll_kraay.params.index:
+            row["coef_driscoll_kraay"] = float(result.driscoll_kraay.params.get(term, np.nan))
+            row["se_driscoll_kraay"] = float(result.driscoll_kraay.std_errors.get(term, np.nan))
+            row["p_driscoll_kraay"] = float(result.driscoll_kraay.pvalues.get(term, np.nan))
+        rows.append(row)
+
+    return pd.DataFrame(rows)
+
+
+def build_table_metadata(
+    *,
+    prefix: str,
+    title: str,
+    result,
+    stats: dict[str, object],
+    flags: dict[str, object],
+    sample_mode: str,
+    key_terms: list[str],
+) -> dict[str, object]:
+    year_min = stats["year_min"]
+    year_max = stats["year_max"]
+    years = None if year_min is None or year_max is None else f"{year_min}-{year_max}"
+    return {
+        "prefix": prefix,
+        "title": title,
+        "sample_mode": sample_mode,
+        "formula": result.formula,
+        "panel_formula": result.panel_formula,
+        "n_observations": stats["n_obs"],
+        "n_entities": stats["n_entities"],
+        "n_countries": stats["n_countries"],
+        "countries": stats["countries"],
+        "year_min": year_min,
+        "year_max": year_max,
+        "years": years,
+        "r_squared": float(getattr(result.headline, "rsquared", np.nan)),
+        "adj_r_squared": float(getattr(result.headline, "rsquared_adj", np.nan)),
+        "fixed_effects": {
+            "country_industry": True,
+            "year": True,
+        },
+        "key_terms": key_terms,
+        "flags": flags,
+    }
+
+
 def write_model_bundle(
     *,
     prefix: str,
@@ -91,6 +167,27 @@ def write_model_bundle(
     key_df.to_csv(target_dir / f"{prefix}_key_terms.csv", index=False)
 
     stats = sample_stats(result.sample)
+    table_terms = summarise_table_terms(
+        result,
+        p_wild_by_term=key_df.set_index("term")["p_wild_cluster"].to_dict(),
+    )
+    table_terms = add_ci_columns(table_terms)
+    table_terms.to_csv(target_dir / f"{prefix}_table_terms.csv", index=False)
+
+    table_metadata = build_table_metadata(
+        prefix=prefix,
+        title=title,
+        result=result,
+        stats=stats,
+        flags=flags,
+        sample_mode=sample_mode,
+        key_terms=key_terms,
+    )
+    (target_dir / f"{prefix}_table_meta.json").write_text(
+        json.dumps(table_metadata, indent=2),
+        encoding="utf-8",
+    )
+
     write_sample_manifest(result.sample, prefix, sample_mode=sample_mode, out_dir=target_dir)
     write_run_metadata(
         f"{prefix}.py",
@@ -144,7 +241,9 @@ def write_model_bundle(
     (target_dir / f"{prefix}_results.txt").write_text(text, encoding="utf-8")
 
     logger.info(
-        f"{title}: saved key terms to {target_dir / f'{prefix}_key_terms.csv'} "
+        f"{title}: saved key terms to {target_dir / f'{prefix}_key_terms.csv'}, "
+        f"table terms to {target_dir / f'{prefix}_table_terms.csv'}, "
+        f"table metadata to {target_dir / f'{prefix}_table_meta.json'}, "
         f"and results to {target_dir / f'{prefix}_results.txt'}"
     )
     return key_df

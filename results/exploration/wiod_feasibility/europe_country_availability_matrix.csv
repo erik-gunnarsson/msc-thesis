@@ -1,0 +1,34 @@
+country_code,has_wiod_sea,has_ifr_raw,has_ifr_lagged,has_ictwss_coord,has_ictwss_ud,has_ictwss_adjcov,has_gdp,in_raw_wiod_panel,in_eq1,in_eq2_coord,in_eq2_ud,in_eq2_adjcov,in_eq2b,primary_blocker,secondary_blockers
+AT,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+BE,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+BG,Y,Y,Y,Y,N,N,Y,Y,Y,Y,N,N,N,regression_ready,"missing_ud_baseline, missing_adjcov_baseline"
+CH,Y,Y,N,Y,Y,Y,Y,Y,N,N,N,N,N,no_lagged_robot_support,
+CY,Y,N,N,Y,Y,Y,Y,N,N,N,N,N,N,missing_ifr_extract,
+CZ,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+DE,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+DK,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+EE,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+EL,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+ES,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+FI,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+FR,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+HR,Y,N,N,Y,Y,N,Y,N,N,N,N,N,N,missing_ifr_extract,missing_adjcov_baseline
+HU,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+IC,N,Y,N,Y,Y,Y,Y,N,N,N,N,N,N,missing_wiod_sea,no_lagged_robot_support
+IE,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+IT,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+LT,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+LU,Y,N,N,Y,Y,Y,Y,N,N,N,N,N,N,missing_ifr_extract,
+LV,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+MT,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+NL,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+NO,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+PL,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+PT,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+RO,Y,Y,Y,N,N,N,Y,Y,Y,N,N,N,N,missing_coord_baseline,"missing_ud_baseline, missing_adjcov_baseline"
+RU,Y,N,N,N,N,N,N,N,N,N,N,N,N,missing_ifr_extract,"missing_gdp, missing_coord_baseline, missing_ud_baseline, missing_adjcov_baseline"
+SE,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,
+SI,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,N,regression_ready,missing_ud_baseline
+SK,Y,Y,Y,Y,Y,N,Y,Y,Y,Y,Y,N,Y,regression_ready,missing_adjcov_baseline
+TR,Y,N,N,Y,Y,Y,Y,N,N,N,N,N,N,missing_ifr_extract,
+UK,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y,regression_ready,

@@ -1,8 +1,8 @@
 Sample manifest: wiod_eq1_baseline_k
-Generated: 2026-03-26T21:18:51.003274+00:00
+Generated: 2026-04-01T11:34:17.220367+00:00
 Sample mode: full
 ========================================================
-Observations: 2283
-Entities: 236
-Countries (24): AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK
+Observations: 2571
+Entities: 257
+Countries (26): AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK
 Years: 2001-2014

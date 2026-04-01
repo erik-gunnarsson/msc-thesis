@@ -1,6 +1,6 @@
 scenario,view,countries,entities,observations,years,dropped_countries
-A_ifr_wiod,raw_ifr_compare,24,508,7620,2000-2014,"CY, HR, LU"
-B_ud,raw_ifr_compare,21,442,6630,2000-2014,"BG, CY, HR, LU, RO, SI"
-B_coord,raw_ifr_compare,23,486,7290,2000-2014,"CY, HR, LU, RO"
-B_both,raw_ifr_compare,21,442,6630,2000-2014,"BG, CY, HR, LU, RO, SI"
-C_adjcov,raw_ifr_compare,14,289,4335,2000-2014,"BG, CY, CZ, EE, ES, HR, HU, LT, LU, LV, PL, RO, SK"
+A_ifr_wiod,raw_ifr_compare,26,549,8235,2000-2014,"CH, CY, HR, IC, LU, RU, TR"
+B_ud,raw_ifr_compare,23,483,7245,2000-2014,"BG, CH, CY, HR, IC, LU, RO, RU, SI, TR"
+B_coord,raw_ifr_compare,25,527,7905,2000-2014,"CH, CY, HR, IC, LU, RO, RU, TR"
+B_both,raw_ifr_compare,23,483,7245,2000-2014,"BG, CH, CY, HR, IC, LU, RO, RU, SI, TR"
+C_adjcov,raw_ifr_compare,15,311,4665,2000-2014,"BG, CH, CY, CZ, EE, ES, HR, HU, IC, LT, LU, LV, NO, PL, RO, RU, SK, TR"

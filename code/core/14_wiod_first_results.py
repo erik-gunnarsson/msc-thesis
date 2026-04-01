@@ -134,7 +134,9 @@ def parse_args() -> argparse.Namespace:
 def artifact_prefix(name: str) -> str | None:
     patterns = [
         (r"^(?P<prefix>.+)_key_terms\.csv$", "prefix"),
+        (r"^(?P<prefix>.+)_table_terms\.csv$", "prefix"),
         (r"^(?P<prefix>.+)_results\.txt$", "prefix"),
+        (r"^(?P<prefix>.+)_table_meta\.json$", "prefix"),
         (r"^sample_manifest_(?P<prefix>.+)\.txt$", "prefix"),
         (r"^run_metadata_(?P<prefix>.+)\.json$", "prefix"),
     ]

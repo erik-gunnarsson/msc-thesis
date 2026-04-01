@@ -9,34 +9,33 @@ DATA SOURCES REQUIRED:
   - ICTWSS (ud, coord, adjcov): AVAILABLE
   - Eurostat GDP: AVAILABLE
 
-SEA COVERAGE: 27 countries have complete VA+CAP for all manufacturing industries across 2000-2014.
-BASE PANEL: 24 countries, 236 entities, 2283 obs, 2001-2014
+SEA COVERAGE: 32 countries have complete VA+CAP for all manufacturing industries across 2000-2014.
+BASE PANEL: 26 countries, 257 entities, 2571 obs, 2001-2014
 
 MAIN MODELS (threshold: >=20 countries):
-  EQ1        PASS — 24 countries, 2283 obs
-  EQ1_GDP    PASS — 24 countries, 2283 obs
-  EQ2_COORD  PASS — 23 countries, 2212 obs
+  EQ1        PASS — 26 countries, 2571 obs
+  EQ1_GDP    PASS — 26 countries, 2571 obs
+  EQ2_COORD  PASS — 25 countries, 2500 obs
 
 RESTRICTED MODELS (threshold: >=14 countries):
-  EQ2_ADJCOV PASS — 14 countries, 1535 obs
+  EQ2_ADJCOV PASS — 15 countries, 1685 obs
 
 REFERENCE BENCHMARKS:
-  EQ2_UD     PASS — 21 countries, 2068 obs
+  EQ2_UD     PASS — 23 countries, 2356 obs
 
 ROBUSTNESS CHECKS:
-  ROB_COMMON_COORD PASS — 14 countries, 1535 obs
-  ROB_COORD_BIN   PASS — 23 countries, 2212 obs
-  ROB_TIMEVAR_COORD PASS — 24 countries, 2283 obs
-  ROB_COMMON_UD   FAIL — 13 countries, 1444 obs
-  ROB_TIMEVAR_UD  PASS — 23 countries, 1933 obs
-  ROB_BALANCED    FAIL — 7 countries, 952 obs
-  ROB_PRECRISIS   PASS — 24 countries, 743 obs
-  ROB_POSTCRISIS  PASS — 24 countries, 1540 obs
-  ROB_NO_CONTROLS PASS — 24 countries, 2283 obs
+  ROB_COMMON_COORD PASS — 15 countries, 1685 obs
+  ROB_COORD_BIN   PASS — 25 countries, 2500 obs
+  ROB_TIMEVAR_COORD PASS — 26 countries, 2571 obs
+  ROB_COMMON_UD   PASS — 14 countries, 1594 obs
+  ROB_TIMEVAR_UD  PASS — 25 countries, 2221 obs
+  ROB_BALANCED    FAIL — 9 countries, 1218 obs
+  ROB_PRECRISIS   PASS — 26 countries, 884 obs
+  ROB_POSTCRISIS  PASS — 26 countries, 1687 obs
+  ROB_NO_CONTROLS PASS — 26 countries, 2571 obs
 
 OVERALL VERDICT: CONDITIONALLY READY
   - Main and restricted models pass, but remaining constraints are:
-    ROB_COMMON_UD: 13 countries (<14)
-    ROB_BALANCED: 7 countries (<20)
-    Unemployment control infeasible: 101 missing country-years out of 255 (39.6% missing)
+    ROB_BALANCED: 9 countries (<20)
+    Unemployment control infeasible: 123 missing country-years out of 283 (43.5% missing)
 ============================================================

@@ -1,3 +1,3 @@
 model,description,n_countries,n_entities,n_observations,countries_list
-EQ1_KLEMS,WIOD exports + KLEMS ln_va and ln_cap,13,125,1381,"AT, BE, CZ, DE, DK, EL, ES, FI, FR, IT, LV, NL, SK"
-EQ2_UD_KLEMS,WIOD exports + KLEMS ln_va and ln_cap + ud_pre,13,125,1381,"AT, BE, CZ, DE, DK, EL, ES, FI, FR, IT, LV, NL, SK"
+EQ1_KLEMS,WIOD exports + KLEMS ln_va and ln_cap,14,136,1531,"AT, BE, CZ, DE, DK, EL, ES, FI, FR, IT, LV, NL, SK, UK"
+EQ2_UD_KLEMS,WIOD exports + KLEMS ln_va and ln_cap + ud_pre,14,136,1531,"AT, BE, CZ, DE, DK, EL, ES, FI, FR, IT, LV, NL, SK, UK"

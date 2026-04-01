@@ -8,8 +8,8 @@ import pandas as pd
 
 from _common import (
     DATA_DIR,
-    EU27_ISO2,
-    EU27_ISO3,
+    EUROPE_CANDIDATE_ISO2,
+    EUROPE_CANDIDATE_ISO3,
     ISO3_TO_ISO2,
     OUTPUT_DIR,
     WIOD_TO_NACE,
@@ -65,6 +65,7 @@ EUROSTAT_GEO_TO_ISO2 = {
     "Germany": "DE",
     "Greece": "EL",
     "Hungary": "HU",
+    "Iceland": "IC",
     "Ireland": "IE",
     "Italy": "IT",
     "Latvia": "LV",
@@ -72,6 +73,7 @@ EUROSTAT_GEO_TO_ISO2 = {
     "Luxembourg": "LU",
     "Malta": "MT",
     "Netherlands": "NL",
+    "Norway": "NO",
     "Poland": "PL",
     "Portugal": "PT",
     "Romania": "RO",
@@ -79,6 +81,8 @@ EUROSTAT_GEO_TO_ISO2 = {
     "Slovenia": "SI",
     "Spain": "ES",
     "Sweden": "SE",
+    "Switzerland": "CH",
+    "Türkiye": "TR",
     "United Kingdom": "UK",
 }
 
@@ -152,7 +156,7 @@ def load_sea_long() -> pd.DataFrame:
         raise RuntimeError(f"Unexpected SEA columns in {SEA_PATH}")
 
     df = df[
-        df["country"].isin(EU27_ISO3)
+        df["country"].isin(EUROPE_CANDIDATE_ISO3)
         & df["code"].isin(SEA_MANUFACTURING_CODES)
         & df["variable"].isin(SEA_VARIABLES)
     ].copy()
@@ -172,7 +176,7 @@ def load_sea_long() -> pd.DataFrame:
 
 def build_sea_outputs(sea_long: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, object]]:
     full_grid = pd.MultiIndex.from_product(
-        [sorted(EU27_ISO2), SEA_YEAR_COLUMNS],
+        [sorted(EUROPE_CANDIDATE_ISO2), SEA_YEAR_COLUMNS],
         names=["country_code", "year"],
     ).to_frame(index=False)
 
@@ -275,7 +279,7 @@ def load_gdp_growth() -> pd.DataFrame:
     gdp["year"] = pd.to_numeric(gdp["TIME_PERIOD"], errors="coerce")
     gdp["gdp"] = pd.to_numeric(gdp["OBS_VALUE"], errors="coerce")
     gdp = gdp[["country_code", "year", "gdp"]].dropna(subset=["country_code", "year"])
-    gdp = gdp[gdp["country_code"].isin(EU27_ISO2)].copy()
+    gdp = gdp[gdp["country_code"].isin(EUROPE_CANDIDATE_ISO2)].copy()
     gdp = gdp.groupby(["country_code", "year"], as_index=False)["gdp"].first()
     gdp = gdp.sort_values(["country_code", "year"]).reset_index(drop=True)
     gdp["gdp_growth"] = gdp.groupby("country_code")["gdp"].transform(
@@ -294,7 +298,7 @@ def load_unemployment() -> pd.DataFrame:
     une["year"] = pd.to_numeric(une["TIME_PERIOD"], errors="coerce")
     une["unemployment"] = pd.to_numeric(une["OBS_VALUE"], errors="coerce")
     une = une[["country_code", "year", "unemployment"]].dropna(subset=["country_code", "year"])
-    une = une[une["country_code"].isin(EU27_ISO2)].copy()
+    une = une[une["country_code"].isin(EUROPE_CANDIDATE_ISO2)].copy()
     une = une.groupby(["country_code", "year"], as_index=False)["unemployment"].first()
     return une
 
@@ -306,7 +310,7 @@ def load_timevarying_ictwss() -> pd.DataFrame:
 
     df = pd.read_csv(path)
     df["country_code"] = df["iso3"].map(ISO3_TO_ISO2)
-    df = df[df["country_code"].isin(EU27_ISO2)].copy()
+    df = df[df["country_code"].isin(EUROPE_CANDIDATE_ISO2)].copy()
     df["year"] = pd.to_numeric(df["year"], errors="coerce")
     for src, dst in [("UD", "ud"), ("Coord", "coord"), ("AdjCov", "adjcov")]:
         df[dst] = pd.to_numeric(df[src], errors="coerce")
@@ -324,7 +328,7 @@ def load_klems_controls() -> pd.DataFrame:
     klems["value"] = pd.to_numeric(klems["value"], errors="coerce")
     klems = klems[klems["var"].isin(["VA_PYP", "CAP_QI"])].copy()
     klems["country_code"] = klems["geo_code"]
-    klems = klems[klems["country_code"].isin(set(EU27_ISO2) | {"EL"})]
+    klems = klems[klems["country_code"].isin(set(EUROPE_CANDIDATE_ISO2) | {"EL"})]
     wide = (
         klems.pivot_table(
             index=["country_code", "nace_r2_code", "year"],

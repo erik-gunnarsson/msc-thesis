@@ -3,8 +3,8 @@ Diagnostic re-estimation of WIOD Eq. 2 coordination moderation on the exact
 Eq. 2b sample.
 
 Purpose:
-  - isolate the sample effect from moving from the 23-country coord model to
-    the 21-country coord x ud intersection sample
+  - isolate the sample effect from moving from the full coord model to
+    the coord x ud intersection sample
   - compare that sample effect to the additional attenuation that happens when
     ud and the three-way term are added in Eq. 2b
 
@@ -54,26 +54,16 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
-
-def expected_eq2b_support() -> dict[str, int]:
-    return {
-        "n_countries": 21,
-        "n_entities": 206,
-        "n_observations": 2068,
-    }
-
-
 def check_sample_integrity(sample: pd.DataFrame) -> None:
-    support = {
-        "n_countries": int(sample["country_code"].nunique()),
-        "n_entities": int(sample["entity"].nunique()),
-        "n_observations": int(len(sample)),
-    }
-    expected = expected_eq2b_support()
-    if support != expected:
+    if sample.empty:
+        raise RuntimeError("Exact Eq. 2b sample integrity check failed: sample is empty.")
+    if sample.duplicated(subset=["entity", "year_int"]).any():
+        raise RuntimeError("Exact Eq. 2b sample integrity check failed: duplicate entity-year rows detected.")
+    years = f"{int(sample['year_int'].min())}-{int(sample['year_int'].max())}"
+    if years != "2001-2014":
         raise RuntimeError(
-            "Exact Eq. 2b sample integrity check failed. "
-            f"Expected {expected}, got {support}."
+            "Exact Eq. 2b sample integrity check failed: "
+            f"expected 2001-2014 support after lagging, got {years}."
         )
 
 
@@ -139,7 +129,10 @@ def build_decomposition_table(
         {
             "review_order": 1,
             "comparison_id": "EQ2_COORD_FULL",
-            "title": "WIOD Eq. 2 coordination moderation (23-country full sample)",
+            "title": (
+                "WIOD Eq. 2 coordination moderation "
+                f"({int(eq2_coord_full_row['n_countries'])}-country full sample)"
+            ),
             "term": "ln_robots_lag1:coord_pre_c",
             "n_countries": int(eq2_coord_full_row["n_countries"]),
             "n_entities": int(eq2_coord_full_row["n_entities"]),
@@ -233,7 +226,7 @@ def write_comparison_markdown(comparison: pd.DataFrame, interpretation: str) -> 
     lines = [
         "# WIOD Eq. 2 Coordination Sample Decomposition",
         "",
-        "This diagnostic isolates whether the coordination attenuation in Eq. 2b is mainly due to losing two countries or due to adding union density and the three-way term on the same rows.",
+        "This diagnostic isolates whether the coordination attenuation in Eq. 2b is mainly due to moving from the broader coord sample to the exact joint-modulator intersection or due to adding union density and the three-way term on the same rows.",
         "",
         f"Interpretation: **{interpretation}**",
         "",
@@ -319,7 +312,8 @@ def main() -> None:
         raise RuntimeError(
             f"Missing ln_robots_lag1:coord_pre_c in {RESULTS_SECONDARY_DIR / f'{prefix}_key_terms.csv'}"
         )
-    eq2b_coord = load_eq2b_coord_term("exploratory_wiod_eq2b_coord_ud_full_k_continuous")
+    eq2b_prefix = f"exploratory_wiod_eq2b_coord_ud_full_{args.capital_proxy}_continuous"
+    eq2b_coord = load_eq2b_coord_term(eq2b_prefix)
     comparison = build_decomposition_table(
         eq2_coord_full_row=eq2_coord_full_row,
         eq2_coord_intersection_row=eq2_coord_intersection.iloc[0],

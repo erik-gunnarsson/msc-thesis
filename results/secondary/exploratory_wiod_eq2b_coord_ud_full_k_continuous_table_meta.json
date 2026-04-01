@@ -1,0 +1,61 @@
+{
+  "prefix": "exploratory_wiod_eq2b_coord_ud_full_k_continuous",
+  "title": "WIOD Eq. 2b joint coord x ud moderation (exploratory Hawk-Dove extension)",
+  "sample_mode": "full",
+  "formula": "ln_h_empe ~ ln_robots_lag1 + ln_robots_lag1:coord_pre_c + ln_robots_lag1:ud_pre_c + ln_robots_lag1:coord_pre_c:ud_pre_c + ln_va_wiod_qi + ln_k_wiod + gdp_growth + C(entity) + C(year_int)",
+  "panel_formula": "ln_h_empe ~ ln_robots_lag1 + ln_robots_lag1:coord_pre_c + ln_robots_lag1:ud_pre_c + ln_robots_lag1:coord_pre_c:ud_pre_c + ln_va_wiod_qi + ln_k_wiod + gdp_growth + EntityEffects + TimeEffects",
+  "n_observations": 2356,
+  "n_entities": 227,
+  "n_countries": 23,
+  "countries": [
+    "AT",
+    "BE",
+    "CZ",
+    "DE",
+    "DK",
+    "EE",
+    "EL",
+    "ES",
+    "FI",
+    "FR",
+    "HU",
+    "IE",
+    "IT",
+    "LT",
+    "LV",
+    "MT",
+    "NL",
+    "NO",
+    "PL",
+    "PT",
+    "SE",
+    "SK",
+    "UK"
+  ],
+  "year_min": 2001,
+  "year_max": 2014,
+  "years": "2001-2014",
+  "r_squared": 0.9968713186291669,
+  "adj_r_squared": 0.9965063799770925,
+  "fixed_effects": {
+    "country_industry": true,
+    "year": true
+  },
+  "key_terms": [
+    "ln_robots_lag1",
+    "ln_robots_lag1:coord_pre_c",
+    "ln_robots_lag1:ud_pre_c",
+    "ln_robots_lag1:coord_pre_c:ud_pre_c"
+  ],
+  "flags": {
+    "capital_proxy": "k",
+    "include_gdp": true,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 199,
+    "equation": "eq2b_hawk_dove"
+  }
+}

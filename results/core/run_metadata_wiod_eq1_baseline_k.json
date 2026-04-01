@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-26T21:18:51.028503+00:00",
-  "git_commit": "1cc26039b8833d97d12ff4b35270108009976d30",
+  "timestamp": "2026-04-01T11:34:17.242104+00:00",
+  "git_commit": "69832d0349bf484df8cc5743a4b65dca9e837559",
   "script": "wiod_eq1_baseline_k.py",
   "flags": {
     "capital_proxy": "k",
@@ -12,6 +12,6 @@
     ],
     "wild_cluster_bootstrap_reps": 199
   },
-  "n_obs": 2283,
-  "n_entities": 236
+  "n_obs": 2571,
+  "n_entities": 257
 }
