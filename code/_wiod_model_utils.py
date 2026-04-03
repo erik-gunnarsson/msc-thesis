@@ -145,8 +145,9 @@ def write_model_bundle(
     bootstrap_terms: list[str] | None = None,
     flags: dict[str, object],
     sample_mode: str = "full",
-    bootstrap_reps: int = 199,
+    bootstrap_reps: int = 999,
     bootstrap_seed: int = 123,
+    bootstrap_show_progress: bool = True,
     extra_lines: list[str] | None = None,
     out_dir: Path | None = None,
 ) -> pd.DataFrame:
@@ -162,6 +163,7 @@ def write_model_bundle(
         restricted_formulas=restricted,
         bootstrap_reps=bootstrap_reps,
         bootstrap_seed=bootstrap_seed,
+        bootstrap_show_progress=bootstrap_show_progress,
     )
     key_df = add_ci_columns(key_df)
     key_df.to_csv(target_dir / f"{prefix}_key_terms.csv", index=False)

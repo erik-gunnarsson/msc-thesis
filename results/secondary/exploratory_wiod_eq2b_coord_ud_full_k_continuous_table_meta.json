@@ -55,7 +55,7 @@
       "entity_cluster",
       "driscoll_kraay"
     ],
-    "wild_cluster_bootstrap_reps": 199,
+    "wild_cluster_bootstrap_reps": 999,
     "equation": "eq2b_hawk_dove"
   }
 }

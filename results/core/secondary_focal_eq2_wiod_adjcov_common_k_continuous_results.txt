@@ -22,7 +22,7 @@ Dep. Variable:              ln_h_empe   R-squared:                       0.998
 Model:                            OLS   Adj. R-squared:                  0.997
 Method:                 Least Squares   F-statistic:                 1.100e+04
 Date:                Wed, 01 Apr 2026   Prob (F-statistic):           8.80e-26
-Time:                        13:35:00   Log-Likelihood:                 1977.3
+Time:                        14:38:53   Log-Likelihood:                 1977.3
 No. Observations:                1685   AIC:                            -3613.
 Df Residuals:                    1514   BIC:                            -2684.
 Df Model:                         170                                         
@@ -215,8 +215,8 @@ strong multicollinearity or other numerical problems.
 
 Key terms (country cluster, entity cluster, DK, wild cluster bootstrap)
                        term  coef_country_cluster  se_country_cluster  p_country_cluster  coef_entity_cluster  se_entity_cluster  p_entity_cluster  coef_driscoll_kraay  se_driscoll_kraay  p_driscoll_kraay  p_wild_cluster  ci95_low_country_cluster  ci95_high_country_cluster
-             ln_robots_lag1              0.008401            0.011373           0.460087             0.008401           0.008381          0.316118             0.008401           0.003703          0.023423        0.482412                 -0.013890                   0.030693
-ln_robots_lag1:adjcov_pre_c              0.000262            0.000408           0.520760             0.000262           0.000439          0.551516             0.000262           0.000206          0.203772        0.512563                 -0.000537                   0.001060
+             ln_robots_lag1              0.008401            0.011373           0.460087             0.008401           0.008381          0.316118             0.008401           0.003703          0.023423        0.459459                 -0.013890                   0.030693
+ln_robots_lag1:adjcov_pre_c              0.000262            0.000408           0.520760             0.000262           0.000439          0.551516             0.000262           0.000206          0.203772        0.508509                 -0.000537                   0.001060
 
 Driscoll-Kraay comparison
                           PanelOLS Estimation Summary                           
@@ -225,7 +225,7 @@ Dep. Variable:              ln_h_empe   R-squared:                        0.3289
 Estimator:                   PanelOLS   R-squared (Between):              0.8889
 No. Observations:                1685   R-squared (Within):               0.0477
 Date:                Wed, Apr 01 2026   R-squared (Overall):              0.8868
-Time:                        13:34:48   Log-likelihood                    1977.3
+Time:                        14:38:09   Log-likelihood                    1977.3
 Cov. Estimator:        Driscoll-Kraay                                           
                                         F-statistic:                      148.39
 Entities:                         153   P-value                           0.0000
@@ -262,7 +262,7 @@ Dep. Variable:              ln_h_empe   R-squared:                       0.998
 Model:                            OLS   Adj. R-squared:                  0.997
 Method:                 Least Squares   F-statistic:                     5452.
 Date:                Wed, 01 Apr 2026   Prob (F-statistic):          1.05e-203
-Time:                        13:35:00   Log-Likelihood:                 1977.3
+Time:                        14:38:53   Log-Likelihood:                 1977.3
 No. Observations:                1685   AIC:                            -3613.
 Df Residuals:                    1514   BIC:                            -2684.
 Df Model:                         170                                         

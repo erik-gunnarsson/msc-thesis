@@ -11,6 +11,7 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from loguru import logger
+from tqdm import tqdm
 
 try:
     from linearmodels import PanelOLS
@@ -537,6 +538,7 @@ def wild_cluster_bootstrap_pvalue(
     reps: int = 99,
     seed: int = 123,
     cluster_col: str = "country_code",
+    show_progress: bool = True,
 ) -> float:
     unrestricted = smf.ols(formula, data=df).fit()
     restricted = smf.ols(restricted_formula, data=df).fit()
@@ -554,7 +556,15 @@ def wild_cluster_bootstrap_pvalue(
     rng = np.random.default_rng(seed)
 
     boot_hits = 0
-    for _ in range(reps):
+    iterator: range | tqdm = range(reps)
+    if show_progress and reps > 0:
+        iterator = tqdm(
+            iterator,
+            desc=f"Wild bootstrap [{target_param}]",
+            unit="rep",
+            leave=False,
+        )
+    for _ in iterator:
         weights = {cluster: rng.choice([-1.0, 1.0]) for cluster in unique_clusters}
         w = clusters.map(weights).to_numpy()
         y_star = restricted.fittedvalues + restricted.resid * w
@@ -575,6 +585,7 @@ def summarise_key_terms(
     restricted_formulas: dict[str, str] | None = None,
     bootstrap_reps: int = 99,
     bootstrap_seed: int = 123,
+    bootstrap_show_progress: bool = True,
 ) -> pd.DataFrame:
     rows: list[dict[str, object]] = []
     restricted_formulas = restricted_formulas or {}
@@ -607,6 +618,7 @@ def summarise_key_terms(
                 target_param=term,
                 reps=bootstrap_reps,
                 seed=bootstrap_seed + idx,
+                show_progress=bootstrap_show_progress,
             )
         rows.append(row)
 

@@ -47,8 +47,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--bootstrap-reps",
         type=int,
-        default=199,
+        default=999,
         help="Wild cluster bootstrap repetitions for the key robot coefficient.",
+    )
+    parser.add_argument(
+        "--no-bootstrap-progress",
+        action="store_true",
+        help="Disable tqdm progress bars during wild cluster bootstrap.",
     )
     return parser.parse_args()
 
@@ -87,6 +92,7 @@ def main() -> None:
         },
         sample_mode="full",
         bootstrap_reps=args.bootstrap_reps,
+        bootstrap_show_progress=not args.no_bootstrap_progress,
         out_dir=RESULTS_CORE_DIR,
         extra_lines=[
             "Outcome: ln_h_empe (WIOD H_EMPE labour-hours proxy)",

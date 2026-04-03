@@ -53,7 +53,7 @@
       "entity_cluster",
       "driscoll_kraay"
     ],
-    "wild_cluster_bootstrap_reps": 199,
+    "wild_cluster_bootstrap_reps": 999,
     "diagnostic": "eq2_coord_on_eq2b_sample"
   }
 }

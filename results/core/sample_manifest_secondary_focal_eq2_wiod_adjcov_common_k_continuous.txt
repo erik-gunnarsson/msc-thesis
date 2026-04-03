@@ -1,5 +1,5 @@
 Sample manifest: secondary_focal_eq2_wiod_adjcov_common_k_continuous
-Generated: 2026-04-01T11:35:00.014265+00:00
+Generated: 2026-04-01T12:38:53.041828+00:00
 Sample mode: common
 ========================================================
 Observations: 1685

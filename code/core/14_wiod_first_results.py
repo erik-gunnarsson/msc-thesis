@@ -120,13 +120,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--bootstrap-reps",
         type=int,
-        default=199,
+        default=999,
         help="Shared wild cluster bootstrap repetitions for the first-results package.",
     )
     parser.add_argument(
         "--skip-archive",
         action="store_true",
         help="Do not archive stale WIOD-only outputs before regenerating the first-results bundle.",
+    )
+    parser.add_argument(
+        "--no-bootstrap-progress",
+        action="store_true",
+        help="Disable tqdm progress bars during wild cluster bootstrap (passed to child model scripts).",
     )
     return parser.parse_args()
 
@@ -195,10 +200,19 @@ def archive_stale_wiod_outputs(keep_prefixes: set[str]) -> list[str]:
     return moved
 
 
-def run_script(script: str, cli_args: tuple[str, ...], *, capital_proxy: str, bootstrap_reps: int) -> None:
+def run_script(
+    script: str,
+    cli_args: tuple[str, ...],
+    *,
+    capital_proxy: str,
+    bootstrap_reps: int,
+    bootstrap_progress: bool,
+) -> None:
     cmd = [sys.executable, str(SCRIPT_DIR / script), *cli_args]
     if script != "09_build_wiod_panel.py":
         cmd.extend(["--capital-proxy", capital_proxy, "--bootstrap-reps", str(bootstrap_reps)])
+        if not bootstrap_progress:
+            cmd.append("--no-bootstrap-progress")
     logger.info("Running " + " ".join(cmd[1:]))
     subprocess.run(cmd, check=True, cwd=str(PROJECT_ROOT))
 
@@ -323,13 +337,20 @@ def main() -> None:
     keep_prefixes = {spec.prefix(args.capital_proxy) for spec in MODEL_SPECS}
     archived = [] if args.skip_archive else archive_stale_wiod_outputs(keep_prefixes)
 
-    run_script("09_build_wiod_panel.py", (), capital_proxy=args.capital_proxy, bootstrap_reps=args.bootstrap_reps)
+    run_script(
+        "09_build_wiod_panel.py",
+        (),
+        capital_proxy=args.capital_proxy,
+        bootstrap_reps=args.bootstrap_reps,
+        bootstrap_progress=not args.no_bootstrap_progress,
+    )
     for spec in MODEL_SPECS:
         run_script(
             spec.script,
             spec.cli_args,
             capital_proxy=args.capital_proxy,
             bootstrap_reps=args.bootstrap_reps,
+            bootstrap_progress=not args.no_bootstrap_progress,
         )
 
     rows = [collect_model_row(spec, capital_proxy=args.capital_proxy) for spec in MODEL_SPECS]

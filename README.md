@@ -70,6 +70,8 @@ The active WIOD design uses:
 - country-clustered headline inference
 - wild cluster bootstrap p-values for the key interaction terms
 
+Wild cluster bootstrap uses **999** repetitions by default (`--bootstrap-reps` on each model script). While bootstrap runs, **tqdm** shows a progress bar per focal coefficient with elapsed time and rate estimates. Pass `--no-bootstrap-progress` on the model scripts or on `code/core/14_wiod_first_results.py` (which forwards the flag to child scripts) to suppress bars, for example in CI logs.
+
 ### Eq. 1
 
 ```text
@@ -149,7 +151,8 @@ The institutional moderators are country-level and baseline-frozen. Their standa
 │   │   ├── 09_build_wiod_panel.py
 │   │   ├── 10_wiod_baseline.py
 │   │   ├── 11_wiod_institution_moderation.py
-│   │   └── 14_wiod_first_results.py
+│   │   ├── 14_wiod_first_results.py
+│   │   └── 18_wiod_academic_tables.py
 │   ├── secondary/
 │   │   ├── 15_wiod_eq2b_hawk_dove.py
 │   │   ├── 16_wiod_eq2_coord_on_eq2b_sample.py
@@ -201,6 +204,8 @@ This writes:
 uv run python code/core/14_wiod_first_results.py
 ```
 
+Default wild bootstrap size is **999** repetitions; override with `--bootstrap-reps N` if needed. Use `--no-bootstrap-progress` to disable tqdm bars during bootstrap (forwarded to `10_wiod_baseline.py` and `11_wiod_institution_moderation.py`).
+
 This coordinated run executes:
 
 - `Eq. 1` baseline
@@ -224,12 +229,25 @@ Current first-results support after the Europe-candidate expansion:
 - `Eq. 2 adjcov`: 15 countries, 153 entities, 1685 observations
 - `Eq. 2 ud`: 23 countries, 227 entities, 2356 observations
 
+### 2b. Build the Combined Regression Table (optional)
+
+After the first-results bundle (and after step 3 if you need the Eq. 2b column), regenerate thesis-facing tables from the saved `*_key_terms.csv` artifacts:
+
+```bash
+uv run python code/core/18_wiod_academic_tables.py
+uv run python code/core/18_wiod_academic_tables.py --star-source cluster
+```
+
+The second command writes the `*_clusterstars` variants (stars from country-clustered p-values). These scripts do not re-estimate models.
+
 ### 3. Run the Exploratory Eq. 2b Extension
 
 ```bash
 uv run python code/exploration/wiod_feasibility/05_wiod_eq2b_hawk_dove_gate.py
 uv run python code/secondary/15_wiod_eq2b_hawk_dove.py
 ```
+
+The Eq. 2b estimation uses the same bootstrap defaults as the core scripts: **999** repetitions; pass `--no-bootstrap-progress` to disable tqdm during wild bootstrap.
 
 This writes:
 
@@ -247,6 +265,8 @@ This writes:
 uv run python code/secondary/16_wiod_eq2_coord_on_eq2b_sample.py
 ```
 
+Supports `--bootstrap-reps` (default **999**) and `--no-bootstrap-progress`.
+
 This isolates whether any change in the coord coefficient comes from:
 
 - moving from the broader coord sample to the exact joint-modulator intersection, or
@@ -262,6 +282,8 @@ Outputs:
 ```bash
 uv run python code/secondary/17_wiod_common_sample_robustness.py
 ```
+
+Supports `--bootstrap-reps` (default **999**) and `--no-bootstrap-progress`.
 
 This estimates `Eq. 1`, `Eq. 2 coord`, `Eq. 2 ud`, and `Eq. 2b` on the exact same `coord x ud` intersection sample.
 

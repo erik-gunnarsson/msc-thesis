@@ -49,8 +49,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--bootstrap-reps",
         type=int,
-        default=199,
+        default=999,
         help="Wild cluster bootstrap repetitions for focal terms.",
+    )
+    parser.add_argument(
+        "--no-bootstrap-progress",
+        action="store_true",
+        help="Disable tqdm progress bars during wild cluster bootstrap.",
     )
     return parser.parse_args()
 
@@ -79,6 +84,7 @@ def run_spec(
     rhs_terms: list[str],
     focal_terms: list[tuple[str, str]],
     bootstrap_reps: int,
+    bootstrap_show_progress: bool = True,
 ) -> list[dict[str, object]]:
     result = fit_all_inference(sample, outcome="ln_h_empe", rhs_terms=rhs_terms)
     key_terms = [term for term, _ in focal_terms]
@@ -87,6 +93,7 @@ def run_spec(
         key_terms=key_terms,
         restricted_formulas=restricted_formulas(rhs_terms, key_terms),
         bootstrap_reps=bootstrap_reps,
+        bootstrap_show_progress=bootstrap_show_progress,
     )
     support = sample_support(sample)
     rows: list[dict[str, object]] = []
@@ -139,6 +146,7 @@ def main() -> None:
             rhs_terms=["ln_robots_lag1"] + controls,
             focal_terms=[("ln_robots_lag1", "Eq. 1 robot coefficient")],
             bootstrap_reps=args.bootstrap_reps,
+            bootstrap_show_progress=not args.no_bootstrap_progress,
         )
     )
     rows.extend(
@@ -149,6 +157,7 @@ def main() -> None:
             rhs_terms=["ln_robots_lag1", "ln_robots_lag1:coord_pre_c"] + controls,
             focal_terms=[("ln_robots_lag1:coord_pre_c", "Eq. 2 coord interaction")],
             bootstrap_reps=args.bootstrap_reps,
+            bootstrap_show_progress=not args.no_bootstrap_progress,
         )
     )
     rows.extend(
@@ -159,6 +168,7 @@ def main() -> None:
             rhs_terms=["ln_robots_lag1", "ln_robots_lag1:ud_pre_c"] + controls,
             focal_terms=[("ln_robots_lag1:ud_pre_c", "Eq. 2 ud interaction")],
             bootstrap_reps=args.bootstrap_reps,
+            bootstrap_show_progress=not args.no_bootstrap_progress,
         )
     )
     rows.extend(
@@ -179,6 +189,7 @@ def main() -> None:
                 ("ln_robots_lag1:coord_pre_c:ud_pre_c", "Eq. 2b Hawk-Dove three-way"),
             ],
             bootstrap_reps=args.bootstrap_reps,
+            bootstrap_show_progress=not args.no_bootstrap_progress,
         )
     )
 
