@@ -1,0 +1,23 @@
+display_order,row_group,row_type,row_key,row_label,Eq. 1,Eq. 2 coord,Eq. 2 adjcov,Eq. 2 ud,Eq. 2b
+1,coefficients,coef,ln_robots_lag1,Log robot intensity (lagged),0.0096,0.0046,0.0084,0.0079,0.0043
+2,coefficients,se,ln_robots_lag1_se,,(0.0062),(0.0069),(0.0114),(0.0068),(0.0071)
+3,coefficients,coef,ln_robots_lag1_coord,Log robots x bargaining coordination,,0.0124,,,0.0117
+4,coefficients,se,ln_robots_lag1_coord_se,,,(0.0053),,,(0.0080)
+5,coefficients,coef,ln_robots_lag1_adjcov,Log robots x adjusted bargaining coverage,,,0.0003,,
+6,coefficients,se,ln_robots_lag1_adjcov_se,,,,(0.0004),,
+7,coefficients,coef,ln_robots_lag1_ud,Log robots x union density,,,,0.0000,0.0000
+8,coefficients,se,ln_robots_lag1_ud_se,,,,,(0.0004),(0.0004)
+9,coefficients,coef,ln_robots_lag1_coord_ud,Log robots x coordination x union density,,,,,-0.0004
+10,coefficients,se,ln_robots_lag1_coord_ud_se,,,,,,(0.0005)
+11,coefficients,coef,ln_va,Log value added,0.1296,0.1273,0.1263,0.1307,0.1273
+12,coefficients,se,ln_va_se,,(0.0260),(0.0259),(0.0332),(0.0270),(0.0258)
+13,coefficients,coef,capital,Log capital,0.2581,0.2945,0.3153,0.3085,0.3230
+14,coefficients,se,capital_se,,(0.0707),(0.0723),(0.0782),(0.0823),(0.0799)
+15,coefficients,coef,gdp_growth,GDP growth,0.2593,0.2473,0.3159,0.3191,0.2942
+16,coefficients,se,gdp_growth_se,,(0.2186),(0.2344),(0.2647),(0.2462),(0.2408)
+17,stats,stat,country_industry_fe,Country-industry FE,Yes,Yes,Yes,Yes,Yes
+18,stats,stat,year_fe,Year FE,Yes,Yes,Yes,Yes,Yes
+19,stats,stat,observations,Observations,2571,2500,1685,2356,2356
+20,stats,stat,entities,Entities,257,247,153,227,227
+21,stats,stat,countries,Countries,26,25,15,23,23
+22,stats,stat,r_squared,R-squared,0.997,0.997,0.998,0.997,0.997

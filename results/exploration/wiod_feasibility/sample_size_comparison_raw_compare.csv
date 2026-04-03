@@ -1,4 +1,4 @@
 Scenario,Countries,Entities,Obs,Years
-A_ifr_wiod,24,508,7620,2000-2014
-B_both,21,442,6630,2000-2014
-C_adjcov,14,289,4335,2000-2014
+A_ifr_wiod,26,549,8235,2000-2014
+B_both,23,483,7245,2000-2014
+C_adjcov,15,311,4665,2000-2014

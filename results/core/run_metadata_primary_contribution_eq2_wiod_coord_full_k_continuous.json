@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-03-26T21:19:23.979649+00:00",
-  "git_commit": "1cc26039b8833d97d12ff4b35270108009976d30",
+  "timestamp": "2026-04-01T12:38:07.474295+00:00",
+  "git_commit": "0011c6510d5fb49cd10dfa1ba4dba1015521ccf2",
   "script": "primary_contribution_eq2_wiod_coord_full_k_continuous.py",
   "flags": {
     "moderator": "coord",
@@ -14,8 +14,8 @@
       "entity_cluster",
       "driscoll_kraay"
     ],
-    "wild_cluster_bootstrap_reps": 199
+    "wild_cluster_bootstrap_reps": 999
   },
-  "n_obs": 2212,
-  "n_entities": 226
+  "n_obs": 2500,
+  "n_entities": 247
 }

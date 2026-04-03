@@ -1,8 +1,8 @@
 Sample manifest: reference_benchmark_eq2_wiod_ud_full_k_continuous
-Generated: 2026-03-26T21:20:13.795644+00:00
+Generated: 2026-04-01T12:40:23.353403+00:00
 Sample mode: full
 ========================================================
-Observations: 2068
-Entities: 206
-Countries (21): AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SK
+Observations: 2356
+Entities: 227
+Countries (23): AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, SE, SK, UK
 Years: 2001-2014

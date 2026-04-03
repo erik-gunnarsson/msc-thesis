@@ -4,7 +4,7 @@ import pandas as pd
 
 from _common import (
     CURRENT_BASELINE_PATH,
-    EU27_ISO2,
+    EUROPE_CANDIDATE_ISO2,
     OUTPUT_DIR,
     build_ifr_main_panel,
     build_ifr_raw_compare_panel,
@@ -87,19 +87,19 @@ def build_summary(
     scenario_c_raw: pd.DataFrame,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     summary_rows = [
-        scenario_metrics(scenario_a, entity_cols=["country_code", "nace_r2_code"], scenario="A_ifr_wiod", view="collapsed", universe=EU27_ISO2),
-        scenario_metrics(scenario_b[scenario_b["ud_available"]], entity_cols=["country_code", "nace_r2_code"], scenario="B_ud", view="collapsed", universe=EU27_ISO2),
-        scenario_metrics(scenario_b[scenario_b["coord_available"]], entity_cols=["country_code", "nace_r2_code"], scenario="B_coord", view="collapsed", universe=EU27_ISO2),
-        scenario_metrics(scenario_b[scenario_b["both_available"]], entity_cols=["country_code", "nace_r2_code"], scenario="B_both", view="collapsed", universe=EU27_ISO2),
-        scenario_metrics(scenario_c, entity_cols=["country_code", "nace_r2_code"], scenario="C_adjcov", view="collapsed", universe=EU27_ISO2),
+        scenario_metrics(scenario_a, entity_cols=["country_code", "nace_r2_code"], scenario="A_ifr_wiod", view="collapsed", universe=EUROPE_CANDIDATE_ISO2),
+        scenario_metrics(scenario_b[scenario_b["ud_available"]], entity_cols=["country_code", "nace_r2_code"], scenario="B_ud", view="collapsed", universe=EUROPE_CANDIDATE_ISO2),
+        scenario_metrics(scenario_b[scenario_b["coord_available"]], entity_cols=["country_code", "nace_r2_code"], scenario="B_coord", view="collapsed", universe=EUROPE_CANDIDATE_ISO2),
+        scenario_metrics(scenario_b[scenario_b["both_available"]], entity_cols=["country_code", "nace_r2_code"], scenario="B_both", view="collapsed", universe=EUROPE_CANDIDATE_ISO2),
+        scenario_metrics(scenario_c, entity_cols=["country_code", "nace_r2_code"], scenario="C_adjcov", view="collapsed", universe=EUROPE_CANDIDATE_ISO2),
         scenario_metrics(scenario_d, entity_cols=["country_code", "entity"], scenario="D_current_baseline", view="current_pipeline"),
     ]
     raw_rows = [
-        scenario_metrics(scenario_a_raw, entity_cols=["country_code", "industry_code"], scenario="A_ifr_wiod", view="raw_ifr_compare", universe=EU27_ISO2),
-        scenario_metrics(scenario_b_raw[scenario_b_raw["ud_available"]], entity_cols=["country_code", "industry_code"], scenario="B_ud", view="raw_ifr_compare", universe=EU27_ISO2),
-        scenario_metrics(scenario_b_raw[scenario_b_raw["coord_available"]], entity_cols=["country_code", "industry_code"], scenario="B_coord", view="raw_ifr_compare", universe=EU27_ISO2),
-        scenario_metrics(scenario_b_raw[scenario_b_raw["both_available"]], entity_cols=["country_code", "industry_code"], scenario="B_both", view="raw_ifr_compare", universe=EU27_ISO2),
-        scenario_metrics(scenario_c_raw, entity_cols=["country_code", "industry_code"], scenario="C_adjcov", view="raw_ifr_compare", universe=EU27_ISO2),
+        scenario_metrics(scenario_a_raw, entity_cols=["country_code", "industry_code"], scenario="A_ifr_wiod", view="raw_ifr_compare", universe=EUROPE_CANDIDATE_ISO2),
+        scenario_metrics(scenario_b_raw[scenario_b_raw["ud_available"]], entity_cols=["country_code", "industry_code"], scenario="B_ud", view="raw_ifr_compare", universe=EUROPE_CANDIDATE_ISO2),
+        scenario_metrics(scenario_b_raw[scenario_b_raw["coord_available"]], entity_cols=["country_code", "industry_code"], scenario="B_coord", view="raw_ifr_compare", universe=EUROPE_CANDIDATE_ISO2),
+        scenario_metrics(scenario_b_raw[scenario_b_raw["both_available"]], entity_cols=["country_code", "industry_code"], scenario="B_both", view="raw_ifr_compare", universe=EUROPE_CANDIDATE_ISO2),
+        scenario_metrics(scenario_c_raw, entity_cols=["country_code", "industry_code"], scenario="C_adjcov", view="raw_ifr_compare", universe=EUROPE_CANDIDATE_ISO2),
     ]
     summary = pd.DataFrame(summary_rows)
     raw_summary = pd.DataFrame(raw_rows)

@@ -1,5 +1,5 @@
 Scenario,Countries,Entities,Obs,Years,coord,adjcov,ud
-A: IFR x WIOD (max),24,258,3870,2000-2014,—,—,—
-B: IFR x WIOD x ICTWSS (coord+ud),21,225,3375,2000-2014,Y,—,Y
-C: IFR x WIOD x ICTWSS (adjcov),14,148,2220,2000-2014,Y,Y,Y
-D: Current (IFR x KLEMS x ICTWSS),14,287,4622,1995-2019,Y,Y,Y
+A: IFR x WIOD (max),26,279,4185,2000-2014,—,—,—
+B: IFR x WIOD x ICTWSS (coord+ud),23,246,3690,2000-2014,Y,—,Y
+C: IFR x WIOD x ICTWSS (adjcov),15,159,2385,2000-2014,Y,Y,Y
+D: Current (IFR x KLEMS x ICTWSS),14,298,4698,1995-2019,Y,Y,Y

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from _common import (
-    EU27_ISO2,
+    EUROPE_CANDIDATE_ISO2,
     OUTPUT_DIR,
     build_ifr_main_panel,
     current_baseline_country_nace_entities,
@@ -110,7 +110,7 @@ def build_country_detail() -> pd.DataFrame:
         .assign(in_current_klems_sample="Y")
     )
 
-    detail = pd.DataFrame({"country_code": EU27_ISO2})
+    detail = pd.DataFrame({"country_code": EUROPE_CANDIDATE_ISO2})
     detail = detail.merge(ifr_country_detail, on="country_code", how="left")
     detail = detail.merge(
         baseline[["country_code", "ud_available", "coord_available", "adjcov_available"]],

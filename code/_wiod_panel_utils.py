@@ -11,6 +11,7 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 from loguru import logger
+from tqdm import tqdm
 
 try:
     from linearmodels import PanelOLS
@@ -36,15 +37,16 @@ SEA_PATH = DATA_DIR / "WIOTS_SEA" / "Socio_Economic_Accounts.xlsx"
 EXPOSURE_BASELINE_START = 2000
 EXPOSURE_BASELINE_END = 2002
 
-EU_ISO2 = {
+WIOD_EUROPE_CANDIDATE_ISO2 = {
     "AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", "EL", "ES", "FI", "FR",
     "HR", "HU", "IE", "IT", "LT", "LU", "LV", "MT", "NL", "PL", "PT", "RO",
-    "SE", "SI", "SK",
+    "SE", "SI", "SK", "UK", "NO", "CH", "TR", "RU", "IC",
 }
-EU_ISO3_TO_ISO2 = {
+WIOD_EUROPE_ISO3_TO_ISO2 = {
     "AUT": "AT",
     "BEL": "BE",
     "BGR": "BG",
+    "CHE": "CH",
     "CYP": "CY",
     "CZE": "CZ",
     "DEU": "DE",
@@ -53,9 +55,11 @@ EU_ISO3_TO_ISO2 = {
     "EST": "EE",
     "FIN": "FI",
     "FRA": "FR",
+    "GBR": "UK",
     "GRC": "EL",
     "HRV": "HR",
     "HUN": "HU",
+    "ISL": "IC",
     "IRL": "IE",
     "ITA": "IT",
     "LTU": "LT",
@@ -63,16 +67,21 @@ EU_ISO3_TO_ISO2 = {
     "LVA": "LV",
     "MLT": "MT",
     "NLD": "NL",
+    "NOR": "NO",
     "POL": "PL",
     "PRT": "PT",
     "ROU": "RO",
+    "RUS": "RU",
     "SVK": "SK",
     "SVN": "SI",
     "SWE": "SE",
+    "TUR": "TR",
 }
 EUROSTAT_GEO_TO_ISO2 = {
+    "Albania": "AL",
     "Austria": "AT",
     "Belgium": "BE",
+    "Bosnia and Herzegovina": "BA",
     "Bulgaria": "BG",
     "Croatia": "HR",
     "Cyprus": "CY",
@@ -85,20 +94,31 @@ EUROSTAT_GEO_TO_ISO2 = {
     "Germany": "DE",
     "Greece": "EL",
     "Hungary": "HU",
+    "Iceland": "IC",
     "Ireland": "IE",
     "Italy": "IT",
+    "Kosovo*": "XK",
     "Latvia": "LV",
+    "Liechtenstein": "LI",
     "Lithuania": "LT",
     "Luxembourg": "LU",
     "Malta": "MT",
+    "Montenegro": "ME",
     "Netherlands": "NL",
+    "North Macedonia": "MK",
+    "Norway": "NO",
     "Poland": "PL",
     "Portugal": "PT",
     "Romania": "RO",
+    "Serbia": "RS",
     "Slovakia": "SK",
     "Slovenia": "SI",
     "Spain": "ES",
     "Sweden": "SE",
+    "Switzerland": "CH",
+    "Turkey": "TR",
+    "Türkiye": "TR",
+    "Ukraine": "UA",
     "United Kingdom": "UK",
 }
 IFR_TO_NACE = {
@@ -195,7 +215,7 @@ def load_ifr_panel() -> pd.DataFrame:
     df["year"] = pd.to_numeric(df["year"], errors="coerce")
     df["robot_wrkr_stock_95"] = pd.to_numeric(df["robot_wrkr_stock_95"], errors="coerce")
     df = df[
-        df["country_code"].isin(EU_ISO2)
+        df["country_code"].isin(WIOD_EUROPE_CANDIDATE_ISO2)
         & df["industry_code"].isin(IFR_TO_NACE)
         & df["year"].between(2000, 2014)
     ].copy()
@@ -223,7 +243,7 @@ def load_wiod_sea_long() -> pd.DataFrame:
     df = pd.read_excel(SEA_PATH, sheet_name="DATA")
     keep_vars = ["H_EMPE", "VA_QI", "K", "CAP", "GO"]
     df = df[
-        df["country"].isin(EU_ISO3_TO_ISO2)
+        df["country"].isin(WIOD_EUROPE_ISO3_TO_ISO2)
         & df["code"].isin(SEA_TO_NACE)
         & df["variable"].isin(keep_vars)
     ].copy()
@@ -233,7 +253,7 @@ def load_wiod_sea_long() -> pd.DataFrame:
         var_name="year",
         value_name="value",
     )
-    long["country_code"] = long["country"].map(EU_ISO3_TO_ISO2)
+    long["country_code"] = long["country"].map(WIOD_EUROPE_ISO3_TO_ISO2)
     long["nace_r2_code"] = long["code"].map(SEA_TO_NACE)
     long["year"] = pd.to_numeric(long["year"], errors="coerce")
     long["value"] = pd.to_numeric(long["value"], errors="coerce")
@@ -261,8 +281,8 @@ def build_wiod_sea_panel() -> pd.DataFrame:
 
 def load_ictwss() -> tuple[pd.DataFrame, pd.DataFrame]:
     ict = pd.read_csv(DATA_DIR / "ictwss_institutions.csv")
-    ict["country_code"] = ict["iso3"].map(EU_ISO3_TO_ISO2)
-    ict = ict[ict["country_code"].isin(EU_ISO2)].copy()
+    ict["country_code"] = ict["iso3"].map(WIOD_EUROPE_ISO3_TO_ISO2)
+    ict = ict[ict["country_code"].isin(WIOD_EUROPE_CANDIDATE_ISO2)].copy()
     ict["year"] = pd.to_numeric(ict["year"], errors="coerce")
     candidates = ["Coord", "AdjCov", "UD", "Wstat", "WC", "SPA_signed"]
     for col in candidates:
@@ -304,7 +324,7 @@ def load_macro_controls() -> tuple[pd.DataFrame, pd.DataFrame]:
     gdp["year"] = pd.to_numeric(gdp["TIME_PERIOD"], errors="coerce")
     gdp["gdp"] = pd.to_numeric(gdp["OBS_VALUE"], errors="coerce")
     gdp = gdp[["country_code", "year", "gdp"]].dropna(subset=["country_code", "year"])
-    gdp = gdp[gdp["country_code"].isin(EU_ISO2)].copy()
+    gdp = gdp[gdp["country_code"].isin(WIOD_EUROPE_CANDIDATE_ISO2)].copy()
     gdp = gdp.groupby(["country_code", "year"], as_index=False)["gdp"].first()
     gdp = gdp.sort_values(["country_code", "year"]).reset_index(drop=True)
     gdp["gdp_growth"] = gdp.groupby("country_code")["gdp"].transform(
@@ -316,7 +336,7 @@ def load_macro_controls() -> tuple[pd.DataFrame, pd.DataFrame]:
     une["year"] = pd.to_numeric(une["TIME_PERIOD"], errors="coerce")
     une["unemployment"] = pd.to_numeric(une["OBS_VALUE"], errors="coerce")
     une = une[["country_code", "year", "unemployment"]].dropna(subset=["country_code", "year"])
-    une = une[une["country_code"].isin(EU_ISO2)].copy()
+    une = une[une["country_code"].isin(WIOD_EUROPE_CANDIDATE_ISO2)].copy()
     une = une.groupby(["country_code", "year"], as_index=False)["unemployment"].first()
     return gdp, une
 
@@ -518,6 +538,7 @@ def wild_cluster_bootstrap_pvalue(
     reps: int = 99,
     seed: int = 123,
     cluster_col: str = "country_code",
+    show_progress: bool = True,
 ) -> float:
     unrestricted = smf.ols(formula, data=df).fit()
     restricted = smf.ols(restricted_formula, data=df).fit()
@@ -535,7 +556,15 @@ def wild_cluster_bootstrap_pvalue(
     rng = np.random.default_rng(seed)
 
     boot_hits = 0
-    for _ in range(reps):
+    iterator: range | tqdm = range(reps)
+    if show_progress and reps > 0:
+        iterator = tqdm(
+            iterator,
+            desc=f"Wild bootstrap [{target_param}]",
+            unit="rep",
+            leave=False,
+        )
+    for _ in iterator:
         weights = {cluster: rng.choice([-1.0, 1.0]) for cluster in unique_clusters}
         w = clusters.map(weights).to_numpy()
         y_star = restricted.fittedvalues + restricted.resid * w
@@ -556,6 +585,7 @@ def summarise_key_terms(
     restricted_formulas: dict[str, str] | None = None,
     bootstrap_reps: int = 99,
     bootstrap_seed: int = 123,
+    bootstrap_show_progress: bool = True,
 ) -> pd.DataFrame:
     rows: list[dict[str, object]] = []
     restricted_formulas = restricted_formulas or {}
@@ -588,6 +618,7 @@ def summarise_key_terms(
                 target_param=term,
                 reps=bootstrap_reps,
                 seed=bootstrap_seed + idx,
+                show_progress=bootstrap_show_progress,
             )
         rows.append(row)
 

@@ -1,15 +1,15 @@
 model,description,required_variables,n_countries,n_entities,n_observations,countries_list,pass_threshold
-EQ1,Baseline: robots -> labour input,(none beyond base),24,236,2283,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
-EQ1_GDP,Baseline + GDP control,gdp_growth,24,236,2283,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
-EQ2_COORD,Primary focal moderation by coord,coord_pre,23,226,2212,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SI, SK",PASS
-EQ2_ADJCOV,Secondary focal moderation by adjcov (restricted),adjcov_pre,14,142,1535,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, SI",PASS
-EQ2_UD,Reference moderation by ud,ud_pre,21,206,2068,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SK",PASS
-ROB_COMMON_COORD,coord on adjcov-available countries only,"coord_pre, restrict(adjcov_pre available)",14,142,1535,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, SI",PASS
-ROB_COORD_BIN,Binary coord (>=4) moderation,"coord_pre_binary, coord_pre >= 4",23,226,2212,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, SE, SI, SK",PASS
-ROB_TIMEVAR_COORD,Time-varying coord,"coord, time-varying coord",24,236,2283,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
-ROB_COMMON_UD,ud on adjcov-available countries only,"ud_pre, restrict(adjcov_pre available)",13,131,1444,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE",FAIL
-ROB_TIMEVAR_UD,Time-varying ud,"ud, time-varying ud",23,222,1933,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SK",PASS
-ROB_BALANCED,Balanced sub-panel (entities in every year),balanced entities (14 years),7,68,952,"DE, DK, ES, FI, FR, IT, SE",FAIL
-ROB_PRECRISIS,Pre-crisis period only,years 2001-2007,24,185,743,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
-ROB_POSTCRISIS,Post-crisis period only,years 2008-2014,24,236,1540,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
-ROB_NO_CONTROLS,Baseline without industry controls,no ln_va_sea / ln_cap_sea requirement,24,236,2283,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, PL, PT, RO, SE, SI, SK",PASS
+EQ1,Baseline: robots -> labour input,(none beyond base),26,257,2571,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK",PASS
+EQ1_GDP,Baseline + GDP control,gdp_growth,26,257,2571,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK",PASS
+EQ2_COORD,Primary focal moderation by coord,coord_pre,25,247,2500,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, SE, SI, SK, UK",PASS
+EQ2_ADJCOV,Secondary focal moderation by adjcov (restricted),adjcov_pre,15,153,1685,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, SI, UK",PASS
+EQ2_UD,Reference moderation by ud,ud_pre,23,227,2356,"AT, BE, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, SE, SK, UK",PASS
+ROB_COMMON_COORD,coord on adjcov-available countries only,"coord_pre, restrict(adjcov_pre available)",15,153,1685,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, SI, UK",PASS
+ROB_COORD_BIN,Binary coord (>=4) moderation,"coord_pre_binary, coord_pre >= 4",25,247,2500,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, SE, SI, SK, UK",PASS
+ROB_TIMEVAR_COORD,Time-varying coord,"coord, time-varying coord",26,257,2571,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK",PASS
+ROB_COMMON_UD,ud on adjcov-available countries only,"ud_pre, restrict(adjcov_pre available)",14,142,1594,"AT, BE, DE, DK, EL, FI, FR, IE, IT, MT, NL, PT, SE, UK",PASS
+ROB_TIMEVAR_UD,Time-varying ud,"ud, time-varying ud",25,243,2221,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SK, UK",PASS
+ROB_BALANCED,Balanced sub-panel (entities in every year),balanced entities (14 years),9,87,1218,"DE, DK, ES, FI, FR, IT, NO, SE, UK",FAIL
+ROB_PRECRISIS,Pre-crisis period only,years 2001-2007,26,206,884,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK",PASS
+ROB_POSTCRISIS,Post-crisis period only,years 2008-2014,26,257,1687,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK",PASS
+ROB_NO_CONTROLS,Baseline without industry controls,no ln_va_sea / ln_cap_sea requirement,26,257,2571,"AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK",PASS

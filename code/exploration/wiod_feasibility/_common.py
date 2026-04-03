@@ -17,17 +17,18 @@ OUTPUT_DIR = ROOT_DIR / "results" / "exploration" / "wiod_feasibility"
 WIOD_DIR = DATA_DIR / "WIOTS_in_EXCEL"
 CURRENT_BASELINE_PATH = DATA_DIR / "cleaned_data.csv"
 
-EU27_ISO2 = [
+EUROPE_CANDIDATE_ISO2 = [
     "AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", "EL", "ES", "FI", "FR",
     "HR", "HU", "IE", "IT", "LT", "LU", "LV", "MT", "NL", "PL", "PT", "RO",
-    "SE", "SI", "SK",
+    "SE", "SI", "SK", "UK", "NO", "CH", "TR", "RU", "IC",
 ]
-EU27_SET = set(EU27_ISO2)
+EUROPE_CANDIDATE_SET = set(EUROPE_CANDIDATE_ISO2)
 
 ISO3_TO_ISO2 = {
     "AUT": "AT",
     "BEL": "BE",
     "BGR": "BG",
+    "CHE": "CH",
     "CYP": "CY",
     "CZE": "CZ",
     "DEU": "DE",
@@ -40,6 +41,7 @@ ISO3_TO_ISO2 = {
     "GRC": "EL",
     "HRV": "HR",
     "HUN": "HU",
+    "ISL": "IC",
     "IRL": "IE",
     "ITA": "IT",
     "LTU": "LT",
@@ -47,15 +49,18 @@ ISO3_TO_ISO2 = {
     "LVA": "LV",
     "MLT": "MT",
     "NLD": "NL",
+    "NOR": "NO",
     "POL": "PL",
     "PRT": "PT",
     "ROU": "RO",
+    "RUS": "RU",
     "SVK": "SK",
     "SVN": "SI",
     "SWE": "SE",
+    "TUR": "TR",
 }
-ISO2_TO_ISO3 = {v: k for k, v in ISO3_TO_ISO2.items() if v in EU27_SET}
-EU27_ISO3 = {ISO2_TO_ISO3[c] for c in EU27_ISO2 if c in ISO2_TO_ISO3}
+ISO2_TO_ISO3 = {v: k for k, v in ISO3_TO_ISO2.items() if v in EUROPE_CANDIDATE_SET}
+EUROPE_CANDIDATE_ISO3 = {ISO2_TO_ISO3[c] for c in EUROPE_CANDIDATE_ISO2 if c in ISO2_TO_ISO3}
 
 IFR_TO_NACE_ALL = {
     "10-12": "C10-C12",
@@ -189,7 +194,7 @@ def load_ifr_raw() -> pd.DataFrame:
 def build_ifr_main_panel(year_start: int = 2000, year_end: int = 2014) -> pd.DataFrame:
     df = load_ifr_raw()
     df = df[
-        df["country_code"].isin(EU27_SET)
+        df["country_code"].isin(EUROPE_CANDIDATE_SET)
         & df["industry_code"].isin(IFR_TO_NACE_MAIN)
         & df["year"].between(year_start, year_end)
     ].copy()
@@ -209,7 +214,7 @@ def build_ifr_main_panel(year_start: int = 2000, year_end: int = 2014) -> pd.Dat
 def build_ifr_raw_compare_panel(year_start: int = 2000, year_end: int = 2014) -> pd.DataFrame:
     df = load_ifr_raw()
     df = df[
-        df["country_code"].isin(EU27_SET)
+        df["country_code"].isin(EUROPE_CANDIDATE_SET)
         & df["industry_code"].isin(IFR_TO_NACE_MAIN)
         & df["year"].between(year_start, year_end)
     ].copy()
@@ -222,7 +227,7 @@ def build_ifr_raw_compare_panel(year_start: int = 2000, year_end: int = 2014) ->
 def load_ictwss_baseline() -> tuple[pd.DataFrame, pd.DataFrame]:
     df = pd.read_csv(DATA_DIR / "ictwss_institutions.csv")
     df["country_code"] = df["iso3"].map(ISO3_TO_ISO2)
-    df = df[df["country_code"].isin(EU27_SET)].copy()
+    df = df[df["country_code"].isin(EUROPE_CANDIDATE_SET)].copy()
     for col in ICTWSS_COLS:
         df[col] = pd.to_numeric(df[col], errors="coerce")
         df.loc[df[col] == -99, col] = pd.NA
@@ -311,11 +316,11 @@ def read_wiod_header_metadata(path: Path) -> dict[str, object]:
         "sheet_name": sheet_name,
         "total_output_idx": total_output_idx,
         "countries": sorted(set(countries)),
-        "eu_countries_iso2": sorted(
+        "candidate_countries_iso2": sorted(
             {
                 ISO3_TO_ISO2[c]
                 for c in countries
-                if c in ISO3_TO_ISO2 and ISO3_TO_ISO2[c] in EU27_SET
+                if c in ISO3_TO_ISO2 and ISO3_TO_ISO2[c] in EUROPE_CANDIDATE_SET
             }
         ),
     }
@@ -326,7 +331,10 @@ def build_wiod_trade_panel(cache_path: Path | None = None) -> pd.DataFrame:
         cached = pd.read_csv(cache_path)
         expected_groups = set(WIOD_TO_NACE_TABLE["nace_r2_code"].unique())
         cached_groups = set(cached["nace_r2_code"].dropna().unique()) if "nace_r2_code" in cached.columns else set()
-        if expected_groups.issubset(cached_groups):
+        header_meta = read_wiod_header_metadata(list_wiod_files()[-1])
+        expected_countries = set(header_meta["candidate_countries_iso2"])
+        cached_countries = set(cached["country_code"].dropna().unique()) if "country_code" in cached.columns else set()
+        if expected_groups.issubset(cached_groups) and expected_countries.issubset(cached_countries):
             return cached
 
     _require_pyxlsb()
@@ -363,7 +371,7 @@ def build_wiod_trade_panel(cache_path: Path | None = None) -> pd.DataFrame:
                                 for col_idx in range(4, total_output_idx)
                                 if row4[col_idx] == origin_iso3
                             ]
-                            for origin_iso3 in EU27_ISO3
+                            for origin_iso3 in EUROPE_CANDIDATE_ISO3
                         }
                         continue
                     if idx < 6:
@@ -378,7 +386,7 @@ def build_wiod_trade_panel(cache_path: Path | None = None) -> pd.DataFrame:
 
                     if not isinstance(row_code, str) or not row_code.startswith("r"):
                         continue
-                    if origin_iso3 not in EU27_ISO3:
+                    if origin_iso3 not in EUROPE_CANDIDATE_ISO3:
                         continue
                     nace_r2_code = WIOD_TO_NACE.get(sector_code)
                     if nace_r2_code is None:
