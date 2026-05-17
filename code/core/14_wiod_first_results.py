@@ -124,6 +124,12 @@ def parse_args() -> argparse.Namespace:
         help="Shared wild cluster bootstrap repetitions for the first-results package.",
     )
     parser.add_argument(
+        "--bootstrap-seed",
+        type=int,
+        default=123,
+        help="Base seed forwarded to child model scripts for wild cluster bootstrap.",
+    )
+    parser.add_argument(
         "--skip-archive",
         action="store_true",
         help="Do not archive stale WIOD-only outputs before regenerating the first-results bundle.",
@@ -206,11 +212,21 @@ def run_script(
     *,
     capital_proxy: str,
     bootstrap_reps: int,
+    bootstrap_seed: int,
     bootstrap_progress: bool,
 ) -> None:
     cmd = [sys.executable, str(SCRIPT_DIR / script), *cli_args]
     if script != "09_build_wiod_panel.py":
-        cmd.extend(["--capital-proxy", capital_proxy, "--bootstrap-reps", str(bootstrap_reps)])
+        cmd.extend(
+            [
+                "--capital-proxy",
+                capital_proxy,
+                "--bootstrap-reps",
+                str(bootstrap_reps),
+                "--bootstrap-seed",
+                str(bootstrap_seed),
+            ]
+        )
         if not bootstrap_progress:
             cmd.append("--no-bootstrap-progress")
     logger.info("Running " + " ".join(cmd[1:]))
@@ -342,6 +358,7 @@ def main() -> None:
         (),
         capital_proxy=args.capital_proxy,
         bootstrap_reps=args.bootstrap_reps,
+        bootstrap_seed=args.bootstrap_seed,
         bootstrap_progress=not args.no_bootstrap_progress,
     )
     for spec in MODEL_SPECS:
@@ -350,6 +367,7 @@ def main() -> None:
             spec.cli_args,
             capital_proxy=args.capital_proxy,
             bootstrap_reps=args.bootstrap_reps,
+            bootstrap_seed=args.bootstrap_seed,
             bootstrap_progress=not args.no_bootstrap_progress,
         )
 

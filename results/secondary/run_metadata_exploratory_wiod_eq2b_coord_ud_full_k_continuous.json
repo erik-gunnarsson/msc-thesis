@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-01T12:22:41.060143+00:00",
-  "git_commit": "0011c6510d5fb49cd10dfa1ba4dba1015521ccf2",
+  "timestamp": "2026-05-15T10:15:33.990195+00:00",
+  "git_commit": "010ee4a1749b83a9c8af98cf34214a1085d8e404",
   "script": "exploratory_wiod_eq2b_coord_ud_full_k_continuous.py",
   "flags": {
     "capital_proxy": "k",

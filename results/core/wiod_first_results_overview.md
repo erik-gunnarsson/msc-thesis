@@ -1,6 +1,6 @@
 # WIOD First Results Overview
 
-Generated: 2026-04-01T12:40:23.653632+00:00
+Generated: 2026-05-15T10:06:32.927440+00:00
 
 Frozen specification:
 - Capital proxy: `k`

@@ -46,6 +46,13 @@ def build_restricted_formulas(
     rhs_terms: list[str],
     key_terms: list[str],
 ) -> dict[str, str]:
+    """Map each bootstrapped term to a restricted formula (H0: coefficient is zero).
+
+    For every ``term`` in ``key_terms``, the restricted model uses the same outcome
+    and fixed effects as the full spec, but the RHS drops **only** ``term`` (all
+    other ``rhs_terms`` unchanged). Used by ``wild_cluster_bootstrap_pvalue`` with
+    restricted residual resampling under that null.
+    """
     restricted: dict[str, str] = {}
     for term in key_terms:
         reduced_terms = [rhs for rhs in rhs_terms if rhs != term]
@@ -156,6 +163,12 @@ def write_model_bundle(
     target_dir.mkdir(parents=True, exist_ok=True)
 
     bootstrap_terms = bootstrap_terms or key_terms
+    flags = {
+        **flags,
+        "effective_bootstrap_seed_by_term": {
+            term: int(bootstrap_seed + idx) for idx, term in enumerate(key_terms)
+        },
+    }
     restricted = build_restricted_formulas("ln_h_empe", rhs_terms, bootstrap_terms)
     key_df = summarise_key_terms(
         result,

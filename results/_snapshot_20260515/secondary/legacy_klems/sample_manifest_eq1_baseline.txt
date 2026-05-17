@@ -1,0 +1,19 @@
+Sample manifest: eq1_baseline
+Generated: 2026-03-26T21:22:28.983102+00:00
+Sample mode: full
+==================================================
+Observations: 4698
+Entities: 298
+Countries (14): AT, BE, CZ, DE, DK, ES, FI, FR, IT, LV, NL, SE, SK, UK
+Year range: 1995-2019
+
+Key variable missingness:
+  ln_robots_lag1: 0 missing (0.0%)
+  ln_hours: 0 missing (0.0%)
+  ud_pre_c: 0 missing (0.0%)
+  coord_pre_c: 0 missing (0.0%)
+  adjcov_pre_c: 1024 missing (21.8%)
+  coord_pre: 0 missing (0.0%)
+  adjcov_pre: 1024 missing (21.8%)
+  ud_pre: 0 missing (0.0%)
+  wstat_pre: 2821 missing (60.0%)

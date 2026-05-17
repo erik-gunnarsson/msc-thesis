@@ -1,5 +1,5 @@
 Sample manifest: reference_benchmark_eq2_wiod_ud_full_k_continuous
-Generated: 2026-04-01T12:40:23.353403+00:00
+Generated: 2026-05-15T10:06:32.482930+00:00
 Sample mode: full
 ========================================================
 Observations: 2356

@@ -7,6 +7,12 @@ Primary output:
 Companion outputs:
   - results/tables/wiod_regression_table_combined.md
   - results/tables/wiod_regression_table_combined.csv
+
+Inference-robustness variant (country-clustered stars only; appendix / §6.2 comparison):
+  - results/secondary/inference_robustness/wiod_regression_table_combined_clusterstars.{tex,md,csv}
+
+Appendix — CH-inclusive log robot stock (Eq. 1 + Eq. 2 coord; GH #29):
+  - results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.{tex,md,csv}
 """
 
 from __future__ import annotations
@@ -24,7 +30,13 @@ CODE_ROOT = Path(__file__).resolve().parents[1]
 if str(CODE_ROOT) not in sys.path:
     sys.path.insert(0, str(CODE_ROOT))
 
-from _paths import RESULTS_CORE_DIR, RESULTS_SECONDARY_DIR, RESULTS_TABLES_DIR, ensure_results_dirs
+from _paths import (
+    RESULTS_CORE_DIR,
+    RESULTS_INFERENCE_ROBUSTNESS_DIR,
+    RESULTS_SECONDARY_DIR,
+    RESULTS_TABLES_DIR,
+    ensure_results_dirs,
+)
 
 
 @dataclass(frozen=True)
@@ -37,7 +49,9 @@ class ModelTableSpec:
     source_script: str
 
     def prefix(self, capital_proxy: str) -> str:
-        return self.prefix_template.format(capital_proxy=capital_proxy)
+        if "{capital_proxy}" in self.prefix_template:
+            return self.prefix_template.format(capital_proxy=capital_proxy)
+        return self.prefix_template
 
 
 @dataclass(frozen=True)
@@ -141,6 +155,49 @@ DISPLAY_ROWS = [
 ]
 
 
+APPENDIX_ROBOT_STOCK_SPECS = [
+    ModelTableSpec(
+        model_id="EQ1_ROBOT_STOCK_CH",
+        column_number=1,
+        column_label="Eq. 1 (log robot stock, incl. CH)",
+        prefix_template="robust_robotstock_eq1_baseline",
+        source_dir=RESULTS_SECONDARY_DIR / "robustness",
+        source_script=(
+            "uv run python code/core/10_wiod_baseline.py --robot-regressor stock "
+            "--output-dir results/secondary/robustness --prefix-override robust_robotstock_eq1_baseline"
+        ),
+    ),
+    ModelTableSpec(
+        model_id="EQ2_COORD_ROBOT_STOCK_CH",
+        column_number=2,
+        column_label="Eq. 2 coord (log robot stock, incl. CH)",
+        prefix_template="robust_robotstock_eq2_coord",
+        source_dir=RESULTS_SECONDARY_DIR / "robustness",
+        source_script=(
+            "uv run python code/core/11_wiod_institution_moderation.py --moderator coord "
+            "--robot-regressor stock --output-dir results/secondary/robustness "
+            "--prefix-override robust_robotstock_eq2_coord"
+        ),
+    ),
+]
+
+APPENDIX_ROBOT_STOCK_DISPLAY_ROWS: tuple[DisplayRowSpec, ...] = (
+    DisplayRowSpec(
+        row_key="ln_robot_stock_lag1",
+        label="Log robot stock (lagged)",
+        candidate_terms=("ln_robot_stock_lag1",),
+        use_wild_stars=True,
+    ),
+    DisplayRowSpec(
+        row_key="ln_robot_stock_lag1_coord",
+        label="Log robot stock x bargaining coordination",
+        candidate_terms=("ln_robot_stock_lag1:coord_pre_c",),
+        use_wild_stars=True,
+    ),
+    *DISPLAY_ROWS[5:],
+)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build thesis-facing academic regression tables.")
     parser.add_argument(
@@ -160,6 +217,14 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional filename suffix. Defaults to _clusterstars for clustered-star tables and empty for wild-star tables.",
     )
+    parser.add_argument(
+        "--appendix-robot-stock-ch-inclusive-only",
+        action="store_true",
+        help=(
+            "Emit only the appendix table for CH-inclusive log robot stock (Eq. 1 + Eq. 2 coord). "
+            "Requires robust_robotstock_* artifacts under results/secondary/robustness/ (GH #29)."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -168,10 +233,24 @@ def resolve_output_paths(*, star_source: str, output_suffix: str | None) -> tupl
     if suffix is None:
         suffix = "_clusterstars" if star_source == "cluster" else ""
     stem = f"wiod_regression_table_combined{suffix}"
+    base = RESULTS_INFERENCE_ROBUSTNESS_DIR if star_source == "cluster" else RESULTS_TABLES_DIR
     return (
-        RESULTS_TABLES_DIR / f"{stem}.tex",
-        RESULTS_TABLES_DIR / f"{stem}.md",
-        RESULTS_TABLES_DIR / f"{stem}.csv",
+        base / f"{stem}.tex",
+        base / f"{stem}.md",
+        base / f"{stem}.csv",
+    )
+
+
+def resolve_appendix_robot_stock_paths(*, star_source: str, output_suffix: str | None) -> tuple[Path, Path, Path]:
+    suffix = output_suffix
+    if suffix is None:
+        suffix = "_clusterstars" if star_source == "cluster" else ""
+    stem = f"wiod_regression_table_appendix_robot_stock_ch_inclusive{suffix}"
+    base = RESULTS_INFERENCE_ROBUSTNESS_DIR if star_source == "cluster" else RESULTS_TABLES_DIR
+    return (
+        base / f"{stem}.tex",
+        base / f"{stem}.md",
+        base / f"{stem}.csv",
     )
 
 
@@ -260,13 +339,17 @@ def escape_latex(text: str) -> str:
     return "".join(replacements.get(char, char) for char in text)
 
 
-def build_display_rows(model_bundles: list[dict[str, object]]) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+def build_display_rows(
+    model_bundles: list[dict[str, object]],
+    *,
+    display_rows: tuple[DisplayRowSpec, ...] | list[DisplayRowSpec] = DISPLAY_ROWS,
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
     coefficient_rows: list[dict[str, object]] = []
     stat_rows: list[dict[str, object]] = []
     column_labels = [bundle["spec"].column_label for bundle in model_bundles]
 
     display_order = 1
-    for row_spec in DISPLAY_ROWS:
+    for row_spec in display_rows:
         coef_row = {
             "display_order": display_order,
             "row_group": "coefficients",
@@ -330,10 +413,11 @@ def apply_star_source(
     model_bundles: list[dict[str, object]],
     *,
     star_source: str,
+    display_rows: tuple[DisplayRowSpec, ...] | list[DisplayRowSpec] = DISPLAY_ROWS,
 ) -> None:
     p_value_field = "p_wild_cluster" if star_source == "wild" else "p_country_cluster"
 
-    row_map = {row_spec.row_key: row_spec for row_spec in DISPLAY_ROWS}
+    row_map = {row_spec.row_key: row_spec for row_spec in display_rows}
     for row in coefficient_rows:
         if row["row_type"] != "coef":
             continue
@@ -369,6 +453,12 @@ def build_notes(model_bundles: list[dict[str, object]], *, star_source: str) -> 
             "Stars on robot-related terms are based on country-clustered p-values "
             "(* p<0.10, ** p<0.05, *** p<0.01). "
         )
+        star_note = (
+            "This table is an inference-robustness companion to the canonical wild-cluster bootstrap "
+            "table (results/tables/wiod_regression_table_combined.tex); the canonical table is the thesis "
+            "inference standard. "
+            + star_note
+        )
     return (
         "Notes: Country-clustered standard errors in parentheses. "
         + star_note
@@ -376,7 +466,41 @@ def build_notes(model_bundles: list[dict[str, object]], *, star_source: str) -> 
         + "All models include country-industry and year fixed effects. "
         + "Eq. 2 adjcov uses the restricted/common sample. "
         + "Eq. 2b is exploratory. "
+        + "ICTWSS moderators are time-invariant country-level averages over 1990-1995. "
         + f"Sample period: {period_note}. Capital control: {capital_label}."
+    )
+
+
+def build_appendix_robot_stock_notes(model_bundles: list[dict[str, object]], *, star_source: str) -> str:
+    years = sorted({bundle["metadata"].get("years") for bundle in model_bundles if bundle["metadata"].get("years")})
+    period_note = years[0] if len(years) == 1 else ", ".join(years)
+    if star_source == "wild":
+        star_note = (
+            "Stars on robot-related terms are based on wild-cluster bootstrap p-values "
+            "(* p<0.10, ** p<0.05, *** p<0.01). "
+        )
+    else:
+        star_note = (
+            "Stars on robot-related terms are based on country-clustered p-values "
+            "(* p<0.10, ** p<0.05, *** p<0.01). "
+        )
+        star_note = (
+            "Inference-robustness companion to "
+            "`results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.tex` "
+            "(wild-bootstrap-star canonical for this appendix pair). "
+            + star_note
+        )
+    return (
+        "Notes: Country-clustered standard errors in parentheses. "
+        + star_note
+        + "Controls use country-clustered standard errors without stars. "
+        + "Both columns use lagged **log robot stock** (`ln_robot_stock_lag1`); Eq. 2 coord adds the coordination interaction. "
+        + "Switzerland enters because stock does not require the IFR per-worker denominator that is undefined for CH "
+        + "(GH #29 — cross-reference from §6.2.2 sample discussion **and** §6.2.3 operationalisation). "
+        + "Headline thesis tables remain **Leibrecht-style per-worker robot intensity**. "
+        + "ICTWSS moderators are country-level averages over 1990–1995. "
+        + f"Sample period: {period_note}. Capital control: WIOD K. "
+        + "Country-industry and year fixed effects in both models."
     )
 
 
@@ -392,10 +516,21 @@ def write_markdown_table(
     model_bundles: list[dict[str, object]],
     note_text: str,
     output_path: Path,
+    *,
+    star_source: str,
+    heading_override: str | None = None,
 ) -> None:
     column_labels = [bundle["spec"].column_label for bundle in model_bundles]
+    if heading_override is not None:
+        heading = heading_override
+    else:
+        heading = (
+            "# WIOD Inference Robustness Table (country-clustered stars)"
+            if star_source == "cluster"
+            else "# WIOD Combined Regression Table"
+        )
     lines = [
-        "# WIOD Combined Regression Table",
+        heading,
         "",
         "| Row | " + " | ".join(column_labels) + " |",
         "| --- | " + " | ".join(["---:"] * len(column_labels)) + " |",
@@ -413,16 +548,27 @@ def write_latex_table(
     model_bundles: list[dict[str, object]],
     note_text: str,
     output_path: Path,
+    *,
+    star_source: str,
+    caption_label: tuple[str, str] | None = None,
 ) -> None:
     column_labels = [bundle["spec"].column_label for bundle in model_bundles]
     model_numbers = [f"({bundle['spec'].column_number})" for bundle in model_bundles]
+    if caption_label is not None:
+        caption, label_key = caption_label
+    elif star_source == "cluster":
+        caption = r"\caption{Inference Robustness: WIOD Regression Results with Country-Clustered Stars}"
+        label_key = r"\label{tab:wiod_regression_table_combined_clusterstars}"
+    else:
+        caption = r"\caption{WIOD Regression Results for Eq. 1, Eq. 2, and Eq. 2b}"
+        label_key = r"\label{tab:wiod_regression_table_combined}"
 
     lines = [
         r"\begin{table}[!htbp]",
         r"\centering",
         r"\begin{threeparttable}",
-        r"\caption{WIOD Regression Results for Eq. 1, Eq. 2, and Eq. 2b}",
-        r"\label{tab:wiod_regression_table_combined}",
+        caption,
+        label_key,
         r"\small",
         rf"\begin{{tabular}}{{l{'c' * len(model_bundles)}}}",
         r"\toprule",
@@ -458,10 +604,78 @@ def write_latex_table(
     output_path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def emit_appendix_robot_stock_ch_inclusive_table(*, star_source: str, output_suffix: str | None) -> None:
+    latex_path, markdown_path, csv_path = resolve_appendix_robot_stock_paths(
+        star_source=star_source,
+        output_suffix=output_suffix,
+    )
+    capital_proxy = "k"
+    model_bundles = [load_model_bundle(spec, capital_proxy=capital_proxy) for spec in APPENDIX_ROBOT_STOCK_SPECS]
+    coefficient_rows, stat_rows = build_display_rows(
+        model_bundles,
+        display_rows=APPENDIX_ROBOT_STOCK_DISPLAY_ROWS,
+    )
+    apply_star_source(
+        coefficient_rows,
+        model_bundles,
+        star_source=star_source,
+        display_rows=APPENDIX_ROBOT_STOCK_DISPLAY_ROWS,
+    )
+    note_text = build_appendix_robot_stock_notes(model_bundles, star_source=star_source)
+    combined_rows = coefficient_rows + stat_rows
+    rows_df = rows_to_dataframe(combined_rows, model_bundles)
+    rows_df.to_csv(csv_path, index=False)
+    md_heading = (
+        "# WIOD Appendix — CH-inclusive log robot stock (country-clustered stars)"
+        if star_source == "cluster"
+        else "# WIOD Appendix — CH-inclusive log robot stock (GH #29)"
+    )
+    write_markdown_table(
+        coefficient_rows,
+        stat_rows,
+        model_bundles,
+        note_text,
+        markdown_path,
+        star_source=star_source,
+        heading_override=md_heading,
+    )
+    if star_source == "cluster":
+        cap_tex = (
+            r"\caption{Appendix (Inference Robustness Stars): CH-Inclusive Log Robot Stock --- Eq.\ 1 and Eq.\ 2 Coord}",
+            r"\label{tab:wiod_appendix_robot_stock_ch_inclusive_clusterstars}",
+        )
+    else:
+        cap_tex = (
+            r"\caption{Appendix: Eq.\ 1 and Eq.\ 2 Coordination with Log Robot Stock (CH-Inclusive Sample)}",
+            r"\label{tab:wiod_appendix_robot_stock_ch_inclusive}",
+        )
+    write_latex_table(
+        coefficient_rows,
+        stat_rows,
+        model_bundles,
+        note_text,
+        latex_path,
+        star_source=star_source,
+        caption_label=cap_tex,
+    )
+    logger.info(f"Appendix robot-stock CH-inclusive CSV -> {csv_path}")
+    logger.info(f"Appendix robot-stock CH-inclusive Markdown -> {markdown_path}")
+    logger.info(f"Appendix robot-stock CH-inclusive LaTeX -> {latex_path}")
+
+
 def main() -> None:
     args = parse_args()
     ensure_results_dirs()
     RESULTS_TABLES_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_INFERENCE_ROBUSTNESS_DIR.mkdir(parents=True, exist_ok=True)
+
+    if args.appendix_robot_stock_ch_inclusive_only:
+        emit_appendix_robot_stock_ch_inclusive_table(
+            star_source=args.star_source,
+            output_suffix=args.output_suffix,
+        )
+        return
+
     latex_path, markdown_path, csv_path = resolve_output_paths(
         star_source=args.star_source,
         output_suffix=args.output_suffix,
@@ -475,8 +689,12 @@ def main() -> None:
     combined_rows = coefficient_rows + stat_rows
     rows_df = rows_to_dataframe(combined_rows, model_bundles)
     rows_df.to_csv(csv_path, index=False)
-    write_markdown_table(coefficient_rows, stat_rows, model_bundles, note_text, markdown_path)
-    write_latex_table(coefficient_rows, stat_rows, model_bundles, note_text, latex_path)
+    write_markdown_table(
+        coefficient_rows, stat_rows, model_bundles, note_text, markdown_path, star_source=args.star_source
+    )
+    write_latex_table(
+        coefficient_rows, stat_rows, model_bundles, note_text, latex_path, star_source=args.star_source
+    )
 
     logger.info(f"Combined table CSV -> {csv_path}")
     logger.info(f"Combined table Markdown -> {markdown_path}")

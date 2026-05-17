@@ -43,6 +43,7 @@ from _wiod_panel_utils import (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+    # Thesis headline: default K, full 2001–2014. Appendix robustness only: capcomp, exclude-years 2008 2009 (GH #30).
     parser.add_argument(
         "--moderator",
         choices=["coord", "adjcov", "ud"],
@@ -62,6 +63,19 @@ def parse_args() -> argparse.Namespace:
         help="Binary coord is a robustness recode (Coord >= 4).",
     )
     parser.add_argument(
+        "--robot-regressor",
+        choices=["intensity", "stock"],
+        default="intensity",
+        help="Robot regressor: per-worker intensity headline (ln_robots_lag1); stock (ln_robot_stock_lag1) for CH-inclusive appendix pair (GH #29).",
+    )
+    parser.add_argument(
+        "--exclude-years",
+        type=int,
+        nargs="*",
+        default=None,
+        help="Optional years to drop from estimation window (e.g. 2008 2009).",
+    )
+    parser.add_argument(
         "--capital-proxy",
         choices=["k", "capcomp"],
         default="k",
@@ -78,9 +92,27 @@ def parse_args() -> argparse.Namespace:
         help="Wild cluster bootstrap repetitions for the key terms.",
     )
     parser.add_argument(
+        "--bootstrap-seed",
+        type=int,
+        default=123,
+        help="Base seed forwarded to wild cluster bootstrap.",
+    )
+    parser.add_argument(
         "--no-bootstrap-progress",
         action="store_true",
         help="Disable tqdm progress bars during wild cluster bootstrap.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help="Write results here (default: results/core).",
+    )
+    parser.add_argument(
+        "--prefix-override",
+        type=str,
+        default=None,
+        help="Override output file prefix stem.",
     )
     return parser.parse_args()
 
@@ -98,18 +130,30 @@ def main() -> None:
         capital_proxy=args.capital_proxy,
         include_gdp=not args.no_gdp,
     )
-    require = ["ln_h_empe", "ln_robots_lag1", mod_var] + controls
-    sample = prepare_wiod_panel(df, require=require, sample=args.sample)
+    robot_col = "ln_robots_lag1" if args.robot_regressor == "intensity" else "ln_robot_stock_lag1"
+    require = ["ln_h_empe", robot_col, mod_var] + controls
+    sample = prepare_wiod_panel(
+        df,
+        require=require,
+        sample=args.sample,
+        exclude_years=args.exclude_years,
+    )
     if has_var in sample.columns:
         sample = sample[sample[has_var]].copy()
 
-    interaction_term = f"ln_robots_lag1:{mod_var}"
-    rhs_terms = ["ln_robots_lag1", interaction_term] + controls
+    interaction_term = f"{robot_col}:{mod_var}"
+    rhs_terms = [robot_col, interaction_term] + controls
     prefix_root = {
         "primary": "primary_contribution_eq2_wiod",
         "secondary": "secondary_focal_eq2_wiod",
         "reference": "reference_benchmark_eq2_wiod",
     }.get(mod_info.get("workflow_tier"), "institutional_eq2_wiod")
+
+    default_prefix = f"{prefix_root}_{args.moderator}_{args.sample}_{args.capital_proxy}_{args.coord_mode}"
+    if args.robot_regressor == "stock":
+        default_prefix = f"{default_prefix}_robot_stock"
+    prefix_out = args.prefix_override or default_prefix
+    out_dir = args.output_dir or RESULTS_CORE_DIR
 
     logger.info(
         "WIOD Eq. 2 institutional sample: "
@@ -120,26 +164,31 @@ def main() -> None:
     result = fit_all_inference(sample, outcome="ln_h_empe", rhs_terms=rhs_terms)
 
     write_model_bundle(
-        prefix=f"{prefix_root}_{args.moderator}_{args.sample}_{args.capital_proxy}_{args.coord_mode}",
+        prefix=prefix_out,
         title=f"WIOD Eq. 2 institutional moderation: {mod_info['label']} ({mod_info['role_label']})",
         result=result,
         rhs_terms=rhs_terms,
-        key_terms=["ln_robots_lag1", interaction_term],
+        key_terms=[robot_col, interaction_term],
         flags={
             "moderator": args.moderator,
             "sample": args.sample,
             "coord_mode": args.coord_mode,
             "capital_proxy": args.capital_proxy,
+            "robot_regressor": args.robot_regressor,
+            "robot_col": robot_col,
+            "exclude_years": args.exclude_years,
             "include_gdp": not args.no_gdp,
             "moderator_is_binary": is_binary,
             "headline_se": "country_cluster",
             "secondary_se": ["entity_cluster", "driscoll_kraay"],
             "wild_cluster_bootstrap_reps": args.bootstrap_reps,
+            "bootstrap_seed": args.bootstrap_seed,
         },
         sample_mode=args.sample,
         bootstrap_reps=args.bootstrap_reps,
+        bootstrap_seed=args.bootstrap_seed,
         bootstrap_show_progress=not args.no_bootstrap_progress,
-        out_dir=RESULTS_CORE_DIR,
+        out_dir=out_dir,
         extra_lines=[
             "Outcome: ln_h_empe (WIOD H_EMPE labour-hours proxy)",
             f"Moderator column: {mod_var}",

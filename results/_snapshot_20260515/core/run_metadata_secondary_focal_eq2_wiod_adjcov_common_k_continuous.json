@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-04-01T12:38:53.065348+00:00",
+  "git_commit": "0011c6510d5fb49cd10dfa1ba4dba1015521ccf2",
+  "script": "secondary_focal_eq2_wiod_adjcov_common_k_continuous.py",
+  "flags": {
+    "moderator": "adjcov",
+    "sample": "common",
+    "coord_mode": "continuous",
+    "capital_proxy": "k",
+    "include_gdp": true,
+    "moderator_is_binary": false,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999
+  },
+  "n_obs": 1685,
+  "n_entities": 153
+}

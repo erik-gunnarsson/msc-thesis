@@ -1,0 +1,54 @@
+{
+  "prefix": "secondary_focal_eq2_wiod_adjcov_common_k_continuous",
+  "title": "WIOD Eq. 2 institutional moderation: Adjusted collective-bargaining coverage (secondary focal moderator)",
+  "sample_mode": "common",
+  "formula": "ln_h_empe ~ ln_robots_lag1 + ln_robots_lag1:adjcov_pre_c + ln_va_wiod_qi + ln_k_wiod + gdp_growth + C(entity) + C(year_int)",
+  "panel_formula": "ln_h_empe ~ ln_robots_lag1 + ln_robots_lag1:adjcov_pre_c + ln_va_wiod_qi + ln_k_wiod + gdp_growth + EntityEffects + TimeEffects",
+  "n_observations": 1685,
+  "n_entities": 153,
+  "n_countries": 15,
+  "countries": [
+    "AT",
+    "BE",
+    "DE",
+    "DK",
+    "EL",
+    "FI",
+    "FR",
+    "IE",
+    "IT",
+    "MT",
+    "NL",
+    "PT",
+    "SE",
+    "SI",
+    "UK"
+  ],
+  "year_min": 2001,
+  "year_max": 2014,
+  "years": "2001-2014",
+  "r_squared": 0.9977356378316997,
+  "adj_r_squared": 0.9974813831628682,
+  "fixed_effects": {
+    "country_industry": true,
+    "year": true
+  },
+  "key_terms": [
+    "ln_robots_lag1",
+    "ln_robots_lag1:adjcov_pre_c"
+  ],
+  "flags": {
+    "moderator": "adjcov",
+    "sample": "common",
+    "coord_mode": "continuous",
+    "capital_proxy": "k",
+    "include_gdp": true,
+    "moderator_is_binary": false,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999
+  }
+}

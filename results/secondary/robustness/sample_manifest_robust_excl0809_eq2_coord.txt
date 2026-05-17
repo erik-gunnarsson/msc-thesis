@@ -1,0 +1,8 @@
+Sample manifest: robust_excl0809_eq2_coord
+Generated: 2026-05-15T10:17:35.185664+00:00
+Sample mode: full
+========================================================
+Observations: 2059
+Entities: 247
+Countries (25): AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, SE, SI, SK, UK
+Years: 2001-2014

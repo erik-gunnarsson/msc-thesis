@@ -20,9 +20,9 @@ Country-clustered FE summary
 ==============================================================================
 Dep. Variable:              ln_h_empe   R-squared:                       0.997
 Model:                            OLS   Adj. R-squared:                  0.996
-Method:                 Least Squares   F-statistic:                 3.697e+12
-Date:                Wed, 01 Apr 2026   Prob (F-statistic):          3.90e-133
-Time:                        14:40:23   Log-Likelihood:                 2501.1
+Method:                 Least Squares   F-statistic:                 1.556e+05
+Date:                Fri, 15 May 2026   Prob (F-statistic):           5.30e-52
+Time:                        12:06:32   Log-Likelihood:                 2501.1
 No. Observations:                2356   AIC:                            -4512.
 Df Residuals:                    2111   BIC:                            -3100.
 Df Model:                         244                                         
@@ -298,8 +298,8 @@ Driscoll-Kraay comparison
 Dep. Variable:              ln_h_empe   R-squared:                        0.2985
 Estimator:                   PanelOLS   R-squared (Between):              0.8928
 No. Observations:                2356   R-squared (Within):              -0.0046
-Date:                Wed, Apr 01 2026   R-squared (Overall):              0.8896
-Time:                        14:38:54   Log-likelihood                    2501.1
+Date:                Fri, May 15 2026   R-squared (Overall):              0.8896
+Time:                        12:04:34   Log-likelihood                    2501.1
 Cov. Estimator:        Driscoll-Kraay                                           
                                         F-statistic:                      179.68
 Entities:                         227   P-value                           0.0000
@@ -335,8 +335,8 @@ Entity-clustered comparison
 Dep. Variable:              ln_h_empe   R-squared:                       0.997
 Model:                            OLS   Adj. R-squared:                  0.996
 Method:                 Least Squares   F-statistic:                 2.233e+04
-Date:                Wed, 01 Apr 2026   Prob (F-statistic):               0.00
-Time:                        14:40:23   Log-Likelihood:                 2501.1
+Date:                Fri, 15 May 2026   Prob (F-statistic):               0.00
+Time:                        12:06:32   Log-Likelihood:                 2501.1
 No. Observations:                2356   AIC:                            -4512.
 Df Residuals:                    2111   BIC:                            -3100.
 Df Model:                         244                                         

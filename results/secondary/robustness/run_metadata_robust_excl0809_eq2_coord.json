@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-05-15T10:17:35.215929+00:00",
+  "git_commit": "010ee4a1749b83a9c8af98cf34214a1085d8e404",
+  "script": "robust_excl0809_eq2_coord.py",
+  "flags": {
+    "moderator": "coord",
+    "sample": "full",
+    "coord_mode": "continuous",
+    "capital_proxy": "k",
+    "robot_regressor": "intensity",
+    "robot_col": "ln_robots_lag1",
+    "exclude_years": [
+      2008,
+      2009
+    ],
+    "include_gdp": true,
+    "moderator_is_binary": false,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999,
+    "bootstrap_seed": 123
+  },
+  "n_obs": 2059,
+  "n_entities": 247
+}

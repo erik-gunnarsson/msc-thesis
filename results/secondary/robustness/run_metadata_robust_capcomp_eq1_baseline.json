@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-05-15T10:15:25.528324+00:00",
+  "git_commit": "010ee4a1749b83a9c8af98cf34214a1085d8e404",
+  "script": "robust_capcomp_eq1_baseline.py",
+  "flags": {
+    "capital_proxy": "capcomp",
+    "robot_regressor": "intensity",
+    "robot_col": "ln_robots_lag1",
+    "exclude_years": null,
+    "include_gdp": true,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999,
+    "bootstrap_seed": 123
+  },
+  "n_obs": 2571,
+  "n_entities": 257
+}

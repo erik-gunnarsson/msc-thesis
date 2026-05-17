@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-03-26T21:22:29.000481+00:00",
+  "git_commit": "1cc26039b8833d97d12ff4b35270108009976d30",
+  "script": "04_klems_baseline.py",
+  "flags": {
+    "se": "clustered"
+  },
+  "n_obs": 2700,
+  "n_entities": 298
+}

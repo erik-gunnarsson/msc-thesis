@@ -50,6 +50,9 @@
     "sample": "full",
     "coord_mode": "continuous",
     "capital_proxy": "k",
+    "robot_regressor": "intensity",
+    "robot_col": "ln_robots_lag1",
+    "exclude_years": null,
     "include_gdp": true,
     "moderator_is_binary": false,
     "headline_se": "country_cluster",
@@ -57,6 +60,7 @@
       "entity_cluster",
       "driscoll_kraay"
     ],
-    "wild_cluster_bootstrap_reps": 999
+    "wild_cluster_bootstrap_reps": 999,
+    "bootstrap_seed": 123
   }
 }

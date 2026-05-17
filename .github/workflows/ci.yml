@@ -21,5 +21,8 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Run smoke test
-        run: uv run python code/00_run_pipeline.py --smoke
+      - name: WIOD smoke (compile + imports + core loaders + funnel)
+        run: uv run python code/secondary/smoke_test.py
+
+      - name: Validate committed WIOD artifacts
+        run: uv run python code/secondary/_validate_artifacts.py

@@ -1,4 +1,4 @@
-# WIOD Combined Regression Table
+# WIOD Inference Robustness Table (country-clustered stars)
 
 | Row | Eq. 1 | Eq. 2 coord | Eq. 2 adjcov | Eq. 2 ud | Eq. 2b |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -25,4 +25,4 @@
 | Countries | 26 | 25 | 15 | 23 | 23 |
 | R-squared | 0.997 | 0.997 | 0.998 | 0.997 | 0.997 |
 
-Notes: Country-clustered standard errors in parentheses. Stars on robot-related terms are based on country-clustered p-values (* p<0.10, ** p<0.05, *** p<0.01). Controls are reported with country-clustered standard errors and no star notation. All models include country-industry and year fixed effects. Eq. 2 adjcov uses the restricted/common sample. Eq. 2b is exploratory. Sample period: 2001-2014. Capital control: WIOD K.
+Notes: Country-clustered standard errors in parentheses. This table is an inference-robustness companion to the canonical wild-cluster bootstrap table (results/tables/wiod_regression_table_combined.tex); the canonical table is the thesis inference standard. Stars on robot-related terms are based on country-clustered p-values (* p<0.10, ** p<0.05, *** p<0.01). Controls are reported with country-clustered standard errors and no star notation. All models include country-industry and year fixed effects. Eq. 2 adjcov uses the restricted/common sample. Eq. 2b is exploratory. ICTWSS moderators are time-invariant country-level averages over 1990-1995. Sample period: 2001-2014. Capital control: WIOD K.

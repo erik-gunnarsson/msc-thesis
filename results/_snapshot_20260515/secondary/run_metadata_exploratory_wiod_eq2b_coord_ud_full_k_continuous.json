@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-04-01T12:22:41.060143+00:00",
+  "git_commit": "0011c6510d5fb49cd10dfa1ba4dba1015521ccf2",
+  "script": "exploratory_wiod_eq2b_coord_ud_full_k_continuous.py",
+  "flags": {
+    "capital_proxy": "k",
+    "include_gdp": true,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999,
+    "equation": "eq2b_hawk_dove"
+  },
+  "n_obs": 2356,
+  "n_entities": 227
+}

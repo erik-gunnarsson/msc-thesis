@@ -214,6 +214,7 @@ def load_ifr_panel() -> pd.DataFrame:
     df["industry_code"] = df["industry_code"].astype(str)
     df["year"] = pd.to_numeric(df["year"], errors="coerce")
     df["robot_wrkr_stock_95"] = pd.to_numeric(df["robot_wrkr_stock_95"], errors="coerce")
+    df["robot_stock"] = pd.to_numeric(df["robot_stock"], errors="coerce")
     df = df[
         df["country_code"].isin(WIOD_EUROPE_CANDIDATE_ISO2)
         & df["industry_code"].isin(IFR_TO_NACE)
@@ -226,6 +227,7 @@ def load_ifr_panel() -> pd.DataFrame:
         df.groupby(["country_code", "nace_r2_code", "year"], as_index=False)
         .agg(
             robot_wrkr_stock_95=("robot_wrkr_stock_95", "mean"),
+            robot_stock=("robot_stock", "mean"),
             ln_robots=("ln_robots", "mean"),
             n_ifr_rows=("industry_code", "size"),
         )
@@ -233,7 +235,9 @@ def load_ifr_panel() -> pd.DataFrame:
         .reset_index(drop=True)
     )
     collapsed["entity_nace"] = collapsed["country_code"] + "_" + collapsed["nace_r2_code"]
+    collapsed["ln_robot_stock"] = np.log(collapsed["robot_stock"].replace(0, np.nan))
     collapsed["ln_robots_lag1"] = collapsed.groupby("entity_nace")["ln_robots"].shift(1)
+    collapsed["ln_robot_stock_lag1"] = collapsed.groupby("entity_nace")["ln_robot_stock"].shift(1)
     return collapsed.drop(columns=["entity_nace"])
 
 
@@ -290,6 +294,8 @@ def load_ictwss() -> tuple[pd.DataFrame, pd.DataFrame]:
             ict[col] = pd.to_numeric(ict[col], errors="coerce")
             ict.loc[ict[col] == -99, col] = np.nan
 
+    # ICTWSS institutional baseline: country means over 1990–1995 only (pre-sample vs 2001–2014 panel).
+    # Timing follows Leibrecht et al. (2023); intentionally not parameterised—no alternate-window appendix loop.
     base = ict[ict["year"].between(1990, 1995)].copy()
     baseline = (
         base.groupby("country_code", as_index=False)
@@ -390,7 +396,8 @@ def build_wiod_panel() -> pd.DataFrame:
 
     out_cols = [
         "country_code", "nace_r2_code", "year", "year_int", "entity",
-        "robot_wrkr_stock_95", "ln_robots", "ln_robots_lag1", "n_ifr_rows",
+        "robot_wrkr_stock_95", "robot_stock", "ln_robots", "ln_robot_stock",
+        "ln_robots_lag1", "ln_robot_stock_lag1", "n_ifr_rows",
         "H_EMPE", "ln_h_empe", "VA_QI", "ln_va_wiod_qi", "K", "ln_k_wiod",
         "CAP", "ln_capcomp_wiod", "GO", "gross_exports_usd_m", "trade_available",
         "expint_current", "expint_pre_ij", "expint_pre_j", "exposed_binary", "exposure_group",
@@ -445,9 +452,13 @@ def prepare_wiod_panel(
     *,
     require: list[str],
     sample: str = "full",
+    exclude_years: list[int] | None = None,
 ) -> pd.DataFrame:
     out = apply_wiod_sample_filter(df.copy(), sample)
     out = out[out["year"].between(2001, 2014)].copy()
+    if exclude_years:
+        out = out[~out["year_int"].isin(exclude_years)].copy()
+        logger.info(f"Excluded years {exclude_years} -> {len(out)} rows remain")
     out = out.dropna(subset=require)
     out = out.drop_duplicates(subset=["entity", "year_int"]).copy()
     return out.sort_values(["entity", "year_int"]).reset_index(drop=True)
@@ -540,6 +551,28 @@ def wild_cluster_bootstrap_pvalue(
     cluster_col: str = "country_code",
     show_progress: bool = True,
 ) -> float:
+    """Wild-cluster bootstrap p-value (Rademacher weights) for one regression coefficient.
+
+    Implements the restricted-residual wild bootstrap under the null that the
+    *target_param* coefficient is zero (Cameron, Gelbach & Miller 2008; see also
+    MacKinnon & Webb on few-cluster behaviour). Steps:
+
+    1. Fit **homoskedastic OLS** for the unrestricted model (``formula``) and for
+       the restricted model (``restricted_formula``) that omits *target_param*
+       from the RHS but is otherwise the same FE structure.
+    2. Let ``\\hat y_r`` and ``\\hat u_r`` be restricted fitted values and residuals.
+       For each rep, draw ``v_g \\in \\{-1,+1\\}`` i.i.d. for each cluster ``g`` in
+       ``cluster_col`` (Rademacher), map to observations ``w``, and set
+       ``y* = \\hat y_r + \\hat u_r \\odot w``.
+    3. Refit the **unrestricted** design on ``y*`` with **cluster-robust** errors
+       (same clustering); compare ``|t*|`` to ``|t|`` from the real-data clustered
+       unrestricted fit.
+    4. Return the two-sided bootstrap p-value as the fraction of reps with
+       ``|t*| \\ge |t|`` (``hits / reps``).
+
+    See also ``build_restricted_formulas`` in ``_wiod_model_utils.py`` for how
+    ``restricted_formula`` is constructed per focal term.
+    """
     unrestricted = smf.ols(formula, data=df).fit()
     restricted = smf.ols(restricted_formula, data=df).fit()
     observed = smf.ols(formula, data=df).fit(
@@ -549,8 +582,6 @@ def wild_cluster_bootstrap_pvalue(
     obs_t = float(observed.tvalues[target_param])
 
     X_u = pd.DataFrame(unrestricted.model.exog, columns=unrestricted.model.exog_names, index=df.index)
-    X_r = pd.DataFrame(restricted.model.exog, columns=restricted.model.exog_names, index=df.index)
-    y = pd.Series(unrestricted.model.endog, index=df.index)
     clusters = df[cluster_col]
     unique_clusters = clusters.drop_duplicates().tolist()
     rng = np.random.default_rng(seed)
@@ -587,6 +618,11 @@ def summarise_key_terms(
     bootstrap_seed: int = 123,
     bootstrap_show_progress: bool = True,
 ) -> pd.DataFrame:
+    """Tabulate coefficients and p-values; run wild bootstrap where `restricted_formulas` supplies a key.
+
+    Wild bootstrap uses ``seed=bootstrap_seed + idx`` for ``idx`` = position in ``key_terms`` (see
+    ``write_model_bundle`` / ``effective_bootstrap_seed_by_term`` in run metadata).
+    """
     rows: list[dict[str, object]] = []
     restricted_formulas = restricted_formulas or {}
 

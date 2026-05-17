@@ -6,6 +6,8 @@ This repository contains the empirical code for an MSc thesis on how industrial 
 - `Eq. 2`: single-moderator institutional moderation
 - `Eq. 2b`: exploratory joint `coord x ud` Hawk-Dove extension
 
+Machine-checked coherence of committed regression outputs under `results/core/`, `results/secondary/`, and `results/tables/` is described in [REPRODUCIBILITY.md](REPRODUCIBILITY.md) (step 8: `uv run python code/secondary/_validate_artifacts.py`).
+
 ## Research Focus
 
 The active thesis question is:
@@ -38,11 +40,11 @@ Expected local inputs under `data/`:
 Main data use in the active WIOD workflow:
 
 - outcome: `H_EMPE` from WIOD SEA
-- robots: IFR robot intensity, lagged one year
+- robots: IFR **per-worker robot intensity** (`ln_robots_lag1`), lagged one year — headline operationalisation matches **Leibrecht et al. (2023)** (IFR robots-per-worker with a baseline-frozen denominator). **Appendix (GH [#29](https://github.com/erik-gunnarsson/msc-thesis/issues/29)):** lagged **log robot stock** (`ln_robot_stock_lag1`) for **Eq. 1** and **Eq. 2 coord** on the **CH-inclusive** sample in one table — [`results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.{md,tex,csv}`](results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.md) (cross-reference from **§6.2.2** and **§6.2.3**). *Graetz & Michaels (2018)* motivate capital-stock controls on the **level** equation; they are **not** the comparator for how robot **exposure** is scaled in the moderation design.
 - output control: `VA_QI` from WIOD SEA
 - capital control: `K` from WIOD SEA by default, `CAP` as sensitivity
 - macro control: Eurostat GDP growth
-- institutions: ICTWSS baseline-frozen 1990-1995 measures
+- institutions: ICTWSS country-level coordination, adjusted coverage, and union-density measures averaged over **1990–1995** and held fixed through the regression window (**2001–2014**). This **pre-sample institutional freeze** is the same benchmark as **Leibrecht et al. (2023)** (reverse causality: institutions are measured before robot adoption in the panel). **No alternative ICTWSS averaging windows** are used or planned as sensitivity checks—the thesis cites that reference for this timing choice instead of multiplying appendix variants.
 
 Country scope in the active WIOD workflow:
 
@@ -52,7 +54,7 @@ Country scope in the active WIOD workflow:
 
 **Excluded countries and reasons:**
 
-- `CH` (Switzerland): the IFR extract contains disaggregated `robot_stock` at the sub-industry level, but `robot_wrkr_stock_95` (the per-worker normalisation used in the regression) is missing because IFR employment is zero for all Swiss manufacturing sub-industries. The raw robot counts exist but cannot be normalised consistently with other countries. CH will be revisited as a robustness exercise using alternative normalisation approaches.
+- `CH` (Switzerland): **Headline intensity panel:** IFR records **zero employment** across Swiss manufacturing sub-industries, so the **per-worker intensity denominator** behind `robot_wrkr_stock_95` is **undefined** — CH cannot enter on the **same intensity measure** as other countries (secondary-data **measurement constraint**, not discretionary trimming). Raw robot **stocks** exist; CH is included under **`ln_robot_stock_lag1`** in the **appendix table** [`wiod_regression_table_appendix_robot_stock_ch_inclusive.{md,tex,csv}`](results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.md). Technical note: [`results/secondary/wiod_ch_alt_normalisation.md`](results/secondary/wiod_ch_alt_normalisation.md).
 - `CY` (Cyprus), `HR` (Croatia), `LU` (Luxembourg), `TR` (Turkey): the IFR data source provides only aggregate country-level robot figures for these countries, with no disaggregated manufacturing sub-industry breakdown. Since the identification strategy relies on within-country cross-industry variation in robot adoption, aggregate-only data is incompatible with the panel design.
 - `IC` (Iceland): missing from the WIOD SEA release (fixed 43-country set), and IFR disaggregated data is also unavailable.
 - `RU` (Russia): missing from the IFR extract, missing Eurostat GDP coverage, and missing all ICTWSS institutional baselines.
@@ -70,7 +72,7 @@ The active WIOD design uses:
 - country-clustered headline inference
 - wild cluster bootstrap p-values for the key interaction terms
 
-Wild cluster bootstrap uses **999** repetitions by default (`--bootstrap-reps` on each model script). While bootstrap runs, **tqdm** shows a progress bar per focal coefficient with elapsed time and rate estimates. Pass `--no-bootstrap-progress` on the model scripts or on `code/core/14_wiod_first_results.py` (which forwards the flag to child scripts) to suppress bars, for example in CI logs.
+Wild cluster bootstrap uses **999** repetitions by default (`--bootstrap-reps` on each model script). **`--bootstrap-seed`** (default **123**) is offset per `key_terms` row (`+0`, `+1`, …); Eq. 2 coordination interaction uses **effective seed 124**. Algorithm and thesis inference wording: [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) §6–7; audit: [`results/secondary/bootstrap_audit_eq2_coord.md`](results/secondary/bootstrap_audit_eq2_coord.md). While bootstrap runs, **tqdm** shows a progress bar per focal coefficient with elapsed time and rate estimates. Pass `--no-bootstrap-progress` on the model scripts or on `code/core/14_wiod_first_results.py` (which forwards the flag to child scripts) to suppress bars, for example in CI logs. Regenerated `run_metadata_*.json` files include `effective_bootstrap_seed_by_term`.
 
 ### Eq. 1
 
@@ -140,7 +142,18 @@ ln(H_EMPE)_ijt
 
 ### Identification Note
 
-The institutional moderators are country-level and baseline-frozen. Their standalone main effects are therefore absorbed by the country-industry fixed effects. What is identified in `Eq. 2` and `Eq. 2b` is whether institutions change the slope on robot adoption.
+The institutional moderators are country-level and baseline-frozen (ICTWSS **1990–1995** country means; timing benchmark from **Leibrecht et al. 2023**, not an alternate-window sensitivity grid). Their standalone main effects are therefore absorbed by the country-industry fixed effects. What is identified in `Eq. 2` and `Eq. 2b` is whether institutions change the slope on robot adoption.
+
+### Thesis vs appendix specification defaults
+
+**Headline (combined thesis tables, full calendar span):** WIOD SEA **capital stock `K`**. This keeps the labour-demand controls aligned with production-function-style benchmarking used in reference robot–labour work (e.g. Graetz & Michaels 2018 rely on **capital stock**, not capital compensation, in comparable specifications). **`CAP`** is a **flow** that mechanically shares variation with **value added**; headline specs therefore pair **`ln(VA_QI)`** with **`ln(K)`**, not with **`ln(CAP)`**.
+
+**Appendix-only sensitivities** (outputs under [`results/secondary/robustness/`](results/secondary/robustness/), summary in [`results/secondary/robustness_overview_20260515.md`](results/secondary/robustness_overview_20260515.md); flags: `--exclude-years 2008 2009`, `--capital-proxy capcomp` on [`code/core/10_wiod_baseline.py`](code/core/10_wiod_baseline.py) / [`code/core/11_wiod_institution_moderation.py`](code/core/11_wiod_institution_moderation.py)):
+
+- **Crisis-year drop:** exclude **2008–2009** to address GFC timing concerns. The focal Eq. 2 coordination interaction stays ~**0.012** (wild *p* virtually unchanged); present in an **appendix table** with a **one-sentence forward reference from §6.2.4** (placeholder **Table A.X** until final appendix numbering). Main tables stay on **2001–2014** because binding inference is **country cluster count**, not calendar length—trimming years does not fix few-cluster bias and can shift the bootstrap reference distribution.
+- **`CAP` instead of `K`:** report as an **explicit sensitivity**. Under **`CAP`**, the coordination interaction **attenuates materially** relative to the **`K`** headline — prose must say so (see [`RESULTS_BRIEF.md`](results/RESULTS_BRIEF.md)). **`CAP`** remains informative precisely because it is constructed differently from **`K`**.
+
+Locked placement decision: **GH [#30](https://github.com/erik-gunnarsson/msc-thesis/issues/30)**.
 
 ## Folder Structure
 
@@ -187,6 +200,8 @@ The institutional moderators are country-level and baseline-frozen. Their standa
 - `results/archive/`: archived legacy output snapshot from the pre-cleanup structure
 
 ## Active Workflow
+
+For a copy-paste **re-run checklist** (commands, expected sample counts, script taxonomy), see [REPRODUCIBILITY.md](REPRODUCIBILITY.md).
 
 ### 1. Build the WIOD Panel
 
@@ -238,7 +253,23 @@ uv run python code/core/18_wiod_academic_tables.py
 uv run python code/core/18_wiod_academic_tables.py --star-source cluster
 ```
 
-The second command writes the `*_clusterstars` variants (stars from country-clustered p-values). These scripts do not re-estimate models.
+The **thesis-facing inference standard** is **wild-cluster bootstrap** stars on robot-related terms, with country-clustered standard errors in parentheses (`results/tables/wiod_regression_table_combined.{md,tex,csv}`). The second command is **optional**: it writes an **inference-robustness** variant with stars from asymptotic country-clustered *p*-values (`results/secondary/inference_robustness/wiod_regression_table_combined_clusterstars.{md,tex,csv}`) — use appendix / §6.2 comparisons only; it is **not** a co-equal headline table. These scripts do not re-estimate models.
+
+**Appendix — CH-inclusive log robot stock (GH #29)** — same structured artefacts as the main table builder, but pulls `robust_robotstock_*` from `results/secondary/robustness/`:
+
+```bash
+uv run python code/core/18_wiod_academic_tables.py --appendix-robot-stock-ch-inclusive-only
+uv run python code/core/18_wiod_academic_tables.py --appendix-robot-stock-ch-inclusive-only --star-source cluster
+```
+
+Writes `results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.{md,tex,csv}` (wild-bootstrap stars) and `results/secondary/inference_robustness/wiod_regression_table_appendix_robot_stock_ch_inclusive_clusterstars.{md,tex,csv}`. Regenerate the underlying estimates first if needed:
+
+```bash
+uv run python code/core/10_wiod_baseline.py --robot-regressor stock \
+  --output-dir results/secondary/robustness --prefix-override robust_robotstock_eq1_baseline
+uv run python code/core/11_wiod_institution_moderation.py --moderator coord --robot-regressor stock \
+  --output-dir results/secondary/robustness --prefix-override robust_robotstock_eq2_coord
+```
 
 ### 3. Run the Exploratory Eq. 2b Extension
 

@@ -1,0 +1,60 @@
+{
+  "prefix": "wiod_eq1_baseline_k",
+  "title": "WIOD Eq. 1 baseline labour-input model (mainline)",
+  "sample_mode": "full",
+  "formula": "ln_h_empe ~ ln_robots_lag1 + ln_va_wiod_qi + ln_k_wiod + gdp_growth + C(entity) + C(year_int)",
+  "panel_formula": "ln_h_empe ~ ln_robots_lag1 + ln_va_wiod_qi + ln_k_wiod + gdp_growth + EntityEffects + TimeEffects",
+  "n_observations": 2571,
+  "n_entities": 257,
+  "n_countries": 26,
+  "countries": [
+    "AT",
+    "BE",
+    "BG",
+    "CZ",
+    "DE",
+    "DK",
+    "EE",
+    "EL",
+    "ES",
+    "FI",
+    "FR",
+    "HU",
+    "IE",
+    "IT",
+    "LT",
+    "LV",
+    "MT",
+    "NL",
+    "NO",
+    "PL",
+    "PT",
+    "RO",
+    "SE",
+    "SI",
+    "SK",
+    "UK"
+  ],
+  "year_min": 2001,
+  "year_max": 2014,
+  "years": "2001-2014",
+  "r_squared": 0.9967931723594358,
+  "adj_r_squared": 0.9964120387304092,
+  "fixed_effects": {
+    "country_industry": true,
+    "year": true
+  },
+  "key_terms": [
+    "ln_robots_lag1"
+  ],
+  "flags": {
+    "capital_proxy": "k",
+    "include_gdp": true,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999
+  }
+}

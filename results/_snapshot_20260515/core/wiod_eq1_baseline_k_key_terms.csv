@@ -1,0 +1,2 @@
+term,coef_country_cluster,se_country_cluster,p_country_cluster,coef_entity_cluster,se_entity_cluster,p_entity_cluster,coef_driscoll_kraay,se_driscoll_kraay,p_driscoll_kraay,p_wild_cluster,ci95_low_country_cluster,ci95_high_country_cluster
+ln_robots_lag1,0.009644888112456354,0.006181605323934952,0.11869934643875613,0.009644888112456354,0.005787386618609774,0.09560670521637633,0.009644888112451544,0.0026548149274643364,0.00028630927407991,0.12612612612612611,-0.002471058322456152,0.02176083454736886
