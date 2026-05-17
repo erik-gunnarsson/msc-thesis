@@ -93,7 +93,7 @@ Source files:
 
 We compute variance inflation factors on entity + year two-way demeaned regressors so that the reported numbers reflect within-FE collinearity, not the well-known FE-induced VIF inflation. The maximum FE-style VIF across the three active equations is **1.741** (Eq. 2 coord, ln_robots_lag1). Every regressor sits well below the VIF=5 watch level and orders of magnitude below the VIF=10 rule-of-thumb.
 
-Verdict: **CLEAN**. Multicollinearity is not the binding inference concern for any of the three active equations. The previously-reported Eq. 2b interaction VIFs (`results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_vif.csv`, max 1.38) are consistent with this audit.
+Verdict: **CLEAN**. Multicollinearity is not the binding inference concern for any of the three active equations. The previously-reported Eq. 2b interaction VIFs (`results/archive/exploration/wiod_feasibility/wiod_eq2b_coord_ud_vif.csv`, max 1.38; live reruns also write `results/exploration/wiod_feasibility/`) are consistent with this audit.
 
 ## #4 Wild-cluster bootstrap seed audit (Eq. 2 coord interaction)
 

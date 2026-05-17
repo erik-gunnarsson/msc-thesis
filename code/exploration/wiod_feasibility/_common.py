@@ -1,5 +1,14 @@
 from __future__ import annotations
 
+"""
+Shared paths and helpers for *exploration* WIOD feasibility scripts (not the core thesis bundle).
+
+``CURRENT_BASELINE_PATH`` defaults to ``data/cleaned_data.csv`` — a **legacy KLEMS-era**
+name still referenced by some audit scripts. The **active WIOD mainline** panel is
+``data/cleaned_data_wiod.csv`` via ``_wiod_panel_utils.WIOD_PANEL_PATH``. Do not assume
+exploration panels match the thesis build without checking.
+"""
+
 import math
 from pathlib import Path
 

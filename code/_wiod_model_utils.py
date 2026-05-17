@@ -1,5 +1,18 @@
 from __future__ import annotations
 
+"""WIOD regression helpers: panel load, restricted-formula bootstrap pairs, table assembly.
+
+``write_model_bundle`` emits ``*_key_terms.csv``, ``*_table_terms.csv``,
+``*_table_meta.json``, ``*_results.txt``, ``sample_manifest_*.txt``, and
+``run_metadata_*.json`` for a given artefact *prefix*.
+
+**Provenance note:** ``write_run_metadata`` is called with ``f"{prefix}.py"`` so the
+JSON ``script`` field matches the output stem — it is **not** always the Python file
+you ran (e.g. ``14_wiod_first_results.py`` coordinates estimates produced by
+``10_*`` / ``11_*``). Use ``wiod_first_results_run_manifest.json`` and per-model
+``*_table_meta.json`` for sample/formula detail.
+"""
+
 import json
 from pathlib import Path
 
@@ -204,6 +217,7 @@ def write_model_bundle(
     )
 
     write_sample_manifest(result.sample, prefix, sample_mode=sample_mode, out_dir=target_dir)
+    # run_metadata "script" is the artifact prefix + ".py" (stable stem), not necessarily the invoking file — see module docstring.
     write_run_metadata(
         f"{prefix}.py",
         flags,

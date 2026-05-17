@@ -1,5 +1,20 @@
 from __future__ import annotations
 
+"""WIOD thesis pipeline: panel merges, variable construction, FE formulas, inference.
+
+**Main panel output:** :data:`WIOD_PANEL_PATH` → ``data/cleaned_data_wiod.csv``.
+
+**Typical estimation columns:** ``ln_h_empe`` (from WIOD SEA ``H_EMPE``),
+``ln_robots_lag1``, ``ln_robot_stock_lag1`` (IFR), ``ln_va_wiod_qi`` (SEA ``VA_QI``),
+``ln_k_wiod`` / ``ln_capcomp_wiod`` (capital stock vs compensation), ICTWSS
+``coord_pre_c``, ``adjcov_pre_c``, ``ud_pre_c`` (1990–1995 baseline means, centred).
+
+**Trade / exploration cache:** :data:`WIOD_TRADE_CACHE` lives under
+``results/exploration/wiod_feasibility/`` (see :mod:`_paths`).
+
+For artifact bundles (CSV/JSON regression outputs), see :mod:`_wiod_model_utils`.
+"""
+
 import json
 import subprocess
 from dataclasses import dataclass

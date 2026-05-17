@@ -58,7 +58,7 @@ Generated for writing the empirical chapter. Numeric claims trace to `results/co
 
 **Claim.** On the **23-country** coord ∩ ud intersection (2356 obs), the **three-way** robot × coordination × union-density term is **not** significant at conventional levels (p_wild ≈ **0.59** in common-sample table). The stand-alone coordination slope in the joint model is **noisier** than in Eq. 2 coord-only on the full sample.
 
-**Supporting artifacts.** `wiod_common_sample_robustness.md`, `wiod_eq2_coord_sample_decomposition.md` (mixed sample vs. specification effect), `wiod_eq2b_coord_ud_gate.md` (gate **GO** on support / collinearity).
+**Supporting artifacts.** `wiod_common_sample_robustness.md`, `wiod_eq2_coord_sample_decomposition.md` (mixed sample vs. specification effect), gate bundle `wiod_eq2b_coord_ud_gate.md` (under `results/archive/exploration/wiod_feasibility/` if `results/exploration/` is empty until rerun — see [`results/README.md`](README.md)) (gate **GO** on support / collinearity).
 
 **Do not overclaim.** Eq. 2b is **exploratory**; do **not** present the three-way term as a core hypothesis test.
 
@@ -122,7 +122,7 @@ Generated for writing the empirical chapter. Numeric claims trace to `results/co
 
 | Thesis subsection | Primary artifact |
 |-------------------|------------------|
-| 6.1.1 Descriptives | Build from panel + ICTWSS; country matrix `results/exploration/wiod_feasibility/europe_country_availability_matrix.csv` |
+| 6.1.1 Descriptives | Build from panel + ICTWSS; country matrix `results/archive/exploration/wiod_feasibility/europe_country_availability_matrix.csv` (or rerun exploration → `results/exploration/wiod_feasibility/`) |
 | 6.1.2 Eq. 1 | `results/core/wiod_eq1_baseline_k_key_terms.csv` |
 | 6.1.3 Eq. 2 coord | `results/core/primary_contribution_eq2_wiod_coord_full_k_continuous_key_terms.csv` |
 | 6.1.4 Eq. 2 ud / adjcov | `reference_benchmark_*`, `secondary_focal_*` key_terms |
@@ -131,7 +131,7 @@ Generated for writing the empirical chapter. Numeric claims trace to `results/co
 | 6.2 Sample | `wiod_common_sample_robustness.md`, `wiod_eq2_coord_sample_decomposition.md`, `wiod_jackknife_eq2_coord.*` |
 | 6.2 CH / intensity | `results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.tex` (GH #29 unified appendix); `results/secondary/wiod_ch_alt_normalisation.md`; `results/secondary/robustness/robust_robotstock_*` |
 | 6.2 Specification | `results/secondary/robustness/robust_capcomp_*`, `robust_binarycoord_*`, `robust_excl0809_*` |
-| 6.2 Multicollinearity | `results/secondary/wiod_vif_audit.md` (plus gate `wiod_eq2b_coord_ud_vif.csv`) |
+| 6.2 Multicollinearity | `results/secondary/wiod_vif_audit.md` (plus Eq. 2b gate `wiod_eq2b_coord_ud_vif.csv` in `results/archive/exploration/wiod_feasibility/` or `results/exploration/wiod_feasibility/` after rerun) |
 | Combined thesis table | `results/tables/wiod_regression_table_combined.tex` |
 | Appendix CH-inclusive robot stock (Eq. 1 + Eq. 2 coord) | `results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.tex` |
 | Inference-robustness table (country-cluster stars) | `results/secondary/inference_robustness/wiod_regression_table_combined_clusterstars.tex` |

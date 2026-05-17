@@ -94,14 +94,17 @@ That is why `Eq. 2b` remains in the active branch as an exploratory extension.
 
 ## Output Locations
 
-Current exploration artifacts are written here:
+Exploration scripts **write** new artifacts to:
 
-- `results/exploration/wiod_feasibility/`
+- `results/exploration/wiod_feasibility/` (live path when you rerun `code/exploration/wiod_feasibility/*`).
 
-Active WIOD results are written elsewhere:
+This **`results/archive/exploration/wiod_feasibility/`** directory holds a **retained committed copy** of the same audit outputs so links stay valid when `results/exploration/` is empty in a clone.
+
+Active WIOD headline results are written elsewhere:
 
 - `results/core/`
 - `results/secondary/`
+- `results/tables/`
 
 The pre-cleanup snapshot of the old structure is preserved in:
 

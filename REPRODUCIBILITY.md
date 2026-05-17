@@ -29,7 +29,13 @@ Expected files are listed in [README.md](README.md) (IFR, ICTWSS, Eurostat GDP/u
 
 6. **Common-sample robustness** — `uv run python code/secondary/17_wiod_common_sample_robustness.py`
 
-7. **Academic tables** —  
+7. **Country jackknife (Eq. 2 coord; GH #16)** — `uv run python code/secondary/19_wiod_jackknife.py`  
+   Writes `results/secondary/wiod_jackknife_eq2_coord.{csv,md}` (default uses fewer wild-bootstrap reps per drop than the headline 999 — see script help / output notes).
+
+8. **VIF audit (GH #22)** — `uv run python code/secondary/20_wiod_vif_audit.py`  
+   Writes `results/secondary/wiod_vif_audit.{csv,md}`.
+
+9. **Academic tables** —  
    Canonical (wild-bootstrap stars): `uv run python code/core/18_wiod_academic_tables.py` → `results/tables/wiod_regression_table_combined.{md,tex,csv}`.
 
    Optional inference robustness (country-clustered stars, appendix-only):  
@@ -37,11 +43,16 @@ Expected files are listed in [README.md](README.md) (IFR, ICTWSS, Eurostat GDP/u
 
    **Appendix — CH-inclusive log robot stock (GH #29)** — `uv run python code/core/18_wiod_academic_tables.py --appendix-robot-stock-ch-inclusive-only` (and the same with `--star-source cluster`) → `results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.{md,tex,csv}` plus cluster-stars sibling under `results/secondary/inference_robustness/`. Underlying models: `10_wiod_baseline.py` / `11_wiod_institution_moderation.py` with `--robot-regressor stock`, `--output-dir results/secondary/robustness`, `--prefix-override robust_robotstock_eq1_baseline` / `robust_robotstock_eq2_coord`.
 
-8. **Validate artifacts** — `uv run python code/secondary/_validate_artifacts.py`  
+10. **Validate artifacts** — `uv run python code/secondary/_validate_artifacts.py`  
    Checks internal consistency among `results/core/` (`wiod_first_results_run_manifest.json`, `wiod_first_results_summary.csv`, per-model `*_table_meta.json`, `*_table_terms.csv`, `*_key_terms.csv`, `run_metadata_*.json`, `sample_manifest_*.txt`), selected `results/secondary/` robustness CSVs (including jackknife + sample decomposition), and `results/tables/` + `results/secondary/inference_robustness/` combined Markdown, TeX, and CSV regression tables (`wiod_first_results_*` mismatches emit a rerun hint). Optional diff against a saved manifest:  
    `uv run python code/secondary/_validate_artifacts.py --compare-snapshot results/_snapshot_YYYYMMDD/run_manifest.json`
 
-9. **CI smoke (no data required)** — `uv run python code/secondary/smoke_test.py`
+11. **CI smoke (no data required)** — `uv run python code/secondary/smoke_test.py`
+
+## Snapshots and exploration paths
+
+- **`results/_snapshot_YYYYMMDD/`** — optional freezes for comparison or meetings; not the primary writing layer. See [`results/README.md`](results/README.md). Prefer refreshing **`results/core/`** / **`results/secondary/`** when headline numbers change, then create a new snapshot if you still need one.
+- **`results/exploration/wiod_feasibility/`** — populated when you run `code/exploration/wiod_feasibility/*`. Committed copies of many feasibility files live under **`results/archive/exploration/wiod_feasibility/`** if `results/exploration/` is empty in your checkout.
 
 ## 4. Expected sample counts (sanity check)
 
@@ -61,13 +72,16 @@ After step 2, `wiod_first_results_summary.csv` should report approximately:
 | Location | Role |
 |----------|------|
 | `code/core/` | Active WIOD mainline: panel build, Eq. 1–2, first-results runner, tables |
-| `code/secondary/` | Diagnostics, robustness, jackknife, bootstrap audit, artifact validator, smoke test |
+| `code/secondary/` | Diagnostics, robustness (`robustness/`), jackknife (`19_*`), VIF audit (`20_*`), bootstrap audit (`_audit_*`), artifact validator, smoke test |
 | `code/exploration/wiod_feasibility/` | Feasibility / Eq. 2b gate (not part of minimal Eq. 1–2-only path) |
 | `code/secondary/legacy_klems/` | Legacy KLEMS robustness only |
 | `results/core/` | Headline regression artifacts |
-| `results/secondary/` | Eq. 2b, decomposition, common-sample, bootstrap audit, robustness subfolder |
+| `results/tables/` | Thesis-facing combined tables + appendix CH-inclusive robot-stock table (GH #29) |
+| `results/secondary/` | Eq. 2b, decomposition, common-sample, jackknife, VIF audit, bootstrap audit, `robustness/` subfolder |
 | `results/secondary/inference_robustness/` | Country-cluster-stars regression table variant (comparison to headline wild-bootstrap table) |
-| `results/tables/` | Canonical combined Markdown/TeX tables + appendix CH-inclusive robot-stock table (`wiod_regression_table_appendix_robot_stock_ch_inclusive.*`, GH #29) |
+| `results/exploration/wiod_feasibility/` | Live output path for exploration reruns (may be empty until rerun) |
+| `results/archive/exploration/wiod_feasibility/` | Committed feasibility / gate bundle copies |
+| `results/_snapshot_YYYYMMDD/` | Optional dated bundle (historical / compare-snapshot) |
 
 ## 6. Wild-cluster bootstrap — methods and code
 

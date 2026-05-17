@@ -69,7 +69,7 @@ MODEL_SPECS = [
         column_label="Eq. 1",
         prefix_template="wiod_eq1_baseline_{capital_proxy}",
         source_dir=RESULTS_CORE_DIR,
-        source_script="code/core/14_wiod_first_results.py",
+        source_script="code/core/10_wiod_baseline.py (via 14_wiod_first_results.py)",
     ),
     ModelTableSpec(
         model_id="EQ2_COORD",
@@ -77,7 +77,7 @@ MODEL_SPECS = [
         column_label="Eq. 2 coord",
         prefix_template="primary_contribution_eq2_wiod_coord_full_{capital_proxy}_continuous",
         source_dir=RESULTS_CORE_DIR,
-        source_script="code/core/14_wiod_first_results.py",
+        source_script="code/core/11_wiod_institution_moderation.py --moderator coord (via 14_wiod_first_results.py)",
     ),
     ModelTableSpec(
         model_id="EQ2_ADJCOV",
@@ -85,7 +85,7 @@ MODEL_SPECS = [
         column_label="Eq. 2 adjcov",
         prefix_template="secondary_focal_eq2_wiod_adjcov_common_{capital_proxy}_continuous",
         source_dir=RESULTS_CORE_DIR,
-        source_script="code/core/14_wiod_first_results.py",
+        source_script="code/core/11_wiod_institution_moderation.py --moderator adjcov (via 14_wiod_first_results.py)",
     ),
     ModelTableSpec(
         model_id="EQ2_UD",
@@ -93,7 +93,7 @@ MODEL_SPECS = [
         column_label="Eq. 2 ud",
         prefix_template="reference_benchmark_eq2_wiod_ud_full_{capital_proxy}_continuous",
         source_dir=RESULTS_CORE_DIR,
-        source_script="code/core/14_wiod_first_results.py",
+        source_script="code/core/11_wiod_institution_moderation.py --moderator ud (via 14_wiod_first_results.py)",
     ),
     ModelTableSpec(
         model_id="EQ2B",

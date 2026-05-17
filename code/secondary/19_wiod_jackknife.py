@@ -2,9 +2,9 @@
 Country leave-one-out jackknife for the WIOD Eq. 2 coordination model.
 
 For each country c in the Eq. 2 coord sample, drop c, re-fit
-    ln(H_EMPE)_ijt = b1 ln(Robots)_{ijt-1}
-                   + b2 ln(Robots)_{ijt-1} * coord_pre_c
-                   + ln(VA_QI)_ijt + ln(K)_ijt
+    ln_h_empe_ijt = b1 ln_robots_lag1_ijt
+                   + b2 (ln_robots_lag1 * coord_pre_c)_ijt
+                   + ln_va_wiod_qi_ijt + ln_k_wiod_ijt
                    + alpha_ij + delta_t + eps_ijt
 with country-clustered SEs, and record the headline interaction term.
 

@@ -7,6 +7,16 @@ Run from repository root:
 
 Optional: compare coefficients to a snapshot manifest produced by copying
 wiod_first_results_run_manifest.json after a trusted run.
+
+**Pinned regression-test counts:** ``EXPECTED_OBS`` matches the committed
+``wiod_first_results_summary.csv`` sample sizes. After a deliberate panel or
+sample-rule change, update those integers (and this comment) or validation will
+fail until the new baseline is agreed.
+
+**Exploration gate:** ``EXPLORATION_GATE`` points at the Eq. 2b Hawk–Dove gate
+Markdown under ``results/exploration/...``. If that file is missing (exploration
+not rerun), the checker skips it — use ``results/archive/exploration/...`` for
+committed gate text.
 """
 
 from __future__ import annotations
@@ -33,6 +43,7 @@ from _paths import (  # noqa: E402
     RESULTS_TABLES_DIR,
 )
 
+# Pinned headline N from wiod_first_results_summary — update when sample definition changes intentionally.
 EXPECTED_OBS = {
     "EQ1": 2571,
     "EQ2_COORD": 2500,

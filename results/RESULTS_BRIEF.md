@@ -1,7 +1,8 @@
 # Results brief (1–2 pages) - May 15th 
 
-**Numbers** trace to `[wiod_first_results_summary.csv](core/wiod_first_results_summary.csv)`.   
-**Claims and caveats** are expanded in `[interpretation_memo.md](interpretation_memo.md)`.
+Where outputs live: [`README.md`](README.md) + [`results/README.md`](README.md).  
+**Numbers** trace to [`wiod_first_results_summary.csv`](core/wiod_first_results_summary.csv).  
+**Claims and caveats** are expanded in [`interpretation_memo.md`](interpretation_memo.md).
 
 ## Design (headline)
 
@@ -35,7 +36,7 @@
 - **Few clusters + focal interaction:** Bootstrap seed audit — stable wild *p* across seeds; cluster vs wild gap documented — `[secondary/bootstrap_audit_eq2_coord.md](secondary/bootstrap_audit_eq2_coord.md)`.
 - **Leave-one-country jackknife (Eq. 2 coordination):** `[secondary/wiod_jackknife_eq2_coord.md](secondary/wiod_jackknife_eq2_coord.md)`.
 - **Common sample + specification comparison:** `[secondary/wiod_common_sample_robustness.md](secondary/wiod_common_sample_robustness.md)`; decomposition — `[secondary/wiod_eq2_coord_sample_decomposition.md](secondary/wiod_eq2_coord_sample_decomposition.md)`.
-- **Eq. 2b feasibility gate:** `[exploration/wiod_feasibility/wiod_eq2b_coord_ud_gate.md](exploration/wiod_feasibility/wiod_eq2b_coord_ud_gate.md)`.
+- **Eq. 2b feasibility gate:** committed copy — [`archive/exploration/wiod_feasibility/wiod_eq2b_coord_ud_gate.md`](archive/exploration/wiod_feasibility/wiod_eq2b_coord_ud_gate.md); live rerun path — `results/exploration/wiod_feasibility/` (see [`results/README.md`](README.md)).
 - **Crisis years (appendix only; GH #30):** exclude **2008–2009** — Eq. 2 coordination interaction stays ~**0.012** (e.g. **0.01218**, SE ~**0.00538**, wild *p* ~**0.104** vs headline **0.0124** / **0.108**) on [`robust_excl0809_eq2_coord_key_terms.csv`](secondary/robustness/robust_excl0809_eq2_coord_key_terms.csv). Not a main-table column; §6.2.4 should forward-reference the appendix table (**Table A.X** placeholder).
 - **Capital proxy (appendix only; GH #30):** headline control remains **`K`**. **`CAP`** (`--capital-proxy capcomp`) is appendix sensitivity: interaction falls to ~**0.00618** (wild *p* ~**0.28**) — [`robust_capcomp_eq2_coord_key_terms.csv`](secondary/robustness/robust_capcomp_eq2_coord_key_terms.csv). Describe as **attenuation under an alternate capital measure**, not “unchanged results.”
 - **Robot exposure — headline vs appendix (GH #29):** Main tables stay on **Leibrecht-style per-worker intensity** (`ln_robots_lag1`). **One appendix table** combines **CH-inclusive log robot stock** for **Eq. 1** and **Eq. 2 coord** — cite **§6.2.2** (sample) **and** **§6.2.3** (operationalisation) to the same artefact: [`wiod_regression_table_appendix_robot_stock_ch_inclusive.{md,tex}`](tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.md). Current run: interaction ≈ **0.0149**, wild *p* ≈ **0.05** (`robust_robotstock_eq2_coord_key_terms.csv`).

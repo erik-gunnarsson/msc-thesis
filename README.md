@@ -6,7 +6,9 @@ This repository contains the empirical code for an MSc thesis on how industrial 
 - `Eq. 2`: single-moderator institutional moderation
 - `Eq. 2b`: exploratory joint `coord x ud` Hawk-Dove extension
 
-Machine-checked coherence of committed regression outputs under `results/core/`, `results/secondary/`, and `results/tables/` is described in [REPRODUCIBILITY.md](REPRODUCIBILITY.md) (step 8: `uv run python code/secondary/_validate_artifacts.py`).
+Machine-checked coherence of committed regression outputs under `results/core/`, `results/secondary/`, and `results/tables/` is described in [REPRODUCIBILITY.md](REPRODUCIBILITY.md) (steps 10–11: `_validate_artifacts.py` and `smoke_test.py`).
+
+How result folders relate to each other (canonical vs archive vs exploration reruns): [results/README.md](results/README.md).
 
 ## Research Focus
 
@@ -39,10 +41,10 @@ Expected local inputs under `data/`:
 
 Main data use in the active WIOD workflow:
 
-- outcome: `H_EMPE` from WIOD SEA
+- outcome: `H_EMPE` from WIOD SEA → estimation column `ln_h_empe`
 - robots: IFR **per-worker robot intensity** (`ln_robots_lag1`), lagged one year — headline operationalisation matches **Leibrecht et al. (2023)** (IFR robots-per-worker with a baseline-frozen denominator). **Appendix (GH [#29](https://github.com/erik-gunnarsson/msc-thesis/issues/29)):** lagged **log robot stock** (`ln_robot_stock_lag1`) for **Eq. 1** and **Eq. 2 coord** on the **CH-inclusive** sample in one table — [`results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.{md,tex,csv}`](results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.md) (cross-reference from **§6.2.2** and **§6.2.3**). *Graetz & Michaels (2018)* motivate capital-stock controls on the **level** equation; they are **not** the comparator for how robot **exposure** is scaled in the moderation design.
-- output control: `VA_QI` from WIOD SEA
-- capital control: `K` from WIOD SEA by default, `CAP` as sensitivity
+- output control: `VA_QI` from WIOD SEA → `ln_va_wiod_qi`
+- capital control: `K` from WIOD SEA by default (`ln_k_wiod`), **capital compensation** `CAP` as sensitivity (`ln_capcomp_wiod`)
 - macro control: Eurostat GDP growth
 - institutions: ICTWSS country-level coordination, adjusted coverage, and union-density measures averaged over **1990–1995** and held fixed through the regression window (**2001–2014**). This **pre-sample institutional freeze** is the same benchmark as **Leibrecht et al. (2023)** (reverse causality: institutions are measured before robot adoption in the panel). **No alternative ICTWSS averaging windows** are used or planned as sensitivity checks—the thesis cites that reference for this timing choice instead of multiplying appendix variants.
 
@@ -59,7 +61,7 @@ Country scope in the active WIOD workflow:
 - `IC` (Iceland): missing from the WIOD SEA release (fixed 43-country set), and IFR disaggregated data is also unavailable.
 - `RU` (Russia): missing from the IFR extract, missing Eurostat GDP coverage, and missing all ICTWSS institutional baselines.
 
-The full 33-country audit matrix is available at `results/exploration/wiod_feasibility/europe_country_availability_matrix.csv`.
+The full 33-country audit matrix is committed under [`results/archive/exploration/wiod_feasibility/europe_country_availability_matrix.csv`](results/archive/exploration/wiod_feasibility/europe_country_availability_matrix.csv). Re-running exploration scripts writes fresh copies under `results/exploration/wiod_feasibility/` (see [results/README.md](results/README.md)).
 
 ## Methodology
 
@@ -128,10 +130,10 @@ ln(H_EMPE)_ijt
 - `i`: country
 - `j`: manufacturing industry
 - `t`: year
-- `ln(H_EMPE)_ijt`: log labour input from WIOD SEA
-- `ln(Robots)_{ij,t-1}`: one-year-lagged log robot intensity from IFR
-- `ln(VA_QI)_{ijt}`: log real value added from WIOD SEA
-- `ln(K)_{ijt}`: log WIOD SEA capital proxy
+- `ln(H_EMPE)_ijt`: log labour input from WIOD SEA (column `ln_h_empe`)
+- `ln(Robots)_{ij,t-1}`: one-year-lagged log robot intensity from IFR (column `ln_robots_lag1`)
+- `ln(VA_QI)_{ijt}`: log real value added from WIOD SEA (column `ln_va_wiod_qi`)
+- `ln(K)_{ijt}`: log WIOD SEA capital stock (column `ln_k_wiod`; compensation flow: `ln_capcomp_wiod`)
 - `GDPGrowth_it`: country-level GDP growth
 - `coord_pre_c`: centered baseline bargaining coordination
 - `adjcov_pre_c`: centered baseline adjusted bargaining coverage
@@ -170,6 +172,10 @@ Locked placement decision: **GH [#30](https://github.com/erik-gunnarsson/msc-the
 │   │   ├── 15_wiod_eq2b_hawk_dove.py
 │   │   ├── 16_wiod_eq2_coord_on_eq2b_sample.py
 │   │   ├── 17_wiod_common_sample_robustness.py
+│   │   ├── 19_wiod_jackknife.py
+│   │   ├── 20_wiod_vif_audit.py
+│   │   ├── _validate_artifacts.py
+│   │   ├── smoke_test.py
 │   │   ├── archived/
 │   │   └── legacy_klems/
 │   ├── exploration/
@@ -181,9 +187,11 @@ Locked placement decision: **GH [#30](https://github.com/erik-gunnarsson/msc-the
 ├── data/
 ├── results/
 │   ├── core/
+│   ├── tables/
 │   ├── secondary/
 │   ├── exploration/
 │   │   └── wiod_feasibility/
+│   ├── _snapshot_YYYYMMDD/   # optional dated freezes (historical); prefer archive/ long-term
 │   └── archive/
 └── README.md
 ```
@@ -195,9 +203,11 @@ Locked placement decision: **GH [#30](https://github.com/erik-gunnarsson/msc-the
 - `code/secondary/legacy_klems/`: legacy KLEMS overlap workflow
 - `code/exploration/wiod_feasibility/`: branch-history audits and feasibility scripts
 - `results/core/`: active first-results outputs
-- `results/secondary/`: Eq. 2b and diagnostic outputs
-- `results/exploration/wiod_feasibility/`: saved feasibility and readiness artifacts
-- `results/archive/`: archived legacy output snapshot from the pre-cleanup structure
+- `results/tables/`: thesis-facing combined tables (from `18_wiod_academic_tables.py`)
+- `results/secondary/`: Eq. 2b, diagnostics, robustness CSVs/MD (incl. jackknife, VIF audit)
+- `results/exploration/wiod_feasibility/`: **live** output when you run `code/exploration/wiod_feasibility/*` (may be empty in a fresh clone until you rerun)
+- `results/archive/`: retained historical bundles — incl. [`archive/exploration/wiod_feasibility/`](results/archive/exploration/wiod_feasibility/README.md) (feasibility artefacts) and legacy migration snapshots
+- `results/_snapshot_YYYYMMDD/`: optional **point-in-time** copies for meetings or `--compare-snapshot`; not part of the day-to-day canonical layer — plan to treat as historical or relocate under `results/archive/` over time
 
 ## Active Workflow
 
@@ -280,7 +290,7 @@ uv run python code/secondary/15_wiod_eq2b_hawk_dove.py
 
 The Eq. 2b estimation uses the same bootstrap defaults as the core scripts: **999** repetitions; pass `--no-bootstrap-progress` to disable tqdm during wild bootstrap.
 
-This writes:
+This writes (gate script → `results/exploration/wiod_feasibility/`; estimation → `results/secondary/`):
 
 - `results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_gate.md`
 - `results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_country_table.csv`
@@ -289,6 +299,8 @@ This writes:
 - `results/exploration/wiod_feasibility/wiod_eq2b_coord_ud_scatter.png`
 - `results/secondary/exploratory_wiod_eq2b_coord_ud_*`
 - `results/secondary/wiod_eq2b_coord_ud_comparison.csv`
+
+Committed copies of the gate bundle also live under [`results/archive/exploration/wiod_feasibility/`](results/archive/exploration/wiod_feasibility/README.md) if `results/exploration/` is not populated.
 
 ### 4. Run the Coord-Attenuation Diagnostic
 
@@ -323,15 +335,36 @@ Outputs:
 - `results/secondary/wiod_common_sample_robustness.csv`
 - `results/secondary/wiod_common_sample_robustness.md`
 
+### 6. Jackknife and VIF audit (optional but documented)
+
+```bash
+uv run python code/secondary/19_wiod_jackknife.py
+uv run python code/secondary/20_wiod_vif_audit.py
+```
+
+Writes `results/secondary/wiod_jackknife_eq2_coord.{csv,md}` and `results/secondary/wiod_vif_audit.{csv,md}`. See [REPRODUCIBILITY.md](REPRODUCIBILITY.md) for ordering relative to the headline bundle.
+
+### 7. Validate committed artifacts
+
+```bash
+uv run python code/secondary/_validate_artifacts.py
+```
+
+Optional snapshot diff: `uv run python code/secondary/_validate_artifacts.py --compare-snapshot results/_snapshot_YYYYMMDD/run_manifest.json`
+
+### 8. CI smoke imports (no data)
+
+```bash
+uv run python code/secondary/smoke_test.py
+```
+
 ## Exploration And Branch-History Audits
 
 Exploratory feasibility and readiness scripts live under:
 
 - `code/exploration/wiod_feasibility/`
 
-Their current documentation and retained outputs live under:
-
-- `results/exploration/wiod_feasibility/`
+Retained (committed) exploration outputs live under **`results/archive/exploration/wiod_feasibility/`**. Re-running scripts repopulates **`results/exploration/wiod_feasibility/`** (same filenames; see [results/README.md](results/README.md)).
 
 These scripts are not part of the main thesis run sequence. They exist to document how the branch evolved and to preserve the feasibility evidence behind the WIOD pivot.
 
@@ -370,7 +403,9 @@ So the KLEMS-WIOD comparison should be read as a **joint measurement-and-control
 
 ## Results Storage
 
-- active first results -> `results/core/`
-- active diagnostics and appendix tables -> `results/secondary/`
-- exploration/audit artifacts -> `results/exploration/wiod_feasibility/`
-- migrated legacy output snapshot -> `results/archive/`
+- headline regression artefacts → `results/core/`
+- thesis tables → `results/tables/`; cluster-stars siblings → `results/secondary/inference_robustness/`
+- diagnostics, Eq. 2b estimates, jackknife, VIF → `results/secondary/` (robustness reruns often under `results/secondary/robustness/`)
+- exploration gate outputs (when rerun) → `results/exploration/wiod_feasibility/`
+- retained exploration + legacy snapshots → `results/archive/`
+- optional dated freezes → `results/_snapshot_YYYYMMDD/` (historical; see [results/README.md](results/README.md))
