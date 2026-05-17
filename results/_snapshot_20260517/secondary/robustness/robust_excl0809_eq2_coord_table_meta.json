@@ -1,0 +1,71 @@
+{
+  "prefix": "robust_excl0809_eq2_coord",
+  "title": "WIOD Eq. 2 institutional moderation: Bargaining coordination (primary focal moderator)",
+  "sample_mode": "full",
+  "formula": "ln_h_empe ~ ln_robots_lag1 + ln_robots_lag1:coord_pre_c + ln_va_wiod_qi + ln_k_wiod + gdp_growth + C(entity) + C(year_int)",
+  "panel_formula": "ln_h_empe ~ ln_robots_lag1 + ln_robots_lag1:coord_pre_c + ln_va_wiod_qi + ln_k_wiod + gdp_growth + EntityEffects + TimeEffects",
+  "n_observations": 2059,
+  "n_entities": 247,
+  "n_countries": 25,
+  "countries": [
+    "AT",
+    "BE",
+    "BG",
+    "CZ",
+    "DE",
+    "DK",
+    "EE",
+    "EL",
+    "ES",
+    "FI",
+    "FR",
+    "HU",
+    "IE",
+    "IT",
+    "LT",
+    "LV",
+    "MT",
+    "NL",
+    "NO",
+    "PL",
+    "PT",
+    "SE",
+    "SI",
+    "SK",
+    "UK"
+  ],
+  "year_min": 2001,
+  "year_max": 2014,
+  "years": "2001-2014",
+  "r_squared": 0.9971013035957689,
+  "adj_r_squared": 0.9966784425390269,
+  "fixed_effects": {
+    "country_industry": true,
+    "year": true
+  },
+  "key_terms": [
+    "ln_robots_lag1",
+    "ln_robots_lag1:coord_pre_c"
+  ],
+  "flags": {
+    "moderator": "coord",
+    "sample": "full",
+    "coord_mode": "continuous",
+    "capital_proxy": "k",
+    "robot_regressor": "intensity",
+    "robot_col": "ln_robots_lag1",
+    "exclude_years": [
+      2008,
+      2009
+    ],
+    "include_gdp": true,
+    "moderator_is_binary": false,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999,
+    "bootstrap_seed": 123
+  }
+}

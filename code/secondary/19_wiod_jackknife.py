@@ -14,7 +14,7 @@ results/secondary/wiod_jackknife_eq2_coord.csv
     dropped_country, n_obs, n_entities, n_countries,
     beta_interaction, se_country_cluster, t, p_cluster,
     beta_robot_main, se_robot_main, p_robot_main,
-    p_wild (optional; 199 reps if --wild-reps > 0)
+    p_wild (optional; 999 reps by default if --wild-reps > 0)
 
 results/secondary/wiod_jackknife_eq2_coord.md
     short table + one-paragraph summary.
@@ -73,7 +73,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--wild-reps",
         type=int,
-        default=199,
+        default=999,
         help="Wild cluster bootstrap reps per dropped country (0 disables).",
     )
     parser.add_argument(
@@ -81,6 +81,11 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=123,
         help="Base seed forwarded to the per-country wild bootstrap.",
+    )
+    parser.add_argument(
+        "--no-bootstrap-progress",
+        action="store_true",
+        help="Disable tqdm progress bars during wild cluster bootstrap.",
     )
     return parser.parse_args()
 
@@ -94,6 +99,7 @@ def fit_one_country_dropped(
     main_term: str,
     wild_reps: int,
     wild_seed: int,
+    bootstrap_show_progress: bool,
     drop_country: str | None,
 ) -> dict[str, object]:
     if drop_country is None:
@@ -128,7 +134,7 @@ def fit_one_country_dropped(
                 target_param=interaction_term,
                 reps=wild_reps,
                 seed=wild_seed,
-                show_progress=False,
+                show_progress=bootstrap_show_progress,
             )
         except Exception as exc:  # pragma: no cover - defensive
             logger.warning(f"Wild bootstrap failed for drop={tag}: {exc}")
@@ -139,7 +145,12 @@ def fit_one_country_dropped(
     return row
 
 
-def summarise_jackknife(df: pd.DataFrame, baseline: dict[str, object]) -> tuple[str, str]:
+def summarise_jackknife(
+    df: pd.DataFrame,
+    baseline: dict[str, object],
+    *,
+    wild_reps: int,
+) -> tuple[str, str]:
     just_jack = df[df["dropped_country"] != "BASELINE_NONE_DROPPED"].copy()
     beta_min = float(just_jack["beta_interaction"].min())
     beta_max = float(just_jack["beta_interaction"].max())
@@ -156,7 +167,7 @@ def summarise_jackknife(df: pd.DataFrame, baseline: dict[str, object]) -> tuple[
         p_wild_max = float(just_jack["p_wild"].max())
         n_wild_sig = int((just_jack["p_wild"] < 0.10).sum())
         wild_para = (
-            f" Wild-cluster p (199 reps) ranges {p_wild_min:.3f}-{p_wild_max:.3f}; "
+            f" Wild-cluster p ({wild_reps} reps) ranges {p_wild_min:.3f}-{p_wild_max:.3f}; "
             f"{n_wild_sig}/{n_total} jackknife fits reject at the 10% wild-bootstrap level."
         )
     else:
@@ -262,6 +273,7 @@ def main() -> None:
         main_term=main_term,
         wild_reps=args.wild_reps,
         wild_seed=args.wild_seed,
+        bootstrap_show_progress=not args.no_bootstrap_progress,
         drop_country=None,
     )
     rows.append(baseline)
@@ -281,6 +293,7 @@ def main() -> None:
             main_term=main_term,
             wild_reps=args.wild_reps,
             wild_seed=args.wild_seed + idx,
+            bootstrap_show_progress=not args.no_bootstrap_progress,
             drop_country=country,
         )
         rows.append(row)
@@ -295,7 +308,7 @@ def main() -> None:
     out.to_csv(CSV_PATH, index=False)
     logger.info(f"Wrote {CSV_PATH}")
 
-    paragraph, verdict = summarise_jackknife(out, baseline)
+    paragraph, verdict = summarise_jackknife(out, baseline, wild_reps=args.wild_reps)
     write_markdown(out, baseline, paragraph)
     logger.info(f"Wrote {MD_PATH}")
     logger.info(f"Jackknife verdict: {verdict}")

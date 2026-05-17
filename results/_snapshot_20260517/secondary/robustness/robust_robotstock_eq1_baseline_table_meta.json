@@ -1,0 +1,68 @@
+{
+  "prefix": "robust_robotstock_eq1_baseline",
+  "title": "WIOD Eq. 1 baseline labour-input model (mainline)",
+  "sample_mode": "full",
+  "formula": "ln_h_empe ~ ln_robot_stock_lag1 + ln_va_wiod_qi + ln_k_wiod + gdp_growth + C(entity) + C(year_int)",
+  "panel_formula": "ln_h_empe ~ ln_robot_stock_lag1 + ln_va_wiod_qi + ln_k_wiod + gdp_growth + EntityEffects + TimeEffects",
+  "n_observations": 2712,
+  "n_entities": 272,
+  "n_countries": 27,
+  "countries": [
+    "AT",
+    "BE",
+    "BG",
+    "CH",
+    "CZ",
+    "DE",
+    "DK",
+    "EE",
+    "EL",
+    "ES",
+    "FI",
+    "FR",
+    "HU",
+    "IE",
+    "IT",
+    "LT",
+    "LV",
+    "MT",
+    "NL",
+    "NO",
+    "PL",
+    "PT",
+    "RO",
+    "SE",
+    "SI",
+    "SK",
+    "UK"
+  ],
+  "year_min": 2001,
+  "year_max": 2014,
+  "years": "2001-2014",
+  "r_squared": 0.9967802811456761,
+  "adj_r_squared": 0.9963975824126817,
+  "fixed_effects": {
+    "country_industry": true,
+    "year": true
+  },
+  "key_terms": [
+    "ln_robot_stock_lag1"
+  ],
+  "flags": {
+    "capital_proxy": "k",
+    "robot_regressor": "stock",
+    "robot_col": "ln_robot_stock_lag1",
+    "exclude_years": null,
+    "include_gdp": true,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999,
+    "bootstrap_seed": 123,
+    "effective_bootstrap_seed_by_term": {
+      "ln_robot_stock_lag1": 123
+    }
+  }
+}

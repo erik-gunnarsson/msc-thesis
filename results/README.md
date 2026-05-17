@@ -8,6 +8,7 @@ This directory mixes **live thesis outputs**, **secondary diagnostics**, and **a
 | -------- | ---- |
 | `results/core/` | Headline Eq. 1 / Eq. 2 artifacts: `*_key_terms.csv`, `run_metadata_*.json`, `wiod_first_results_summary.csv`, manifests. |
 | `results/tables/` | Combined regression tables from `code/core/18_wiod_academic_tables.py` (wild-bootstrap stars by default). |
+| `results/figures/` | Thesis-ready figure PDF/PNG + table `.tex` / `.csv` bundle from [`code/core/21_wiod_thesis_figures_tables.py`](../code/core/21_wiod_thesis_figures_tables.py). Regeneration commands: **[figures/README.md](figures/README.md)**. |
 | `results/secondary/inference_robustness/` | Optional cluster-stars variants of the same tables (appendix / comparison only). |
 | `results/secondary/` | Eq. 2b estimates, decomposition, common-sample tables, jackknife, VIF audit, bootstrap audit, `robustness/` reruns, etc. |
 

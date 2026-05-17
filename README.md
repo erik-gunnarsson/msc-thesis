@@ -6,9 +6,11 @@ This repository contains the empirical code for an MSc thesis on how industrial 
 - `Eq. 2`: single-moderator institutional moderation
 - `Eq. 2b`: exploratory joint `coord x ud` Hawk-Dove extension
 
-Machine-checked coherence of committed regression outputs under `results/core/`, `results/secondary/`, and `results/tables/` is described in [REPRODUCIBILITY.md](REPRODUCIBILITY.md) (steps 10–11: `_validate_artifacts.py` and `smoke_test.py`).
+Machine-checked coherence of committed regression outputs under `results/core/`, `results/secondary/`, and `results/tables/` is described in [REPRODUCIBILITY.md](REPRODUCIBILITY.md) (steps 11–12: `_validate_artifacts.py` and `smoke_test.py`).
 
 How result folders relate to each other (canonical vs archive vs exploration reruns): [results/README.md](results/README.md).
+
+Publication-style **figures and LaTeX/CSV manuscript tables** emitted to `results/figures/`: regenerate with **`uv run python code/core/21_wiod_thesis_figures_tables.py`** — options and prerequisites are spelled out in [results/figures/README.md](results/figures/README.md) (and in [REPRODUCIBILITY.md](REPRODUCIBILITY.md) step 10).
 
 ## Research Focus
 
@@ -167,7 +169,8 @@ Locked placement decision: **GH [#30](https://github.com/erik-gunnarsson/msc-the
 │   │   ├── 10_wiod_baseline.py
 │   │   ├── 11_wiod_institution_moderation.py
 │   │   ├── 14_wiod_first_results.py
-│   │   └── 18_wiod_academic_tables.py
+│   │   ├── 18_wiod_academic_tables.py
+│   │   └── 21_wiod_thesis_figures_tables.py
 │   ├── secondary/
 │   │   ├── 15_wiod_eq2b_hawk_dove.py
 │   │   ├── 16_wiod_eq2_coord_on_eq2b_sample.py
@@ -187,6 +190,7 @@ Locked placement decision: **GH [#30](https://github.com/erik-gunnarsson/msc-the
 ├── data/
 ├── results/
 │   ├── core/
+│   ├── figures/
 │   ├── tables/
 │   ├── secondary/
 │   ├── exploration/
@@ -204,6 +208,7 @@ Locked placement decision: **GH [#30](https://github.com/erik-gunnarsson/msc-the
 - `code/exploration/wiod_feasibility/`: branch-history audits and feasibility scripts
 - `results/core/`: active first-results outputs
 - `results/tables/`: thesis-facing combined tables (from `18_wiod_academic_tables.py`)
+- `results/figures/`: manuscript PDF/PNG figures + manuscript-ready `.tex` / `.csv` table fragments (`21_wiod_thesis_figures_tables.py` — see [results/figures/README.md](results/figures/README.md))
 - `results/secondary/`: Eq. 2b, diagnostics, robustness CSVs/MD (incl. jackknife, VIF audit)
 - `results/exploration/wiod_feasibility/`: **live** output when you run `code/exploration/wiod_feasibility/*` (may be empty in a fresh clone until you rerun)
 - `results/archive/`: retained historical bundles — incl. [`archive/exploration/wiod_feasibility/`](results/archive/exploration/wiod_feasibility/README.md) (feasibility artefacts) and legacy migration snapshots
@@ -405,6 +410,7 @@ So the KLEMS-WIOD comparison should be read as a **joint measurement-and-control
 
 - headline regression artefacts → `results/core/`
 - thesis tables → `results/tables/`; cluster-stars siblings → `results/secondary/inference_robustness/`
+- manuscript figures + manuscript table snippets → `results/figures/` (regenerate with `uv run python code/core/21_wiod_thesis_figures_tables.py` — flags in [results/figures/README.md](results/figures/README.md))
 - diagnostics, Eq. 2b estimates, jackknife, VIF → `results/secondary/` (robustness reruns often under `results/secondary/robustness/`)
 - exploration gate outputs (when rerun) → `results/exploration/wiod_feasibility/`
 - retained exploration + legacy snapshots → `results/archive/`

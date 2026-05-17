@@ -1,0 +1,8 @@
+Sample manifest: robust_capcomp_eq1_baseline
+Generated: 2026-05-15T10:15:25.480610+00:00
+Sample mode: full
+========================================================
+Observations: 2571
+Entities: 257
+Countries (26): AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK
+Years: 2001-2014

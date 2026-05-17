@@ -1,0 +1,28 @@
+# WIOD Inference Robustness Table (country-clustered stars)
+
+| Row | Eq. 1 | Eq. 2 coord | Eq. 2 adjcov | Eq. 2 ud | Eq. 2b |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Log robot intensity (lagged) | 0.0096 | 0.0046 | 0.0084 | 0.0079 | 0.0043 |
+|  | (0.0062) | (0.0069) | (0.0114) | (0.0068) | (0.0071) |
+| Log robots x bargaining coordination |  | 0.0124** |  |  | 0.0117 |
+|  |  | (0.0053) |  |  | (0.0080) |
+| Log robots x adjusted bargaining coverage |  |  | 0.0003 |  |  |
+|  |  |  | (0.0004) |  |  |
+| Log robots x union density |  |  |  | 0.0000 | 0.0000 |
+|  |  |  |  | (0.0004) | (0.0004) |
+| Log robots x coordination x union density |  |  |  |  | -0.0004 |
+|  |  |  |  |  | (0.0005) |
+| Log value added | 0.1296 | 0.1273 | 0.1263 | 0.1307 | 0.1273 |
+|  | (0.0260) | (0.0259) | (0.0332) | (0.0270) | (0.0258) |
+| Log capital | 0.2581 | 0.2945 | 0.3153 | 0.3085 | 0.3230 |
+|  | (0.0707) | (0.0723) | (0.0782) | (0.0823) | (0.0799) |
+| GDP growth | 0.2593 | 0.2473 | 0.3159 | 0.3191 | 0.2942 |
+|  | (0.2186) | (0.2344) | (0.2647) | (0.2462) | (0.2408) |
+| Country-industry FE | Yes | Yes | Yes | Yes | Yes |
+| Year FE | Yes | Yes | Yes | Yes | Yes |
+| Observations | 2571 | 2500 | 1685 | 2356 | 2356 |
+| Entities | 257 | 247 | 153 | 227 | 227 |
+| Countries | 26 | 25 | 15 | 23 | 23 |
+| R-squared | 0.997 | 0.997 | 0.998 | 0.997 | 0.997 |
+
+Notes: Country-clustered standard errors in parentheses. This table is an inference-robustness companion to the canonical wild-cluster bootstrap table (results/tables/wiod_regression_table_combined.tex); the canonical table is the thesis inference standard. Stars on robot-related terms are based on country-clustered p-values (* p<0.10, ** p<0.05, *** p<0.01). Controls are reported with country-clustered standard errors and no star notation. All models include country-industry and year fixed effects. Eq. 2 adjcov uses the restricted/common sample. Eq. 2b is exploratory. ICTWSS moderators are time-invariant country-level averages over 1990-1995. Sample period: 2001-2014. Capital control: WIOD K.

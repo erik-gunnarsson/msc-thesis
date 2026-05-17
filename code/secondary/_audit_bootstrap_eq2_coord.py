@@ -9,6 +9,7 @@ inference.
 """
 from __future__ import annotations
 
+import argparse
 import sys
 import time
 from pathlib import Path
@@ -45,7 +46,18 @@ TARGET_TERM = "ln_robots_lag1:coord_pre_c"
 KEY_TERM_INDEX = 1
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Audit Eq. 2 coord wild-bootstrap seed stability.")
+    parser.add_argument(
+        "--no-bootstrap-progress",
+        action="store_true",
+        help="Disable tqdm progress bars during wild cluster bootstrap.",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = parse_args()
     df = load_or_build_wiod_panel()
     mod_var, has_var, _ = moderator_to_columns("coord", "continuous")
     controls = get_wiod_controls(capital_proxy="k", include_gdp=True)
@@ -80,7 +92,7 @@ def main() -> None:
             target_param=TARGET_TERM,
             reps=WILD_REPS,
             seed=effective_seed,
-            show_progress=False,
+            show_progress=not args.no_bootstrap_progress,
         )
         elapsed = time.perf_counter() - t0
         rows.append(
@@ -106,7 +118,7 @@ def main() -> None:
         target_param=TARGET_TERM,
         reps=san_reps,
         seed=san_seed,
-        show_progress=False,
+        show_progress=not args.no_bootstrap_progress,
     )
     p_san_b = wild_cluster_bootstrap_pvalue(
         formula,
@@ -115,7 +127,7 @@ def main() -> None:
         target_param=TARGET_TERM,
         reps=san_reps,
         seed=san_seed,
-        show_progress=False,
+        show_progress=not args.no_bootstrap_progress,
     )
     if p_san_a != p_san_b:
         raise RuntimeError(

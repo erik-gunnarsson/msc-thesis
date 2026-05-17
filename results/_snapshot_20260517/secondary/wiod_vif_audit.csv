@@ -1,0 +1,17 @@
+equation,term,demeaned_term,vif,n_obs_used
+EQ1_BASELINE,ln_robots_lag1,ln_robots_lag1__dm,1.6696537485603271,2571
+EQ1_BASELINE,ln_va_wiod_qi,ln_va_wiod_qi__dm,1.0345328800387172,2571
+EQ1_BASELINE,ln_k_wiod,ln_k_wiod__dm,1.7020225905191666,2571
+EQ1_BASELINE,gdp_growth,gdp_growth__dm,1.0102172561430602,2571
+EQ2_COORD,ln_robots_lag1,ln_robots_lag1__dm,1.7414185965550353,2500
+EQ2_COORD,ln_va_wiod_qi,ln_va_wiod_qi__dm,1.0296251590252659,2500
+EQ2_COORD,ln_k_wiod,ln_k_wiod__dm,1.6570800375819978,2500
+EQ2_COORD,gdp_growth,gdp_growth__dm,1.0149165435236929,2500
+EQ2_COORD,ln_robots_lag1_x_coord_pre_c,ln_robots_lag1_x_coord_pre_c__dm,1.1074479197282625,2500
+EQ2B_COORD_UD,ln_robots_lag1,ln_robots_lag1__dm,2.0229055873505644,2356
+EQ2B_COORD_UD,ln_va_wiod_qi,ln_va_wiod_qi__dm,1.0465682077163359,2356
+EQ2B_COORD_UD,ln_k_wiod,ln_k_wiod__dm,1.5842915090140997,2356
+EQ2B_COORD_UD,gdp_growth,gdp_growth__dm,1.0111736346233755,2356
+EQ2B_COORD_UD,ln_robots_lag1_x_coord_pre_c,ln_robots_lag1_x_coord_pre_c__dm,1.6270695010940184,2356
+EQ2B_COORD_UD,ln_robots_lag1_x_ud_pre_c,ln_robots_lag1_x_ud_pre_c__dm,1.5837775137204655,2356
+EQ2B_COORD_UD,ln_robots_lag1_x_coord_pre_c_x_ud_pre_c,ln_robots_lag1_x_coord_pre_c_x_ud_pre_c__dm,1.9042194375340815,2356

@@ -1,0 +1,8 @@
+Sample manifest: audit_eq2_coord_seed31
+Generated: 2026-05-15T10:34:16.825488+00:00
+Sample mode: full
+========================================================
+Observations: 2500
+Entities: 247
+Countries (25): AT, BE, BG, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, SE, SI, SK, UK
+Years: 2001-2014

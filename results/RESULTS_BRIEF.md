@@ -1,6 +1,7 @@
 # Results brief (1–2 pages) - May 15th 
 
 Where outputs live: [`README.md`](README.md) + [`results/README.md`](README.md).  
+Publication-style figures and manuscript-ready table fragments → [`results/figures/`](figures/) — regenerate **`uv run python code/core/21_wiod_thesis_figures_tables.py`** ([`figures/README.md`](figures/README.md)).  
 **Numbers** trace to [`wiod_first_results_summary.csv`](core/wiod_first_results_summary.csv).  
 **Claims and caveats** are expanded in [`interpretation_memo.md`](interpretation_memo.md).
 

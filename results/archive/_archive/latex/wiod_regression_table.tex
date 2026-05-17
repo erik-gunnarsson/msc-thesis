@@ -1,0 +1,148 @@
+\documentclass[10pt]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────
+\usepackage[a4paper, left=1cm, right=1cm, top=1.4cm, bottom=1.4cm]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+
+\captionsetup{font=footnotesize, skip=4pt}
+
+% ── Metadata ──────────────────────────────────────────────────────────────
+\title{WIOD Regression Results}
+\author{Erik Gunnarsson}
+\date{April 2026}
+
+\pagestyle{empty}
+
+\begin{document}
+
+% ══════════════════════════════════════════════════════════════════════════
+%  TABLE — portrait, one page; tabular* fills \textwidth so rules align
+% ══════════════════════════════════════════════════════════════════════════
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.06}
+
+\begin{table}[t]
+\centering
+\caption{Robot Adoption and Labour Input in European Manufacturing: Baseline and Institutional Moderation}
+\label{tab:wiod_main_results}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccccc@{}}
+
+\toprule
+ & (1) & (2) & (3) & (4) & (5) \\
+ & Eq.~1 & Eq.~2 & Eq.~2 & Eq.~2 & Eq.~2b \\
+ & Baseline & Coordination & Adj.\ Coverage & Union Density & Coord $\times$ UD \\
+\midrule
+
+\multicolumn{6}{@{}l}{\textit{Panel A: Coefficients}} \\[2pt]
+
+$\ln(\text{Robots})_{t-1}$
+  & 0.0096 & 0.0046 & 0.0084 & 0.0079 & 0.0043 \\
+  & (0.0062) & (0.0069) & (0.0114) & (0.0068) & (0.0071) \\[2pt]
+
+$\ln(\text{Robots})_{t-1} \times \text{Coordination}$
+  & & 0.0124 & & & 0.0117 \\
+  & & (0.0053) & & & (0.0080) \\[2pt]
+
+$\ln(\text{Robots})_{t-1} \times \text{Adj.\ Coverage}$
+  & & & 0.0003 & & \\
+  & & & (0.0004) & & \\[2pt]
+
+$\ln(\text{Robots})_{t-1} \times \text{Union Density}$
+  & & & & $-$0.0000 & 0.0000 \\
+  & & & & (0.0004) & (0.0004) \\[2pt]
+
+$\ln(\text{Robots})_{t-1} \times \text{Coord} \times \text{UD}$
+  & & & & & $-$0.0004 \\
+  & & & & & (0.0005) \\[2pt]
+
+\addlinespace[2pt]
+
+$\ln(\text{Value Added})$
+  & 0.1296 & 0.1273 & 0.1263 & 0.1307 & 0.1273 \\
+  & (0.0260) & (0.0259) & (0.0332) & (0.0270) & (0.0258) \\[2pt]
+
+$\ln(\text{Capital})$
+  & 0.2581 & 0.2945 & 0.3153 & 0.3085 & 0.3230 \\
+  & (0.0707) & (0.0723) & (0.0782) & (0.0823) & (0.0799) \\[2pt]
+
+GDP growth
+  & 0.2593 & 0.2473 & 0.3159 & 0.3191 & 0.2942 \\
+  & (0.2186) & (0.2344) & (0.2647) & (0.2462) & (0.2408) \\
+
+\midrule
+
+\multicolumn{6}{@{}l}{\textit{Panel B: Inference on focal robot-related terms}} \\[2pt]
+
+Focal term
+  & $\ln R_{t-1}$
+  & $\ln R_{t-1} \!\times\! \text{Coord}$
+  & $\ln R_{t-1} \!\times\! \text{AdjCov}$
+  & $\ln R_{t-1} \!\times\! \text{UD}$
+  & $\ln R_{t-1} \!\times\! \text{Coord}$ \\[2pt]
+
+$p_{\text{cluster}}$\,(country)
+  & 0.119 & 0.020 & 0.521 & 0.939 & 0.145 \\[1pt]
+
+$p_{\text{wild}}$\,($B = 199$)
+  & 0.146 & 0.156 & 0.513 & 0.950 & 0.467 \\[1pt]
+
+$p_{\text{wild}}$\,($B = 999$)
+  & 0.126 & 0.108 & 0.509 & 0.955 & 0.470 \\
+
+\midrule
+
+\multicolumn{6}{@{}l}{\textit{Panel C: Sample and model}} \\[2pt]
+
+Country--industry FE & Yes & Yes & Yes & Yes & Yes \\
+Year FE              & Yes & Yes & Yes & Yes & Yes \\
+Observations         & 2,571 & 2,500 & 1,685 & 2,356 & 2,356 \\
+Entities             & 257 & 247 & 153 & 227 & 227 \\
+Countries            & 26 & 25 & 15 & 23 & 23 \\
+$R^{2}$              & 0.997 & 0.997 & 0.998 & 0.997 & 0.997 \\
+Years                & 2001--2014 & 2001--2014 & 2001--2014 & 2001--2014 & 2001--2014 \\
+
+\bottomrule
+
+\end{tabular*}
+\end{table}
+
+\endgroup
+
+\vspace{0.6em}
+\noindent\begin{minipage}{\linewidth}
+\small
+\raggedright
+\setlength{\parskip}{0.55em}
+
+\noindent\textit{Notes.}
+
+\noindent\textbf{Panel A.}
+Outcome is $\ln(\text{H\_EMPE})$, the log of hours worked.
+Figures in parentheses are standard errors clustered by country.
+Stars are omitted from robot-related terms (see Panel~B).
+
+\noindent\textbf{Panel B.}
+Each column shows $p$-values for that column's main robot-related term (see the ``Focal term'' row).
+$p_{\text{cluster}}$ uses standard cluster-robust SEs by country.
+$p_{\text{wild}}$ is a wild cluster bootstrap (Webb, 2023); $B$ is the number of bootstrap draws, and $B = 999$ is the headline row.
+No robot term clears $p < 0.10$ on the wild bootstrap, so stars are omitted.
+In column~(2), the coordination interaction is below 5\% using clustering ($p = 0.020$) but not using the wild bootstrap ($p = 0.108$), which often happens when there are few clusters ($G = 25$ countries).
+Column~(5) follows Eq.~2b: the three-way term is an extra diagnostic on top of the coordination term.
+
+\noindent\textbf{Panel C.}
+Country counts vary across columns because institutional data availability differs by moderator.
+Column~(3) uses a restricted 15-country sample due to limited adjusted coverage data.
+Institutional moderators are frozen at 1990--1995 baseline levels.
+Robot intensity is scaled using employment from before the sample period.
+
+\end{minipage}
+
+\end{document}

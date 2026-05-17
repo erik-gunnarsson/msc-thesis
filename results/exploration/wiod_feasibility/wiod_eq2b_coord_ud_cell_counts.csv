@@ -1,0 +1,5 @@
+coord_high,ud_high,cell_label,n_countries,countries
+0,0,coord_low__ud_low,8,"EL, ES, FR, IT, LT, LV, PT, UK"
+0,1,coord_low__ud_high,7,"CZ, EE, FI, HU, MT, SE, SK"
+1,0,coord_high__ud_low,3,"DE, IE, NL"
+1,1,coord_high__ud_high,5,"AT, BE, DK, NO, PL"

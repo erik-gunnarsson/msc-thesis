@@ -25,7 +25,7 @@ from _wiod_panel_utils import WIOD_PANEL_PATH, save_wiod_panel
 
 
 def main() -> None:
-    panel = save_wiod_panel()
+    panel = save_wiod_panel(show_progress=True)
     logger.info(f"Saved WIOD panel to {WIOD_PANEL_PATH}")
     logger.info("Controls source check: WIOD SEA supplies VA_QI, K, and CAP for this panel.")
     logger.info(

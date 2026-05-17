@@ -1,0 +1,8 @@
+Sample manifest: robust_robotstock_eq1_baseline
+Generated: 2026-05-17T14:12:38.554520+00:00
+Sample mode: full
+========================================================
+Observations: 2712
+Entities: 272
+Countries (27): AT, BE, BG, CH, CZ, DE, DK, EE, EL, ES, FI, FR, HU, IE, IT, LT, LV, MT, NL, NO, PL, PT, RO, SE, SI, SK, UK
+Years: 2001-2014

@@ -207,7 +207,7 @@ def load_wiod_panel(path: Path = WIOD_PANEL_PATH) -> pd.DataFrame:
     return df
 
 
-def load_wiod_trade_panel() -> pd.DataFrame:
+def load_wiod_trade_panel(*, show_progress: bool = False) -> pd.DataFrame:
     if WIOD_TRADE_CACHE.exists():
         return pd.read_csv(WIOD_TRADE_CACHE)
 
@@ -220,7 +220,7 @@ def load_wiod_trade_panel() -> pd.DataFrame:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     build_wiod_trade_panel = module.build_wiod_trade_panel
-    return build_wiod_trade_panel(cache_path=WIOD_TRADE_CACHE)
+    return build_wiod_trade_panel(cache_path=WIOD_TRADE_CACHE, show_progress=show_progress)
 
 
 def load_ifr_panel() -> pd.DataFrame:
@@ -391,43 +391,67 @@ def add_exposure_variables(
     return out
 
 
-def build_wiod_panel() -> pd.DataFrame:
-    ifr = load_ifr_panel()
-    sea = build_wiod_sea_panel()
-    trade = load_wiod_trade_panel()
-    baseline, _ = load_ictwss()
-    gdp, une = load_macro_controls()
+def build_wiod_panel(*, show_progress: bool = False) -> pd.DataFrame:
+    progress = tqdm(
+        total=8,
+        desc="Building WIOD panel",
+        unit="step",
+        disable=not show_progress,
+    )
 
-    df = ifr.merge(sea, on=["country_code", "nace_r2_code", "year"], how="inner")
-    df = df.merge(trade, on=["country_code", "nace_r2_code", "year"], how="left")
-    df = df.merge(gdp[["country_code", "year", "gdp", "gdp_growth"]], on=["country_code", "year"], how="left")
-    df = df.merge(une, on=["country_code", "year"], how="left")
-    df = df.merge(baseline, on="country_code", how="left")
-    df = add_exposure_variables(df)
+    def run_step(label: str, func):
+        progress.set_description(label)
+        progress.refresh()
+        result = func()
+        progress.update()
+        return result
 
-    df["year_int"] = df["year"].astype(int)
-    df["entity"] = df["country_code"] + "_" + df["nace_r2_code"]
-    df["panel_source"] = "wiod"
+    try:
+        ifr = run_step("Loading IFR panel", load_ifr_panel)
+        sea = run_step("Loading WIOD SEA workbook", build_wiod_sea_panel)
+        trade = run_step("Loading WIOD trade panel", lambda: load_wiod_trade_panel(show_progress=show_progress))
+        baseline, _ = run_step("Loading ICTWSS institutions", load_ictwss)
+        gdp, une = run_step("Loading macro controls", load_macro_controls)
 
-    out_cols = [
-        "country_code", "nace_r2_code", "year", "year_int", "entity",
-        "robot_wrkr_stock_95", "robot_stock", "ln_robots", "ln_robot_stock",
-        "ln_robots_lag1", "ln_robot_stock_lag1", "n_ifr_rows",
-        "H_EMPE", "ln_h_empe", "VA_QI", "ln_va_wiod_qi", "K", "ln_k_wiod",
-        "CAP", "ln_capcomp_wiod", "GO", "gross_exports_usd_m", "trade_available",
-        "expint_current", "expint_pre_ij", "expint_pre_j", "exposed_binary", "exposure_group",
-        "gdp", "gdp_growth", "unemployment",
-        "ud_pre", "ud_pre_c", "has_ud", "coord_pre", "coord_pre_c", "has_coord",
-        "adjcov_pre", "adjcov_pre_c", "has_adjcov", "high_coord_pre",
-        "panel_source",
-    ]
-    out_cols = [col for col in out_cols if col in df.columns]
-    return df[out_cols].sort_values(["country_code", "nace_r2_code", "year"]).reset_index(drop=True)
+        progress.set_description("Merging source panels")
+        progress.refresh()
+        df = ifr.merge(sea, on=["country_code", "nace_r2_code", "year"], how="inner")
+        df = df.merge(trade, on=["country_code", "nace_r2_code", "year"], how="left")
+        df = df.merge(gdp[["country_code", "year", "gdp", "gdp_growth"]], on=["country_code", "year"], how="left")
+        df = df.merge(une, on=["country_code", "year"], how="left")
+        df = df.merge(baseline, on="country_code", how="left")
+        progress.update()
+
+        df = run_step("Adding exposure variables", lambda: add_exposure_variables(df))
+
+        progress.set_description("Finalising panel columns")
+        progress.refresh()
+        df["year_int"] = df["year"].astype(int)
+        df["entity"] = df["country_code"] + "_" + df["nace_r2_code"]
+        df["panel_source"] = "wiod"
+
+        out_cols = [
+            "country_code", "nace_r2_code", "year", "year_int", "entity",
+            "robot_wrkr_stock_95", "robot_stock", "ln_robots", "ln_robot_stock",
+            "ln_robots_lag1", "ln_robot_stock_lag1", "n_ifr_rows",
+            "H_EMPE", "ln_h_empe", "VA_QI", "ln_va_wiod_qi", "K", "ln_k_wiod",
+            "CAP", "ln_capcomp_wiod", "GO", "gross_exports_usd_m", "trade_available",
+            "expint_current", "expint_pre_ij", "expint_pre_j", "exposed_binary", "exposure_group",
+            "gdp", "gdp_growth", "unemployment",
+            "ud_pre", "ud_pre_c", "has_ud", "coord_pre", "coord_pre_c", "has_coord",
+            "adjcov_pre", "adjcov_pre_c", "has_adjcov", "high_coord_pre",
+            "panel_source",
+        ]
+        out_cols = [col for col in out_cols if col in df.columns]
+        progress.update()
+        return df[out_cols].sort_values(["country_code", "nace_r2_code", "year"]).reset_index(drop=True)
+    finally:
+        progress.close()
 
 
-def save_wiod_panel(path: Path = WIOD_PANEL_PATH) -> pd.DataFrame:
+def save_wiod_panel(path: Path = WIOD_PANEL_PATH, *, show_progress: bool = False) -> pd.DataFrame:
     ensure_output_dir()
-    panel = build_wiod_panel()
+    panel = build_wiod_panel(show_progress=show_progress)
     panel.to_csv(path, index=False)
     logger.info(f"Saved {len(panel)} rows to {path}")
     logger.info(
@@ -622,6 +646,59 @@ def wild_cluster_bootstrap_pvalue(
         boot_hits += abs(t_star) >= abs(obs_t)
 
     return boot_hits / reps
+
+
+def wild_cluster_unrestricted_coef_draws(
+    formula: str,
+    df: pd.DataFrame,
+    param_names: list[str],
+    *,
+    reps: int = 999,
+    seed: int = 0,
+    cluster_col: str = "country_code",
+    show_progress: bool = True,
+) -> np.ndarray:
+    """Draw Rademacher wild-cluster bootstrap replications of OLS coefficients.
+
+    Uses **unrestricted** residuals (fitted + residual wild weights), which is the
+    standard wild-cluster analogue for building percentile bands on smooth
+    functions of coefficients (e.g. marginal effects) even when headline
+    p-values come from restricted-residual tests term-by-term.
+    """
+    unrestricted = smf.ols(formula, data=df).fit()
+    y_hat = np.asarray(unrestricted.fittedvalues)
+    u = np.asarray(unrestricted.resid)
+    X = np.asarray(unrestricted.model.exog)
+    exog_names = list(unrestricted.model.exog_names)
+    indices = []
+    for name in param_names:
+        if name not in exog_names:
+            raise KeyError(f"Parameter {name!r} not in formula exog ({exog_names})")
+        indices.append(exog_names.index(name))
+
+    clusters_ser = df[cluster_col]
+    unique_clusters = clusters_ser.drop_duplicates().tolist()
+    rng = np.random.default_rng(seed)
+    draws = np.zeros((reps, len(param_names)))
+
+    iterator: range | tqdm = range(reps)
+    if show_progress and reps > 0:
+        iterator = tqdm(
+            iterator,
+            desc=f"Wild coef draws [{','.join(param_names)}]",
+            unit="rep",
+            leave=False,
+        )
+    rep_idx = 0
+    for _ in iterator:
+        weights = {cl: float(rng.choice([-1.0, 1.0])) for cl in unique_clusters}
+        w = clusters_ser.map(weights).to_numpy(dtype=float)
+        y_star = y_hat + u * w
+        res_star = sm.OLS(y_star, X).fit()
+        for j, idx in enumerate(indices):
+            draws[rep_idx, j] = float(res_star.params[idx])
+        rep_idx += 1
+    return draws
 
 
 def summarise_key_terms(

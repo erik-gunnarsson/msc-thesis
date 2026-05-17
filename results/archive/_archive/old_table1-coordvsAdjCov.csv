@@ -1,0 +1,12 @@
+country_code,coord,adjcov,n_years,country_name
+AT,4.0,98.0,15,Austria
+BE,4.0,100.0,15,Belgium
+DE,4.0,85.0,25,Germany
+DK,4.0,82.90000000000003,23,Denmark
+FI,3.166666666666667,83.0,25,Finland
+FR,2.0,93.2,25,France
+IT,3.3333333333333335,100.0,24,Italy
+NL,4.333333333333334,82.16666666666667,15,Netherlands
+SE,3.666666666666667,90.7,25,Sweden
+SI,3.6,100.0,12,Slovenia
+UK,2.0,55.35,24,UK

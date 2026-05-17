@@ -14,11 +14,13 @@ Expected files are listed in [README.md](README.md) (IFR, ICTWSS, Eurostat GDP/u
 
 ## 3. Command sequence (canonical thesis outputs)
 
+The bootstrap-heavy commands below intentionally keep tqdm progress bars enabled, so you can see rep counts, elapsed time, and ETA while they run. Only add `--no-bootstrap-progress` when piping output to logs or running in CI.
+
 1. **Panel** — `uv run python code/core/09_build_wiod_panel.py`  
    Writes `data/cleaned_data_wiod.csv`.
 
 2. **First-results bundle (Eq. 1, Eq. 2 × 4)** — `uv run python code/core/14_wiod_first_results.py`  
-   Default: **999** wild-cluster bootstrap reps. Use `--no-bootstrap-progress` in CI logs.  
+   Default: **999** wild-cluster bootstrap reps with tqdm progress bars.  
    Writes under `results/core/` (`wiod_first_results_summary.csv`, `wiod_first_results_overview.md`, per-model `*_key_terms.csv`, etc.).
 
 3. **Eq. 2b gate (exploratory)** — `uv run python code/exploration/wiod_feasibility/05_wiod_eq2b_hawk_dove_gate.py`
@@ -30,7 +32,7 @@ Expected files are listed in [README.md](README.md) (IFR, ICTWSS, Eurostat GDP/u
 6. **Common-sample robustness** — `uv run python code/secondary/17_wiod_common_sample_robustness.py`
 
 7. **Country jackknife (Eq. 2 coord; GH #16)** — `uv run python code/secondary/19_wiod_jackknife.py`  
-   Writes `results/secondary/wiod_jackknife_eq2_coord.{csv,md}` (default uses fewer wild-bootstrap reps per drop than the headline 999 — see script help / output notes).
+   Writes `results/secondary/wiod_jackknife_eq2_coord.{csv,md}` (default 999 wild-bootstrap reps per drop, matching other headline specs, with tqdm progress — pass `--no-bootstrap-progress` for logs/CI).
 
 8. **VIF audit (GH #22)** — `uv run python code/secondary/20_wiod_vif_audit.py`  
    Writes `results/secondary/wiod_vif_audit.{csv,md}`.
@@ -43,11 +45,13 @@ Expected files are listed in [README.md](README.md) (IFR, ICTWSS, Eurostat GDP/u
 
    **Appendix — CH-inclusive log robot stock (GH #29)** — `uv run python code/core/18_wiod_academic_tables.py --appendix-robot-stock-ch-inclusive-only` (and the same with `--star-source cluster`) → `results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.{md,tex,csv}` plus cluster-stars sibling under `results/secondary/inference_robustness/`. Underlying models: `10_wiod_baseline.py` / `11_wiod_institution_moderation.py` with `--robot-regressor stock`, `--output-dir results/secondary/robustness`, `--prefix-override robust_robotstock_eq1_baseline` / `robust_robotstock_eq2_coord`.
 
-10. **Validate artifacts** — `uv run python code/secondary/_validate_artifacts.py`  
+10. **Thesis figures & manuscript table fragments** — `uv run python code/core/21_wiod_thesis_figures_tables.py` → `results/figures/` (`*.tex`, `*.csv`, figure PDFs/PNGs under `renders/` and filenames like `figure*.pdf`). Depends on **`data/cleaned_data_wiod.csv`** (step 1), combined regression artefacts, and secondary outputs (robustness, jackknife, VIF audit, bootstrap audit as applicable). Detailed flags (e.g. faster Figure 3 tuning): **[results/figures/README.md](results/figures/README.md)**.
+
+11. **Validate artifacts** — `uv run python code/secondary/_validate_artifacts.py`  
    Checks internal consistency among `results/core/` (`wiod_first_results_run_manifest.json`, `wiod_first_results_summary.csv`, per-model `*_table_meta.json`, `*_table_terms.csv`, `*_key_terms.csv`, `run_metadata_*.json`, `sample_manifest_*.txt`), selected `results/secondary/` robustness CSVs (including jackknife + sample decomposition), and `results/tables/` + `results/secondary/inference_robustness/` combined Markdown, TeX, and CSV regression tables (`wiod_first_results_*` mismatches emit a rerun hint). Optional diff against a saved manifest:  
    `uv run python code/secondary/_validate_artifacts.py --compare-snapshot results/_snapshot_YYYYMMDD/run_manifest.json`
 
-11. **CI smoke (no data required)** — `uv run python code/secondary/smoke_test.py`
+12. **CI smoke (no data required)** — `uv run python code/secondary/smoke_test.py`
 
 ## Snapshots and exploration paths
 
@@ -71,12 +75,13 @@ After step 2, `wiod_first_results_summary.csv` should report approximately:
 
 | Location | Role |
 |----------|------|
-| `code/core/` | Active WIOD mainline: panel build, Eq. 1–2, first-results runner, tables |
+| `code/core/` | Active WIOD mainline: panel build, Eq. 1–2, first-results runner, combined tables (`18_*`), manuscript figures/export (`21_*`) |
 | `code/secondary/` | Diagnostics, robustness (`robustness/`), jackknife (`19_*`), VIF audit (`20_*`), bootstrap audit (`_audit_*`), artifact validator, smoke test |
 | `code/exploration/wiod_feasibility/` | Feasibility / Eq. 2b gate (not part of minimal Eq. 1–2-only path) |
 | `code/secondary/legacy_klems/` | Legacy KLEMS robustness only |
 | `results/core/` | Headline regression artifacts |
 | `results/tables/` | Thesis-facing combined tables + appendix CH-inclusive robot-stock table (GH #29) |
+| `results/figures/` | Thesis manuscript figures/tables exporter (`21_wiod_thesis_figures_tables.py`; see [`results/figures/README.md`](results/figures/README.md)) |
 | `results/secondary/` | Eq. 2b, decomposition, common-sample, jackknife, VIF audit, bootstrap audit, `robustness/` subfolder |
 | `results/secondary/inference_robustness/` | Country-cluster-stars regression table variant (comparison to headline wild-bootstrap table) |
 | `results/exploration/wiod_feasibility/` | Live output path for exploration reruns (may be empty until rerun) |
@@ -98,7 +103,7 @@ Defaults: **999** repetitions, cluster id **`country_code`**, PRNG **`numpy.rand
 
 **Seed convention.** Scripts take `--bootstrap-seed` (default **123**). [`summarise_key_terms`](code/_wiod_panel_utils.py) passes `seed = bootstrap_seed + idx` for the `idx`-th entry of `key_terms`. For Eq. 2 ([`11_wiod_institution_moderation.py`](code/core/11_wiod_institution_moderation.py)), `key_terms = [ln_robots_lag1, interaction]`, so the **coordination interaction uses effective seed 124**. Eq. 2b lists four focal terms, so effective seeds **123–126** for those rows. Regenerated `run_metadata_*.json` files include `effective_bootstrap_seed_by_term` for traceability.
 
-**Audit (GH #4):** multi-seed stability and cluster-vs-wild narrative — [`results/secondary/bootstrap_audit_eq2_coord.md`](results/secondary/bootstrap_audit_eq2_coord.md); `uv run python code/secondary/_audit_bootstrap_eq2_coord.py`.
+**Audit (GH #4):** multi-seed stability and cluster-vs-wild narrative — [`results/secondary/bootstrap_audit_eq2_coord.md`](results/secondary/bootstrap_audit_eq2_coord.md); `uv run python code/secondary/_audit_bootstrap_eq2_coord.py` (tqdm progress bars enabled by default).
 
 ### Thesis inference standard (results chapter)
 

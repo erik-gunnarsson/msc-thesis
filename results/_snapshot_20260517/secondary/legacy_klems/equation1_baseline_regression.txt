@@ -1,0 +1,35 @@
+                          PanelOLS Estimation Summary                           
+================================================================================
+Dep. Variable:               ln_hours   R-squared:                        0.3442
+Estimator:                   PanelOLS   R-squared (Between):              0.8833
+No. Observations:                2700   R-squared (Within):               0.3566
+Date:                Thu, Mar 26 2026   R-squared (Overall):              0.8859
+Time:                        22:22:28   Log-likelihood                    4250.3
+Cov. Estimator:             Clustered                                           
+                                        F-statistic:                      252.31
+Entities:                         275   P-value                           0.0000
+Avg Obs:                       9.8182   Distribution:                  F(5,2404)
+Min Obs:                       1.0000                                           
+Max Obs:                       17.000   F-statistic (robust):             40.810
+                                        P-value                           0.0000
+Time periods:                      17   Distribution:                  F(5,2404)
+Avg Obs:                       158.82                                           
+Min Obs:                       17.000                                           
+Max Obs:                       275.00                                           
+                                                                                
+                               Parameter Estimates                                
+==================================================================================
+                Parameter  Std. Err.     T-stat    P-value    Lower CI    Upper CI
+----------------------------------------------------------------------------------
+ln_robots_lag1    -0.0073     0.0093    -0.7917     0.4286     -0.0255      0.0108
+ln_va              0.0026     0.0108     0.2380     0.8119     -0.0186      0.0237
+ln_cap             0.4010     0.0491     8.1731     0.0000      0.3048      0.4972
+ln_gdp             0.0973     0.1572     0.6192     0.5358     -0.2109      0.4056
+unemployment      -0.0091     0.0018    -5.1136     0.0000     -0.0127     -0.0056
+==================================================================================
+
+F-test for Poolability: 6.0949
+P-value: 0.0000
+Distribution: F(290,2404)
+
+Included effects: Entity, Time

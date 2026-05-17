@@ -13,6 +13,7 @@ import math
 from pathlib import Path
 
 import pandas as pd
+from tqdm import tqdm
 
 try:
     from pyxlsb import open_workbook
@@ -335,7 +336,7 @@ def read_wiod_header_metadata(path: Path) -> dict[str, object]:
     }
 
 
-def build_wiod_trade_panel(cache_path: Path | None = None) -> pd.DataFrame:
+def build_wiod_trade_panel(cache_path: Path | None = None, *, show_progress: bool = False) -> pd.DataFrame:
     if cache_path is not None and cache_path.exists():
         cached = pd.read_csv(cache_path)
         expected_groups = set(WIOD_TO_NACE_TABLE["nace_r2_code"].unique())
@@ -348,8 +349,15 @@ def build_wiod_trade_panel(cache_path: Path | None = None) -> pd.DataFrame:
 
     _require_pyxlsb()
     records: list[dict[str, object]] = []
+    wiod_files = list_wiod_files()
 
-    for path in list_wiod_files():
+    for path in tqdm(
+        wiod_files,
+        desc="Parsing WIOD trade workbooks",
+        unit="file",
+        disable=not show_progress,
+        dynamic_ncols=True,
+    ):
         year = _wiod_year_from_path(path)
         with open_workbook(path) as wb:
             sheet_name = wb.sheets[0]

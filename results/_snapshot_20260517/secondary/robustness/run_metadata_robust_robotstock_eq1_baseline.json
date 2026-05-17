@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-05-17T14:12:38.576104+00:00",
+  "git_commit": "898d3c91b4129aad9a327ab5db7d0d5c548606e0",
+  "script": "robust_robotstock_eq1_baseline.py",
+  "flags": {
+    "capital_proxy": "k",
+    "robot_regressor": "stock",
+    "robot_col": "ln_robot_stock_lag1",
+    "exclude_years": null,
+    "include_gdp": true,
+    "headline_se": "country_cluster",
+    "secondary_se": [
+      "entity_cluster",
+      "driscoll_kraay"
+    ],
+    "wild_cluster_bootstrap_reps": 999,
+    "bootstrap_seed": 123,
+    "effective_bootstrap_seed_by_term": {
+      "ln_robot_stock_lag1": 123
+    }
+  },
+  "n_obs": 2712,
+  "n_entities": 272
+}

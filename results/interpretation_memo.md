@@ -133,6 +133,7 @@ Generated for writing the empirical chapter. Numeric claims trace to `results/co
 | 6.2 Specification | `results/secondary/robustness/robust_capcomp_*`, `robust_binarycoord_*`, `robust_excl0809_*` |
 | 6.2 Multicollinearity | `results/secondary/wiod_vif_audit.md` (plus Eq. 2b gate `wiod_eq2b_coord_ud_vif.csv` in `results/archive/exploration/wiod_feasibility/` or `results/exploration/wiod_feasibility/` after rerun) |
 | Combined thesis table | `results/tables/wiod_regression_table_combined.tex` |
+| Figures + manuscript table fragments | `results/figures/` (`21_wiod_thesis_figures_tables.py`; commands in [`figures/README.md`](figures/README.md)) |
 | Appendix CH-inclusive robot stock (Eq. 1 + Eq. 2 coord) | `results/tables/wiod_regression_table_appendix_robot_stock_ch_inclusive.tex` |
 | Inference-robustness table (country-cluster stars) | `results/secondary/inference_robustness/wiod_regression_table_combined_clusterstars.tex` |
 

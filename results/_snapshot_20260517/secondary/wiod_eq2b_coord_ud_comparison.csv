@@ -1,0 +1,7 @@
+review_order,model_id,title,role,term,term_label,n_countries,n_entities,n_observations,years,coef_country_cluster,se_country_cluster,p_country_cluster,p_wild_cluster
+1,EQ1,WIOD Eq. 1 baseline,headline baseline,ln_robots_lag1,ln_robots_lag1,26,257,2571,2001-2014,0.0096448881124548,0.0061816053239349,0.1186993464388119,0.1261261261261261
+2,EQ2_COORD,WIOD Eq. 2 coordination moderation,primary focal institutional result,ln_robots_lag1:coord_pre_c,ln_robots_lag1:coord_pre_c,25,247,2500,2001-2014,0.0124452048610494,0.0053456551576612,0.0199069423977612,0.1081081081081081
+4,EQ2B_COORD_UD,WIOD Eq. 2b joint coord x ud moderation,exploratory Hawk-Dove extension,ln_robots_lag1:coord_pre_c,Eq. 2b coord slope term,23,227,2356,2001-2014,0.0116600941501924,0.0079919373733353,0.1445700145397195,0.4724724724724725
+4,EQ2_UD,WIOD Eq. 2 union-density reference,reference benchmark institutional result,ln_robots_lag1:ud_pre_c,ln_robots_lag1:ud_pre_c,23,227,2356,2001-2014,-3.1603754834534994e-05,0.0004112074344147,0.938738108122449,0.954954954954955
+5,EQ2B_COORD_UD,WIOD Eq. 2b joint coord x ud moderation,exploratory Hawk-Dove extension,ln_robots_lag1:ud_pre_c,Eq. 2b ud slope term,23,227,2356,2001-2014,-5.988011922370383e-06,0.0003633009755317,0.986849674870514,0.983983983983984
+6,EQ2B_COORD_UD,WIOD Eq. 2b joint coord x ud moderation,exploratory Hawk-Dove extension,ln_robots_lag1:coord_pre_c:ud_pre_c,Eq. 2b Hawk-Dove three-way term,23,227,2356,2001-2014,-0.0004114320059108,0.0004924251736398,0.4034239339337273,0.5435435435435435
