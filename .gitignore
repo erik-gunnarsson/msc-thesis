@@ -57,3 +57,28 @@ figures/
 
 # Cursor
 .cursor/
+
+
+# IDE & OS
+.DS_Store
+.idea/
+*.swp
+*.swo
+*~
+*.log
+
+# Cursor
+.cursor/
+
+# Claude Code
+.claude/
+
+# R
+.R/
+.Rhistory
+.RData
+.Rapp.history
+
+# Python tooling caches
+.ruff_cache/
+.mypy_cache/
